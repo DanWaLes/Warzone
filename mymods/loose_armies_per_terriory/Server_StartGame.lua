@@ -8,6 +8,6 @@ function Server_StartGame(game, standing)
 		return;
 	end
 
-	SetInitialGold(game);
+	SetInitialGold(game, standing);
 	SetInitialStorage(game);
 end

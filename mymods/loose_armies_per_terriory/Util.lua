@@ -29,11 +29,9 @@ function tprint (tbl, indent)
   return toprint;
 end
 
-function GetTerritoriesByPlayerID(playerID, game)
+function GetTerritoriesByPlayerID(playerID, gameStanding)
 	local ret = {};
-	local lastestTurnStanding = game.ServerGame.LatestTurnStanding or game.ServerGame.TurnZeroStanding;
-	-- LatestTurnStanding is nil in Server_StatGame
-	local serverterritories = lastestTurnStanding.Territories;
+	local serverterritories = gameStanding.Territories;
 
 	ret.NumTerritories = 0;
 	ret.Territories = {};
