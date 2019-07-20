@@ -50,14 +50,19 @@ end
 function SetInitialGold(game, standing)
 	print("init SetInitialGold");
 	local allPlayerData = GatherAllPlayerData(game, standing);
-	print("got allPlayerData, about to SetPlayerResource");
+	print("got allPlayerData\n" .. tprint(allPlayerData));
+	print("about to modify gold");
 	print(tprint(WL.ResourceType));
+	print(game.ServerGame.SetPlayerResource);
 	for i,player in pairs(allPlayerData) do
 		print("on player " .. tostring(i));
 		print("player\n" .. tprint(player));
+		print("player.ID = " .. tostring(player.ID));
+		print("WL.ResourceType.Gold = " .. tostring(WL.ResourceType.Gold));
+		print("player.CorrectedGold = " .. tostring(player.CorrectedGold));
 		game.ServerGame.SetPlayerResource(player.ID, WL.ResourceType.Gold, player.CorrectedGold);
 	end
-	print("done SetPlayerResource");
+	print("done modifying gold");
 	print("out it SetInitialGold");
 end
 
