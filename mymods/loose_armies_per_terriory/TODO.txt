@@ -1,0 +1,4 @@
+- make UI config
+	- Gold minus G per T territories
+	- Bonus overrider (D default, N new):
+		N = D + (G/T)
