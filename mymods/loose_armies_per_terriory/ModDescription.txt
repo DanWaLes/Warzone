@@ -1,6 +1,7 @@
 This mod allows each X territories to be worth -Y Gold.
-Commerce is automatically enabled if it hasn't been done so already with army cost multiplier at 1 and no building cities (in essence making it just like normal income).
-Gold (the currency of commerce games) has to be used as that the only form of currency that mods can override.
-
+Commerce is has to enabled. To make Gold (the currency of commerce games) just like normal income, go to Armies, tick Commerce, untick Army Cost Multiplier and untick building Can Build Cities.
 Comes with a basic bonus overrider to reduce the risk of draws.
 Use the BonusValue QuickOverrider for more flexibility or manually override bonus values (in the Armies section).
+
+Gold has to be used as that is currently the only form of currency that mods can override.
+Commerce and not be force enabled by mods, I have tried.
