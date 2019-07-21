@@ -1,6 +1,6 @@
 require "LooseArmiesPerTerritory"
 
--- set initial Gold and Mod data (auto dist only) - called in manual and auto dist
+-- set initial Mod data (auto dist only) - called in manual and auto dist
 
 function Server_StartGame(game, standing)
 	if not game.Settings.AutomaticTerritoryDistribution then
@@ -8,6 +8,6 @@ function Server_StartGame(game, standing)
 		return;
 	end
 
-	SetInitialGold(game, standing);
 	SetInitialStorage(game);
+	-- note that when the game starts, the displayed Gold is incorrect, afterwards the displayed amount is correct and removes the correct amount of Gold
 end

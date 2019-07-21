@@ -25,14 +25,16 @@ function GatherPlayerData(pID, game, standing)
 	player.State = playerId.State;
 	player.NumTerritories = GetTerritoriesByPlayerID(pID, standing).NumTerritories;
 	player.CorrectedGold = player.Gold - player.NumTerritories;
+	player.LooseArmiesPerTerritoryCost = player.NumTerritories;
 
 	-- Gold can't be negative
 	if player.CorrectedGold < 0 then
 		player.CorrectedGold = 0;
+		player.LooseArmiesPerTerritoryCost = player.Gold;
 	end
 
-	print("GatherPlayerData player exiting with");
-	print(tprint(player));
+	-- print("GatherPlayerData player exiting with");
+	-- print(tprint(player));
 	return player;
 end
 
@@ -47,34 +49,42 @@ function GatherAllPlayerData(game, standing)
 	return allPlayerData;
 end
 
-function SetInitialGold(game, standing)
-	print("init SetInitialGold");
-	local allPlayerData = GatherAllPlayerData(game, standing);
-	print("got allPlayerData\n" .. tprint(allPlayerData));
-	print("about to modify gold");
-	print(tprint(WL.ResourceType));
-	print(game.ServerGame.SetPlayerResource);
-	for i,player in pairs(allPlayerData) do
-		print("on player " .. tostring(i));
-		print("player\n" .. tprint(player));
-		print("player.ID = " .. tostring(player.ID));
-		print("WL.ResourceType.Gold = " .. tostring(WL.ResourceType.Gold));
-		print("player.CorrectedGold = " .. tostring(player.CorrectedGold));
-		game.ServerGame.SetPlayerResource(player.ID, WL.ResourceType.Gold, player.CorrectedGold);
-	end
-	print("done modifying gold");
-	print("out it SetInitialGold");
-end
-
 function SetInitialStorage(game)
+	-- print("init SetInitalStorage");
 	-- can only store data about human players
 	local playerGameData = Mod.PlayerGameData;
 	local serverplayers = game.ServerGame.Game.Players;
 
 	for i,playerId in pairs(serverplayers) do
 		if not playerId.IsAI then
-			playerGameData[playerId.ID].HasReduceGold = false;
+			playerGameData[playerId.ID] = {HasReduceGold = false};
 			Mod.PlayerGameData = playerGameData;
 		end
 	end
+
+	-- print("Mod.PlayerGameData =\n" .. tprint(Mod.PlayerGameData));
+	-- print("Set initial storage");
+	-- https://www.warzone.com/wiki/Mod_Game_Data_Storage
+end
+
+function SetGold(playerID, game, addNewOrder)
+	-- playerID as in the actual player id, not the player object
+
+	-- game.ServerGame.SetPlayerResource(player.ID, WL.ResourceType.Gold, player.Gold);
+	-- can't do the above as SetPlayerResource cannot be called from an AdvanceTurn hook.  To set resources from these hooks, add a GameOrderEvent instead.
+	-- using game order event doesn't work properly - gold is modified here then gold is added, even when called from Server_AdvanceTurn_End (has to be called at Server_AdvanceTurn_Start to prevent this - results in lots of orders being skipped), so humans have to have Client_GameRefresh + Server_GameCustomMessage using SetPlayerResource and AIs have Server_AdvanceTurn_Start but even then the number of territories each player owned is likely to have changed from when the turn started and when the turn ended
+	local player = GatherPlayerData(playerID, game);
+
+	-- make the order
+	local message = "Removed 1 Gold per territory";
+	local visibleToOpt = {playerID};
+	local terrModsOpt = nil;
+	local resources = {};
+	resources[WL.ResourceType.Gold] = player.CorrectedGold;
+
+	local setResources = {};
+
+	setResources[playerID] = resources;
+
+	addNewOrder(WL.GameOrderEvent.Create(playerID, message, visibleToOpt, terrModsOpt, setResources));
 end

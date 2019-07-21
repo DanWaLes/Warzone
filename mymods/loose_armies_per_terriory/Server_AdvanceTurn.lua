@@ -5,25 +5,10 @@ function Server_AdvanceTurn_Start(game, addNewOrder)
 	-- on turn advance, reduce each AI players income
 	local serverplayers = game.ServerGame.Game.Players;
 
-	for i,playerId in pairs(serverplayers) do
-		if playerId.IsAI then
-			local pID = playerId.ID;
-			local aiPlayer = GatherPlayerData(pID, game);
-
-			-- game.ServerGame.SetPlayerResource(player.ID, WL.ResourceType.Gold, player.Gold);
-			-- can't do the above as SetPlayerResource cannot be called from an AdvanceTurn hook.  To set resources from these hooks, add a GameOrderEvent instead.
-
-			local message = "Removed 1 Gold per territory";
-			local visibleToOpt = {pID};
-			local terrModsOpt = nil;
-			local resources = {};
-			resources[WL.ResourceType.Gold] = aiPlayer.Gold;
-
-			local setResources = {};
-
-			setResources[pID] = resources;
-
-			addNewOrder(WL.GameOrderEvent.Create(pID, message, visibleToOpt, terrModsOpt, setResources));
+	for i,player in pairs(serverplayers) do
+		if player.IsAIOrHumanTurnedIntoAI and PlayerIsPlaying(player) then
+			-- human may not have come back and is possible to bypass the Gold changes if only using player.IsAI
+			SetGold(player.ID, game, addNewOrder);
 		end
 	end
 end
@@ -34,7 +19,7 @@ function Server_AdvanceTurn_End(game, addNewOrder)
 	local playerGameData = Mod.PlayerGameData;
 
 	for i,player in pairs(serverplayers) do
-		if not player.IsAI then
+		if not player.IsAI and PlayerIsPlaying(player) then
 			playerGameData[player.ID].HasReduceGold = false;
 			Mod.PlayerGameData = playerGameData;
 		end

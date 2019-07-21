@@ -59,3 +59,7 @@ function PlayerIdIntToPlayerId(playerIDInt, game)
 
 	return ret;
 end
+
+function PlayerIsPlaying(player)
+	return player.State == WL.GamePlayerState.Playing;
+end
