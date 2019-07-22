@@ -1,7 +1,1 @@
-- make UI config
-	- Client_PresentSettingsUI
-	- Bonus overrider (D default, N new):
-		N = D + (G/T)
-
-- use CommerceArmyCostMultiplier to force-enable commerce same as income if commerce not enabled already - monitor what this is in test game
 -when game created, alert user of their start income as the visual is incorrect.

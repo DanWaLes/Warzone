@@ -26,7 +26,7 @@ function GatherPlayerData(pID, game, standing)
 	player.State = playerId.State;
 	player.NumTerritories = GetTerritoriesByPlayerID(pID, standing).NumTerritories;
 	player.LoseArmiesPerXTerritoriesCost = round((player.NumTerritories / Mod.Settings.Territories) * Mod.Settings.Gold);
-	player.CorrectedGold = player.Gold - LoseArmiesPerXTerritoriesCost;
+	player.CorrectedGold = player.Gold - player.LoseArmiesPerXTerritoriesCost;
 
 	-- Gold can't be negative
 	if player.CorrectedGold < 0 then
@@ -99,6 +99,7 @@ function GetDefaults(key)
 	defaults.GoldMaxVal = 15;
 	defaults.TerritoriesMinVal = 1;
 	defaults.TerritoriesMaxVal = 15;
+	defaults.EnableBonusOverrider = true;
 
 	if key then
 		return defaults[key];

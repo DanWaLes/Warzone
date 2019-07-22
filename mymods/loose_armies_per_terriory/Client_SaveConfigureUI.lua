@@ -4,6 +4,7 @@ require "LoseArmiesPerTerritory"
 function Client_SaveConfigureUI(alert)
 	local goldVal = goldInputField.GetValue();
 	local territoriesVal = territoriesInputField.GetValue();
+	local enableBonusOverrider = enableBonusOverriderInputField.GetIsChecked();
 	local errMsg;
 	local goldErrMsg = "Gold must be between " .. tostring(GetDefaults("GoldMinVal")) .. " and " .. tostring(GetDefaults("GoldMaxVal")) .. ".";
 	local territoriesErrMsg = "Territories must be between " .. tostring(GetDefaults("TerritoriesMinVal")) .. " and " .. tostring(GetDefaults("TerritoriesMaxVal")) .. ".";
@@ -23,4 +24,5 @@ function Client_SaveConfigureUI(alert)
 	-- write to Mod.Settings
 	Mod.Settings.Gold = goldVal;
 	Mod.Settings.Territories = territoriesVal;
+	Mod.Settings.EnableBonusOverrider = enableBonusOverrider;
 end
