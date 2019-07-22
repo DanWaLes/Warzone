@@ -1,4 +1,4 @@
-require "LoseArmiesPerTerritory"
+require "LoseArmiesForTerritories"
 require "Util"
 
 function Client_PresentConfigureUI(rootParent)

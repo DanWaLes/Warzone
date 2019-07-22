@@ -1,5 +1,5 @@
 require "Util"
-require "LoseArmiesPerTerritory"
+require "LoseArmiesForTerritories"
 
 function Client_SaveConfigureUI(alert)
 	local goldVal = goldInputField.GetValue();
