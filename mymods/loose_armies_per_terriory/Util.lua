@@ -29,6 +29,22 @@ function tprint (tbl, indent)
   return toprint;
 end
 
+-- http://lua-users.org/wiki/SimpleRound
+-- there isn't a built -in math.round
+function round(num, numDecimalPlaces)
+  local mult = 10^(numDecimalPlaces or 0)
+  return math.floor(num * mult + 0.5) / mult
+end
+
+-- ? isn't included in lua
+function ternary(condition, iftrue, iffalse)
+	if condition then
+		return iftrue;
+	else
+		return iffalse;
+	end
+end
+
 function GetTerritoriesByPlayerID(playerID, gameStanding)
 	local ret = {};
 	local serverterritories = gameStanding.Territories;

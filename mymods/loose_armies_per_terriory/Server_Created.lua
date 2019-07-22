@@ -1,6 +1,8 @@
 -- apply bonus overrider if needed
 
 function Server_Created(game, settings)
+	-- print(settings.CommerceArmyCostMultiplier);
+
 	-- apply bonus overrider
     local overriddenBonuses = {};
 

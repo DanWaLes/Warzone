@@ -1,5 +1,6 @@
 require "Util"
-require "LooseArmiesPerTerritory"
+require "LoseArmiesPerTerritory"
+
 -- apply the changes in Gold
 function Server_GameCustomMessage(game, playerId, payload)
 	-- print("init Server_GameCustomMessage");

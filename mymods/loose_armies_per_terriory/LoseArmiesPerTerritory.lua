@@ -19,18 +19,19 @@ function GatherPlayerData(pID, game, standing)
 	end
 
 	-- player effectively extends playerId however playerId isn't writable
+
 	player.ID = pID;
 	player.Gold = standing.NumResources(pID, WL.ResourceType.Gold);
 	player.IsAI = playerId.IsAI;
 	player.State = playerId.State;
 	player.NumTerritories = GetTerritoriesByPlayerID(pID, standing).NumTerritories;
-	player.CorrectedGold = player.Gold - player.NumTerritories;
-	player.LooseArmiesPerTerritoryCost = player.NumTerritories;
+	player.LoseArmiesPerXTerritoriesCost = round((player.NumTerritories / Mod.Settings.Territories) * Mod.Settings.Gold);
+	player.CorrectedGold = player.Gold - LoseArmiesPerXTerritoriesCost;
 
 	-- Gold can't be negative
 	if player.CorrectedGold < 0 then
 		player.CorrectedGold = 0;
-		player.LooseArmiesPerTerritoryCost = player.Gold;
+		player.LoseArmiesPerXTerritoriesCost = player.Gold;
 	end
 
 	-- print("GatherPlayerData player exiting with");
@@ -76,7 +77,7 @@ function SetGold(playerID, game, addNewOrder)
 	local player = GatherPlayerData(playerID, game);
 
 	-- make the order
-	local message = "Removed 1 Gold per territory";
+	local message = "Removed " .. tostring(Mod.Settings.Gold) .. " Gold for each " .. ternary(Mod.Settings.Territories == 1, "territory", tostring(Mod.Settings.Territories) .. "territories") .. " owned";
 	local visibleToOpt = {playerID};
 	local terrModsOpt = nil;
 	local resources = {};
@@ -87,4 +88,21 @@ function SetGold(playerID, game, addNewOrder)
 	setResources[playerID] = resources;
 
 	addNewOrder(WL.GameOrderEvent.Create(playerID, message, visibleToOpt, terrModsOpt, setResources));
+end
+
+function GetDefaults(key)
+	local defaults = {};
+
+	defaults.Gold = 1;
+	defaults.Territories = 1;
+	defaults.GoldMinVal = 1;
+	defaults.GoldMaxVal = 15;
+	defaults.TerritoriesMinVal = 1;
+	defaults.TerritoriesMaxVal = 15;
+
+	if key then
+		return defaults[key];
+	end
+
+	return defaults;
 end

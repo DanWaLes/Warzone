@@ -1,4 +1,4 @@
-require "LooseArmiesPerTerritory"
+require "LoseArmiesPerTerritory"
 
 -- set initial Mod data (auto dist only) - called in manual and auto dist
 

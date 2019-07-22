@@ -1,4 +1,4 @@
 - make UI config
-	- Gold minus G per T territories
+	- Client_PresentSettingsUI
 	- Bonus overrider (D default, N new):
 		N = D + (G/T)

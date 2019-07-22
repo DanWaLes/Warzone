@@ -1,5 +1,5 @@
 require "Util"
-require "LooseArmiesPerTerritory"
+require "LoseArmiesPerTerritory"
 
 function Server_AdvanceTurn_Start(game, addNewOrder)
 	-- on turn advance, reduce each AI players income

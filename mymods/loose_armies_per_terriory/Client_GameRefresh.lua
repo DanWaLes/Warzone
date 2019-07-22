@@ -19,14 +19,12 @@ function Client_GameRefresh(game)
 
 	-- print("Mod.PlayerGameData =\n" .. tprint(Mod.PlayerGameData));
 
-	if playerGameData.HasReduceGold then
-		return;
-	end
+	if playerGameData.HasReduceGold then return; end
 
-	local waitText = "Removing 1 Gold per territory...";
-	local doneText = "Removed 1 Gold per territory";
+	local waitText = "Removing " .. tostring(Mod.Settings.Gold) .. " Gold for each " .. ternary(Mod.Settings.Territories == 1, "territory", tostring(Mod.Settings.Territories) .. "territories") .. "owned"
+	local doneText = "Removed " .. tostring(Mod.Settings.Gold) .. " Gold for each " .. ternary(Mod.Settings.Territories == 1, "territory", tostring(Mod.Settings.Territories) .. "territories") .. "owned"
 	local payload = {};
-	payload.Msg = "Remove 1 Gold per territory";
+	payload.Msg = "Remove gold for territories";
 
 	local callback = function(returnValue)
 		-- prompting user each turn could get in the user's way
