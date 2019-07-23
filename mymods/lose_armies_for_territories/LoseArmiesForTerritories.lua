@@ -6,21 +6,20 @@ require "Util";
 -- https://www.warzone.com/wiki/Mod_API_Reference:GamePlayer
 -- https://www.warzone.com/wiki/Mod_API_Reference:TerritoryStanding
 
-function GatherPlayerData(pID, game, standing)
+function GatherPlayerData(pID, game)
 	-- @param pID as in the player's actual id
 	-- can't modify income, so commerce has to be used - can modify gold
 
 	local player = {};
 	local playerId = PlayerIdIntToPlayerId(pID, game);
-	if not standing then
-		standing = game.ServerGame.LatestTurnStanding;
-		-- LatestTurnStanding is nil in Server_StatGame, so pass standing as argument from there
-		-- otherwise use the default LastestTurnStanding
-	end
+	local standing = game.ServerGame.LatestTurnStanding or Mod.PrivateGameData.initialStanding;
 
 	-- player effectively extends playerId however playerId isn't writable
 
 	player.ID = pID;
+	print("game = " .. tprint(game));
+	print("standing = " .. tprint(standing));
+	print("standing.NumResources = " .. tostring(standing.NumResources));
 	player.Gold = standing.NumResources(pID, WL.ResourceType.Gold);
 	player.IsAI = playerId.IsAI;
 	player.State = playerId.State;
@@ -39,18 +38,18 @@ function GatherPlayerData(pID, game, standing)
 	return player;
 end
 
-function GatherAllPlayerData(game, standing)
+function GatherAllPlayerData(game)
 	local allPlayerData = {};
 	local serverplayers = game.ServerGame.Game.Players;
 
 	for i,playerId in pairs(serverplayers) do
-		allPlayerData[i] = GatherPlayerData(playerId.ID, game, standing);
+		allPlayerData[i] = GatherPlayerData(playerId.ID, game);
 	end
 
 	return allPlayerData;
 end
 
-function SetInitialStorage(game)
+function SetInitialStorage(game, standing)
 	-- print("init SetInitalStorage");
 	-- can only store data about human players
 	local playerGameData = Mod.PlayerGameData;
@@ -65,6 +64,10 @@ function SetInitialStorage(game)
 		end
 	end
 
+	local privateGameData = Mod.PrivateGameData;
+
+	privateGameData.initialStanding = standing;
+	Mod.PrivateGameData = privateGameData;
 	-- print("Mod.PlayerGameData =\n" .. tprint(Mod.PlayerGameData));
 	-- print("Set initial storage");
 	-- https://www.warzone.com/wiki/Mod_Game_Data_Storage

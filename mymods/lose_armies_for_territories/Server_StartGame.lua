@@ -8,5 +8,5 @@ function Server_StartGame(game, standing)
 		return;
 	end
 
-	SetInitialStorage(game);
+	SetInitialStorage(game, standing);
 end
