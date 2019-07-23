@@ -29,6 +29,15 @@ function tprint (tbl, indent)
   return toprint;
 end
 
+function debugPrint(msg)
+	-- for conditionally printing data that would help in debugging
+	local debugEnabled = false;
+
+	if debugEnabled then
+		print(msg);
+	end
+end
+
 -- http://lua-users.org/wiki/SimpleRound
 -- there isn't a built -in math.round
 function round(num, numDecimalPlaces)

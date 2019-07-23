@@ -26,7 +26,8 @@ function Client_PresentConfigureUI(rootParent)
 		.SetSliderMaxValue(GetDefaults("TerritoriesMaxVal"))
 		.SetValue(initialTerritories);
 
-	UI.CreateLabel(vert).SetText("It's recommended that bonuses are overridden to prevent the game from being a draw.");
+	UI.CreateLabel(vert).SetText("It's recommended that bonuses are overridden to prevent the game from being a draw");
 	UI.CreateLabel(vert).SetText("Bonus overrider formula is: default bonus value + round((territories in bonus / T) * G)");
+	UI.CreateLabel(vert).SetText("The bonus overrider only takes affect when gold is positive");
 	enableBonusOverriderInputField = UI.CreateCheckBox(vert).SetText('Enable bonus overrider').SetIsChecked(initialEnableBonusOverrider);
 end

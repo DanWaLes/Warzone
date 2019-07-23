@@ -26,7 +26,13 @@ function Client_GameRefresh(game)
 	local payload = {};
 	payload.Msg = "Remove gold for territories";
 
-	local callback = function(returnValue)
+	local callback = function(player)
+		if not playerGameData.HasShownIncorrectGoldWarning then
+			-- note that when the game starts, the displayed Gold is incorrect, afterwards the displayed amount is correct and removes the correct amount of Gold
+
+			UI.Alert("Your Gold for this turn is " .. player.CorrectedGold .. ". Your displayed Gold will be correct for the rest of this game.");
+		end
+
 		-- prompting user each turn could get in the user's way
 		-- UI.Alert(doneText);
 	end

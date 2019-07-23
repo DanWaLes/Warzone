@@ -10,7 +10,7 @@ function Server_Created(game, settings)
 	end
 
 	-- apply bonus overrider
-	if Mod.Settings.EnableBonusOverrider then
+	if Mod.Settings.EnableBonusOverrider and Mod.Settings.Gold > 0 then
 		local overriddenBonuses = {};
 
 		for i, bonus in pairs(game.Map.Bonuses) do

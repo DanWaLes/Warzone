@@ -1,1 +1,1 @@
--when game created, alert user of their start income as the visual is incorrect.
+-stalemate stop ??

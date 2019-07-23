@@ -9,5 +9,4 @@ function Server_StartGame(game, standing)
 	end
 
 	SetInitialStorage(game);
-	-- note that when the game starts, the displayed Gold is incorrect, afterwards the displayed amount is correct and removes the correct amount of Gold
 end

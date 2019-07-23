@@ -58,7 +58,9 @@ function SetInitialStorage(game)
 
 	for i,playerId in pairs(serverplayers) do
 		if not playerId.IsAI then
-			playerGameData[playerId.ID] = {HasReduceGold = false};
+			playerGameData[playerId.ID] = {};
+			playerGameData[playerId.ID].HasReduceGold = false;
+			playerGameData[playerId.ID].HasShownIncorrectGoldWarning = false;
 			Mod.PlayerGameData = playerGameData;
 		end
 	end
@@ -95,8 +97,8 @@ function GetDefaults(key)
 
 	defaults.Gold = 1;
 	defaults.Territories = 1;
-	defaults.GoldMinVal = 1;
-	defaults.GoldMaxVal = 15;
+	defaults.GoldMinVal = -15;-- positive gold per turn
+	defaults.GoldMaxVal = 15;-- negative gold per turn
 	defaults.TerritoriesMinVal = 1;
 	defaults.TerritoriesMaxVal = 15;
 	defaults.EnableBonusOverrider = true;
