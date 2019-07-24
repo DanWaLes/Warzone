@@ -1,8 +1,7 @@
 -- https://stackoverflow.com/questions/41942289/display-contents-of-tables-in-lua#answer-41943392
 function tprint (tbl, indent)
 	if tbl == nil then
-		print("tbl is nil");
-		return;
+		return "tbl is nil";
 	end
   if not indent then indent = 0 end
   local toprint = string.rep(" ", indent) .. "{\r\n"
@@ -31,7 +30,7 @@ end
 
 function debugPrint(msg)
 	-- for conditionally printing data that would help in debugging
-	local debugEnabled = false;
+	local debugEnabled = true;
 
 	if debugEnabled then
 		print(msg);

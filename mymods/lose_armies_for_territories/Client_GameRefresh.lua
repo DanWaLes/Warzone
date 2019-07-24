@@ -3,6 +3,8 @@ require "Util"
 -- only called on human players
 
 function Client_GameRefresh(game)
+	print("init Client_GameRefresh");
+
 	-- if we're in the game
 	if game == nil then
 		return;
@@ -12,6 +14,12 @@ function Client_GameRefresh(game)
 	end
 
 	if not PlayerIsPlaying(game.Us) then
+		return;
+	end
+
+	if not Mod.PublicGameData.enteredServer_StartGame then
+		-- in manual dist, order is server_created client_refresh server_gamecustommessage etc.
+		-- server_startgame isn't called before trying apply changes in server_gamecustommessage
 		return;
 	end
 
