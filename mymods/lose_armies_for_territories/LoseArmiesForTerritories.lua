@@ -68,6 +68,12 @@ function SetInitialStorage(game, standing)
 
 	privateGameData.initialStanding = standing;
 	Mod.PrivateGameData = privateGameData;
+
+	local publicGameData = Mod.PublicGameData;
+
+	publicGameData.enteredServer_StartGame = true;
+	Mod.PublicGameData = publicGameData;
+
 	-- print("Mod.PlayerGameData =\n" .. tprint(Mod.PlayerGameData));
 	-- print("Set initial storage");
 	-- https://www.warzone.com/wiki/Mod_Game_Data_Storage
@@ -100,8 +106,8 @@ function GetDefaults(key)
 
 	defaults.Gold = 1;
 	defaults.Territories = 1;
-	defaults.GoldMinVal = -15;-- positive gold per turn
-	defaults.GoldMaxVal = 15;-- negative gold per turn
+	defaults.GoldMinVal = 1;-- 0 would do nothing, negative would be extra GPT - this is mod only meant to reduce
+	defaults.GoldMaxVal = 15;
 	defaults.TerritoriesMinVal = 1;
 	defaults.TerritoriesMaxVal = 15;
 	defaults.EnableBonusOverrider = true;

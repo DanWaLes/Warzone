@@ -1,12 +1,9 @@
 require "LoseArmiesForTerritories"
 
--- set initial Mod data (auto dist only) - called in manual and auto dist
+-- set initial Mod data (auto and manual dist) - called in manual and auto dist
+-- trying to do in maul dist using Server_StartDistrubtion causes standing.NumResources to be nil
 
 function Server_StartGame(game, standing)
-	if not game.Settings.AutomaticTerritoryDistribution then
-		-- is manual dist - already done this task in Server_StartDistribution
-		return;
-	end
-
+	print("init Server_StartGame");
 	SetInitialStorage(game, standing);
 end

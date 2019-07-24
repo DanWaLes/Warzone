@@ -3,6 +3,8 @@ require "LoseArmiesForTerritories"
 
 -- apply the changes in Gold
 function Server_GameCustomMessage(game, playerId, payload, setReturn)
+	print("init Server_GameCustomMessage");
+
 	local player = GatherPlayerData(playerId, game);
 
 	if player == nil then
