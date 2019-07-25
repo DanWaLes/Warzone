@@ -5,5 +5,5 @@ require "LoseArmiesForTerritories"
 
 function Server_StartGame(game, standing)
 	print("init Server_StartGame");
-	SetInitialStorage(game, standing);
+	SetInitialStorage(game);
 end

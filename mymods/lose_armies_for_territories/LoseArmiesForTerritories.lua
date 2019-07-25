@@ -12,7 +12,7 @@ function GatherPlayerData(pID, game)
 
 	local player = {};
 	local playerId = PlayerIdIntToPlayerId(pID, game);
-	local standing = game.ServerGame.LatestTurnStanding or Mod.PrivateGameData.initialStanding;
+	local standing = game.ServerGame.LatestTurnStanding;
 
 	-- player effectively extends playerId however playerId isn't writable
 
@@ -49,7 +49,7 @@ function GatherAllPlayerData(game)
 	return allPlayerData;
 end
 
-function SetInitialStorage(game, standing)
+function SetInitialStorage(game)
 	-- print("init SetInitalStorage");
 	-- can only store data about human players
 	local playerGameData = Mod.PlayerGameData;
@@ -63,11 +63,6 @@ function SetInitialStorage(game, standing)
 			Mod.PlayerGameData = playerGameData;
 		end
 	end
-
-	local privateGameData = Mod.PrivateGameData;
-
-	privateGameData.initialStanding = standing;
-	Mod.PrivateGameData = privateGameData;
 
 	local publicGameData = Mod.PublicGameData;
 
