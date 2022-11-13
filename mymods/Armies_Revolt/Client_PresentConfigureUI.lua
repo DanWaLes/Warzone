@@ -27,7 +27,7 @@ function Client_PresentConfigureUI(rootParent)
 				.SetValue(initialSettingValue);
 
 			if value.inputType == 'float' then
-				GLOBALS[key].WholeNumbers = false;
+				GLOBALS[key].SetWholeNumbers(false);
 			end
 		end
 	end
