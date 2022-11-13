@@ -5,7 +5,7 @@ GLOBALS = {};
 function Client_PresentConfigureUI(rootParent)
 	local inputFieldTypes = {
 		int = 'CreateNumberInputField',
-		number = 'CreateNumberInputField',
+		float = 'CreateNumberInputField',
 		bool = 'CreateCheckBox'
 	};
 
@@ -29,7 +29,7 @@ function Client_PresentConfigureUI(rootParent)
 				.SetSliderMaxValue(value.maxValue)
 				.SetValue(initialSettingValue)
 
-			if value.inputType == 'number' then
+			if value.inputType == 'float' then
 				GLOBALS[key].WholeNumbers = false;
 			end
 		end
