@@ -68,7 +68,7 @@ function doSwaps(game, addNewOrder, swaps)
 
 	for tId, territory in pairs(game.ServerGame.LatestTurnStanding.Territories) do
 		if not territory.IsNeutral and territory.Structures == nil and #territory.NumArmies.SpecialUnits < 1 then
-			return table.insert(mods, doSwap(territory, swaps));
+			table.insert(mods, doSwap(territory, swaps));
 		end
 	end
 
