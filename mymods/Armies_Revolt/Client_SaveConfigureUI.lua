@@ -5,7 +5,6 @@ function Client_SaveConfigureUI(alert)
 	local settingValues = {};
 
 	for key, value in pairs(getSettings()) do
-		local isNumber = value.inputType == 'int' or value.inputType == 'number';
 		local settingVal;
 
 		if value.inputType == 'bool' then
