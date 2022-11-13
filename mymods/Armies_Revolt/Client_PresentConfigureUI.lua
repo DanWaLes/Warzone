@@ -3,31 +3,52 @@ require 'settings'
 GLOBALS = {};
 
 function Client_PresentConfigureUI(rootParent)
+	cpc(rootParent, getSettings());
+end
+
+function cpc(rootParent, settings)
 	local vert = UI.CreateVerticalLayoutGroup(rootParent);
 
-	for key, value in pairs(getSettings()) do
-		local initialSettingValue = Mod.Settings[key];
+	for settingName, setting in pairs(settings) do
+		local initialSettingValue = Mod.Settings[settingName];
 
 		if initialSettingValue == nil then
-			initialSettingValue = value.defaultValue;
+			initialSettingValue = setting.defaultValue;
 		end
 
-		if value.inputType == 'bool' then
-			GLOBALS[key] = UI.CreateCheckBox(vert)
-				.SetText(value.label)
+		if setting.inputType == 'bool' then
+			local vert2 = UI.CreateVerticalLayoutGroup(vert);
+
+			GLOBALS[settingName] = UI.CreateCheckBox(vert2)
+				.SetText(setting.label)
 				.SetIsChecked(initialSettingValue);
+
+			if setting.subsettings then
+				local vert3;
+				local subsettingEnabledOrDisabled = function()
+					if GLOBALS[settingName].GetIsChecked() then
+						vert3 = UI.CreateVerticalLayoutGroup(vert2);
+						cpc(vert3, setting.subsettings);
+					elseif not UI.IsDestroyed(vert3) then
+						UI.Destroy(vert3);
+					end
+				end
+
+				GLOBALS[settingName].SetOnValueChanged(subsettingEnabledOrDisabled);
+				subsettingEnabledOrDisabled();
+			end
 		else
 			local horz = UI.CreateHorizontalLayoutGroup(rootParent);
 
-			UI.CreateLabel(horz).SetText(value.label);
+			UI.CreateLabel(horz).SetText(setting.label);
 
-			GLOBALS[key] = UI.CreateNumberInputField(horz)
-				.SetSliderMinValue(value.minValue)
-				.SetSliderMaxValue(value.maxValue)
+			GLOBALS[settingName] = UI.CreateNumberInputField(horz)
+				.SetSliderMinValue(setting.minValue)
+				.SetSliderMaxValue(setting.maxValue)
 				.SetValue(initialSettingValue);
 
-			if value.inputType == 'float' then
-				GLOBALS[key].SetWholeNumbers(false);
+			if setting.inputType == 'float' then
+				GLOBALS[settingName].SetWholeNumbers(false);
 			end
 		end
 	end

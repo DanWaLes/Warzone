@@ -4,15 +4,29 @@ function Client_SaveConfigureUI(alert)
 	local errMsg;
 	local settingValues = {};
 
-	for key, value in pairs(getSettings()) do
+	local ret = csc(errMsg, settingValues, getSettings());
+	errMsg = ret.errMsg;
+	settingValues = ret.settingValues;
+
+	if errMsg then
+		return alert(errMsg);
+	end
+
+	for settingName, settingValue in pairs(settingValues) do
+		Mod.Settings[settingName] = settingValue;
+	end
+end
+
+function csc(errMsg, settingValues, settings)
+	for settingName, setting in pairs(settings) do
 		local settingVal;
 
-		if value.inputType == 'bool' then
-			settingVal = GLOBALS[key].GetIsChecked();
+		if setting.inputType == 'bool' then
+			settingVal = GLOBALS[settingName].GetIsChecked();
 		else
-			settingVal = GLOBALS[key].GetValue();
+			settingVal = GLOBALS[settingName].GetValue();
 
-			if settingVal < value.minValue or settingVal > value.maxValue then
+			if settingVal < setting.minValue or settingVal > setting.maxValue then
 				if errMsg == nil then
 					errMsg = '';
 				end
@@ -21,18 +35,19 @@ function Client_SaveConfigureUI(alert)
 					errMsg = errMsg .. '\n';
 				end
 
-				errMsg = errMsg .. value.label .. ' must be between ' .. tostring(value.minValue) .. ' and ' .. tostring(value.maxValue);
+				errMsg = errMsg .. setting.label .. ' must be between ' .. tostring(setting.minValue) .. ' and ' .. tostring(setting.maxValue);
 			end
 		end
 
-		settingValues[key] = settingVal;
+		settingValues[settingName] = settingVal;
+
+		if setting.subsettings then
+			csc(errMsg, settingValues, setting.subsettings);
+		end
 	end
 
-	if errMsg then
-		return alert(errMsg);
-	end
-
-	for key, value in pairs(settingValues) do
-		Mod.Settings[key] = value;
-	end
+	return {
+		errMsg = errMsg,
+		settingValues = settingValues
+	};
 end
