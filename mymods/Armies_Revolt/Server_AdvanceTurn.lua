@@ -81,7 +81,7 @@ end
 function doSwap(territory, swaps)
 	local swapWith = swaps[territory.OwnerPlayerID];
 
-	if math.random() > Mod.Settings.RevoltChance / 100 then
+	if math.random() < Mod.Settings.RevoltChance / 100 then
 		local mod = WL.TerritoryModification.Create(territory.ID);
 		mod.SetOwnerOpt = swapWith;
 		return mod;
