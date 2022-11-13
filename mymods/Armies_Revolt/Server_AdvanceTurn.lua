@@ -41,7 +41,7 @@ function decideRandomPlayerSwaps(game)
 
 	for id, player in pairs(players) do
 		table.insert(playerIds, id);
-	end
+    end
 
 	local swaps = {};
 
@@ -79,13 +79,11 @@ function doSwaps(game, addNewOrder, swaps)
 end
 
 function doSwap(territory, swaps)
-	for original, swapWith in pairs(swaps) do
-		if territory.OwnerPlayerID == original then
-			if math.random() > Mod.Settings.RevoltChance / 100 then
-				local mod = WL.TerritoryModification.Create(territory.ID);
-				mod.SetOwnerOpt = swapWith;
-				return mod;
-			end
-		end
+	local swapWith = swaps[territory.OwnerPlayerID];
+
+	if math.random() > Mod.Settings.RevoltChance / 100 then
+		local mod = WL.TerritoryModification.Create(territory.ID);
+		mod.SetOwnerOpt = swapWith;
+		return mod;
 	end
 end
