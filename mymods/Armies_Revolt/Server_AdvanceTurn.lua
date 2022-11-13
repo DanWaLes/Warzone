@@ -68,9 +68,8 @@ function doSwaps(game, addNewOrder, swaps)
 
 	for tId, territory in pairs(game.ServerGame.LatestTurnStanding.Territories) do
 		if not territory.IsNeutral and territory.Structures == nil and #territory.NumArmies.SpecialUnits < 1 then
-			local swap = doSwap(territory, swaps);
-			if swap ~= nil then
-				table.insert(mods, swap);
+			if math.random() < Mod.Settings.RevoltChance / 100 then
+				table.insert(mods, doSwap(territory, swaps[territory.OwnerPlayerID]));
 			end
 		end
 	end
@@ -78,12 +77,8 @@ function doSwaps(game, addNewOrder, swaps)
 	addNewOrder(WL.GameOrderEvent.Create(WL.PlayerID.Neutral, 'Armies revolt!', {}, mods));
 end
 
-function doSwap(territory, swaps)
-	local swapWith = swaps[territory.OwnerPlayerID];
-
-	if math.random() < (1 - Mod.Settings.RevoltChance / 100) then
-		local mod = WL.TerritoryModification.Create(territory.ID);
-		mod.SetOwnerOpt = swapWith;
-		return mod;
-	end
+function doSwap(territory, swapWith)
+	local mod = WL.TerritoryModification.Create(territory.ID);
+	mod.SetOwnerOpt = swapWith;
+	return mod;
 end
