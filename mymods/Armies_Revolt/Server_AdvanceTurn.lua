@@ -41,7 +41,7 @@ function decideRandomPlayerSwaps(game)
 
 	for id, player in pairs(players) do
 		table.insert(playerIds, id);
-    	end
+    end
 
 	local swaps = {};
 
@@ -68,7 +68,10 @@ function doSwaps(game, addNewOrder, swaps)
 
 	for tId, territory in pairs(game.ServerGame.LatestTurnStanding.Territories) do
 		if not territory.IsNeutral and territory.Structures == nil and #territory.NumArmies.SpecialUnits < 1 then
-			table.insert(mods, doSwap(territory, swaps));
+			local swap = doSwap(territory, swaps);
+			if swap ~= nil then
+				table.insert(mods, swap);
+			end
 		end
 	end
 
