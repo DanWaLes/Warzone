@@ -41,7 +41,7 @@ function decideRandomPlayerSwaps(game)
 
 	for id, player in pairs(players) do
 		table.insert(playerIds, id);
-    end
+	end
 
 	local swaps = {};
 
