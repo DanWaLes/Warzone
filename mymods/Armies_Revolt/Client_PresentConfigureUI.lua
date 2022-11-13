@@ -3,12 +3,6 @@ require 'settings'
 GLOBALS = {};
 
 function Client_PresentConfigureUI(rootParent)
-	local inputFieldTypes = {
-		int = 'CreateNumberInputField',
-		float = 'CreateNumberInputField',
-		bool = 'CreateCheckBox'
-	};
-
 	local vert = UI.CreateVerticalLayoutGroup(rootParent);
 
 	for key, value in pairs(getSettings()) do
@@ -18,16 +12,19 @@ function Client_PresentConfigureUI(rootParent)
 			initialSettingValue = value.defaultValue;
 		end
 
-		UI.CreateLabel(vert).SetText(value.label);
-		GLOBALS[key] = UI[inputFieldTypes[value.inputType]](vert);
-
 		if value.inputType == 'bool' then
-			GLOBALS[key].SetIsChecked(initialSettingValue);
+			GLOBALS[key] = UI.CreateCheckBox(vert)
+				.SetText(value.label)
+				.SetIsChecked(initialSettingValue);
 		else
-			GLOBALS[key]	
+			local horz = UI.CreateHorizontalLayoutGroup(rootParent);
+
+			UI.CreateLabel(horz).SetText(value.label);
+
+			GLOBALS[key] = UI.CreateNumberInputField(horz)
 				.SetSliderMinValue(value.minValue)
 				.SetSliderMaxValue(value.maxValue)
-				.SetValue(initialSettingValue)
+				.SetValue(initialSettingValue);
 
 			if value.inputType == 'float' then
 				GLOBALS[key].WholeNumbers = false;
