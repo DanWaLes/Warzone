@@ -1,1 +1,1 @@
-This mod swaps your territories with someone else's at the end of every turns. The chance of territories swapping is customizable. Territories with a special unit (like commanders or tanks) aren't swapped. Territories with a structure (like cities) aren't swapped either.
+This mod swaps your territories with someone else's at the end of every turn. The chance of territories swapping is customizable. Territories with a special unit (like commanders or tanks) aren't swapped. Territories with a structure (like cities) aren't swapped either.
