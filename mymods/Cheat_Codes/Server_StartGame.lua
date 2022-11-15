@@ -1,19 +1,6 @@
 function Server_StartGame(game)
-	local cheatCodes = {};
-
-	for id, _ in pairs(game.Settings.Cards) do
-		local code = generateCheatCode();
-		print(code);
-
-		if not cheatCodes[code] then
-			cheatCodes[code] = {};
-		end
-
-		table.insert(cheatCodes[code], id);
-	end
-
 	local privateGameData = Mod.PrivateGameData;
-	privateGameData.cheatCodes = cheatCodes;
+	privateGameData.cheatCodes = generateCheatCodes(game);
 	Mod.PrivateGameData = privateGameData;
 
 	local playerGameData = Mod.PlayerGameData;
@@ -22,11 +9,29 @@ function Server_StartGame(game)
 		playerGameData[id] = {
 			guessesSentThisTurn = {},
 			solvedCheatCodesToDisplay = {},
-			solvedCheatCodes = {}
+			solvedCheatCodes = nil,
+			codesToUse = {}
 		};
 	end
 
 	Mod.PlayerGameData = playerGameData;
+end
+
+function generateCheatCodes(game)
+	local cheatCodes = {};
+
+	for id, _ in pairs(game.Settings.Cards) do
+		local code = generateCheatCode();
+		-- print(code);-- so that i can't cheat
+
+		if not cheatCodes[code] then
+			cheatCodes[code] = {};
+		end
+
+		table.insert(cheatCodes[code], id);
+	end
+
+	return cheatCodes;
 end
 
 function generateCheatCode()

@@ -1,7 +1,8 @@
 require 'ui'
+require 'util'
 
 function Client_PresentMenuUI(rootParent, setMaxSize, setScrollable, game, close)
-    setMaxSize(400,250);
+    setMaxSize(400, 250);
 
 	local playerIsPlaying = (game.Us ~= nil) and (game.Us.State == WL.GamePlayerState.Playing);
     local distributionOver = game.Game.TurnNumber > 0;
@@ -16,28 +17,40 @@ function Client_PresentMenuUI(rootParent, setMaxSize, setScrollable, game, close
 	UI.CreateLabel(guessHorz).SetText('Guess cheat code');
 
 	local guessedCheatCodeInput = UI.CreateTextInputField(guessHorz)
-		.SetPreferredWidth(40)
+		.SetPreferredWidth(Mod.Settings.CheatCodeLength * 10 + 10)
 		.SetCharacterLimit(Mod.Settings.CheatCodeLength)
-		.SetPlaceholderText('0000');
+		.SetPlaceholderText(generateCheatCodePlaceholderText());
 
 	local submitCheatCodeGuessBtn = UI.CreateButton(guessHorz);
 
 	UI.CreateLabel(vert).SetText('You are allowed to make up to ' .. Mod.Settings.CheatCodeGuessesPerTurn .. ' guesses per turn');
 
+	local invalidGuess = UI.CreateLabel(vert).SetColor('#FF0000');
 	local guessesList = UI.CreateLabel(vert);
+	local ranOutOfGuessesLabel;
 
 	function submitCheatCodeGuessBtnClicked()
+		invalidGuess.SetText('');
 		submitCheatCodeGuessBtn.SetInteractable(false);
 
-		game.SendGameCustomMessage('Submitting guess...', {guess = guessedCheatCodeInput.GetText()}, updateGuessesUsedThisTurn);
+		local guess = guessedCheatCodeInput.GetText();
+		local isValidGuess = string.len(guess) == Mod.Settings.CheatCodeLength and not string.match(guess, '[^%d]');
+		-- https://www.lua.org/pil/20.2.html
+
+		if isValidGuess then
+			game.SendGameCustomMessage('Submitting guess...', {guess = guess}, updateGuessesUsedThisTurn);
+		else
+			invalidGuess.SetText(guess .. ' is not a valid cheat code');
+			submitCheatCodeGuessBtn.SetInteractable(true);
+		end
 	end
 
-	function updateGuessesUsedThisTurn()
+	function updateGuessesUsedThisTurn(guesses)
 		submitCheatCodeGuessBtn.SetInteractable(false);
 
-		local guessNo = #Mod.PlayerGameData.guessesSentThisTurn + 1;
+		local guessNo = #guesses + 1;
 
-		if guessNo < Mod.Settings.CheatCodeGuessesPerTurn then
+		if guessNo < Mod.Settings.CheatCodeGuessesPerTurn + 1 then
 			submitCheatCodeGuessBtn.SetInteractable(true);
 			submitCheatCodeGuessBtn.SetText('Send guess #' .. guessNo);
 		else
@@ -45,37 +58,21 @@ function Client_PresentMenuUI(rootParent, setMaxSize, setScrollable, game, close
 				UI.Destroy(guessHorz);
 			end
 
-			if runOutOfGuessesLabel then
+			if ranOutOfGuessesLabel then
 				return;
 			end
 
-			runOutOfGuessesLabel = UI.CreateLabel(vert).SetText('You have used all your guesses for this turn');
+			ranOutOfGuessesLabel = UI.CreateLabel(vert).SetText('You have used all your guesses for this turn');
 		end
 
-		populateGuessesList();
+		guessesList.SetText('Guesses: ' .. arrayToStrList(guesses));
 	end
 
-	function populateGuessesList()
-		local guesses = Mod.PlayerGameData.guessesSentThisTurn;
-		local str = '';
-
-		for i, guess in pairs(guesses) do
-			str = str .. guess;
-
-			if i < #guesses then
-				str = str .. ', ';
-			end
-		end
-
-		print('all client guesses = ' .. str);
-	end
-
-	--submitCheatCodeGuessBtnClicked();
-	-- somehow the button label isnt correct if the 'fake click' isnt called first
-	updateGuessesUsedThisTurn();
+	updateGuessesUsedThisTurn(Mod.PlayerGameData.guessesSentThisTurn);
 	submitCheatCodeGuessBtn.SetOnClick(submitCheatCodeGuessBtnClicked);
 
-	if #Mod.PlayerGameData.solvedCheatCodes < 1 then
+	if not Mod.PlayerGameData.solvedCheatCodes then
+		-- print('no solved cheat codes');
 		return;
 	end
 
@@ -83,12 +80,30 @@ function Client_PresentMenuUI(rootParent, setMaxSize, setScrollable, game, close
 
 	local useCodeHorz = Horz(vert);
 
-	for cheatCode in pairs(Mod.PlayerGameData.solvedCheatCodes) do
+	for cheatCode, _ in pairs(Mod.PlayerGameData.solvedCheatCodes) do
 		local useCheatCodeBtn = UI.CreateButton(useCodeHorz)
-			.SetText(cheatCode)
-			.SetOnClick(function()
-				useCheatCodeBtn.SetInteractable(false);
-				-- todo send msg to server
-			end);
+			.SetText(cheatCode);
+		local useCheatCodeBtnClicked = function()
+			useCheatCodeBtn.SetInteractable(false);
+			game.SendGameCustomMessage('Acknowledging cheat code usage ...', {useCode = cheatCode}, function() end);
+		end;
+
+		useCheatCodeBtn.SetOnClick(useCheatCodeBtnClicked);
 	end
+end
+
+function generateCheatCodePlaceholderText()
+	local placeholder = '';
+	local i = 0;
+
+	while true do
+		if i == Mod.Settings.CheatCodeLength then
+			break;
+		end
+
+		placeholder = placeholder .. i;
+		i = i + 1;
+	end
+
+	return placeholder;
 end

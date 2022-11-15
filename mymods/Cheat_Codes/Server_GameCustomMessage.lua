@@ -1,23 +1,49 @@
-function Server_GameCustomMessage(game, playerId, payload)
+function Server_GameCustomMessage(game, playerId, payload, setReturn)
 	if not payload then
 		return;
 	end
 
+	local ret = {};
+
 	if payload.guess ~= nil then
-		processGuess(playerId, payload.guess);
+		ret = processGuess(playerId, payload.guess);
+	elseif payload.useCode ~= nil then
+		local playerGameData = Mod.PlayerGameData;
+		if not playerGameData[playerId].solvedCheatCodes then
+			playerGameData[playerId].solvedCheatCodes = {};
+		end
+
+		if not playerGameData[playerId].solvedCheatCodes[payload.useCode] then
+			print('cant use this code because youve not guessed it yet');
+			return;
+		end
+
+		if not Mod.PrivateGameData.cheatCodes[payload.useCode] then
+			-- hacked somehow
+			return;
+		end
+
+		if playerGameData[playerId].codesToUse[payload.useCode] then
+			-- hacked somehow
+			return;
+		end
+
+		playerGameData[playerId].codesToUse[payload.useCode] = 1;
+		Mod.PlayerGameData = playerGameData;
 	end
+
+	setReturn(ret);
 end
 
 function processGuess(playerId, guess)
 	local playerGameData = Mod.PlayerGameData;
 	local guessNo = #playerGameData[playerId].guessesSentThisTurn;
 
-	print('server guessNo = ' .. guessNo + 1);
-	--print('server guess = ' .. guess);
+	-- print('server guessNo = ' .. guessNo + 1);
 
 	if guessNo >= Mod.Settings.CheatCodeGuessesPerTurn then
-		print('ran out of guesses');
-		return;
+		-- print('ran out of guesses');
+		return {};
 	end
 
 	table.insert(playerGameData[playerId].guessesSentThisTurn, guess);
@@ -30,16 +56,5 @@ function processGuess(playerId, guess)
 
 	Mod.PlayerGameData = playerGameData;
 
-	local guesses = Mod.PlayerGameData[playerId].guessesSentThisTurn;
-	local str = '';
-
-	for i, guess in pairs(guesses) do
-		str = str .. guess;
-
-		if i < #guesses then
-			str = str .. ', ';
-		end
-	end
-
-	print('all server guesses = ' .. str);
+	return Mod.PlayerGameData[playerId].guessesSentThisTurn;
 end
