@@ -17,7 +17,17 @@ function Client_PresentMenuUI(rootParent, setMaxSize, setScrollable, game, close
 	local HEIGHT = 250;
 	setMaxSize(WIDTH, HEIGHT);
 	local CHEAT_CODE_SIZE = Mod.Settings.CheatCodeLength * 10 + 12;
-	local MAX_BTNS_PER_ROW = math.floor(WIDTH / CHEAT_CODE_SIZE) - 2;
+	local MAX_BTNS_PER_ROW = math.floor(WIDTH / CHEAT_CODE_SIZE) - 1;-- fine for 6, 7, 8
+
+	if (Mod.Settings.CheatCodeLength < 6) then
+		MAX_BTNS_PER_ROW = MAX_BTNS_PER_ROW - 1;-- fine for 4, 5
+	end
+	if (Mod.Settings.CheatCodeLength < 4) then
+		MAX_BTNS_PER_ROW = MAX_BTNS_PER_ROW - 1;-- fine for 3
+	end
+	if (Mod.Settings.CheatCodeLength == 2) then
+		MAX_BTNS_PER_ROW = MAX_BTNS_PER_ROW - 1;-- fine for 2
+	end
 
 	makeMenu(rootParent, Mod.PlayerGameData.guessesSentThisTurn, CHEAT_CODE_SIZE, MAX_BTNS_PER_ROW);
 end
@@ -30,7 +40,7 @@ function makeMenu(rootParent, guessesSentThisTurn, CHEAT_CODE_SIZE, MAX_BTNS_PER
 	local guessHorz = Horz(guessVert);
 
 	local guessedCheatCodeInput = UI.CreateTextInputField(guessHorz)
-		.SetPreferredWidth(CHEAT_CODE_SIZE)
+		.SetPreferredWidth(CHEAT_CODE_SIZE + 2)
 		.SetCharacterLimit(Mod.Settings.CheatCodeLength)
 		.SetPlaceholderText(generateCheatCodePlaceholderText());
 
