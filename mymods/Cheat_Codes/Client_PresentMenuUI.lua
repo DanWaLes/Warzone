@@ -2,8 +2,6 @@ require 'ui'
 require 'util'
 
 function Client_PresentMenuUI(rootParent, setMaxSize, setScrollable, game, close)
-    setMaxSize(400, 250);
-
 	local playerIsPlaying = (game.Us ~= nil) and (game.Us.State == WL.GamePlayerState.Playing);
     local distributionOver = game.Game.TurnNumber > 0;
 
@@ -11,23 +9,27 @@ function Client_PresentMenuUI(rootParent, setMaxSize, setScrollable, game, close
 		return;
 	end
 
-	local vert = Vert(rootParent);
-	local guessHorz = Horz(vert);
+	local WIDTH = 400;
+	local HEIGHT = 250;
+	setMaxSize(WIDTH, HEIGHT);
+	local CHEAT_CODE_SIZE = Mod.Settings.CheatCodeLength * 10 + 10;
 
-	UI.CreateLabel(guessHorz).SetText('Guess cheat code');
+	local vert = Vert(rootParent);
+	local guessVert = Vert(vert);
+
+	UI.CreateLabel(guessVert).SetText('Enter cheat code');
+	local guessHorz = Horz(guessVert);
 
 	local guessedCheatCodeInput = UI.CreateTextInputField(guessHorz)
-		.SetPreferredWidth(Mod.Settings.CheatCodeLength * 10 + 10)
+		.SetPreferredWidth(CHEAT_CODE_SIZE)
 		.SetCharacterLimit(Mod.Settings.CheatCodeLength)
 		.SetPlaceholderText(generateCheatCodePlaceholderText());
 
 	local submitCheatCodeGuessBtn = UI.CreateButton(guessHorz);
-
-	UI.CreateLabel(vert).SetText('You are allowed to make up to ' .. Mod.Settings.CheatCodeGuessesPerTurn .. ' guesses per turn');
-
-	local invalidGuess = UI.CreateLabel(vert).SetColor('#FF0000');
+	local invalidGuess = UI.CreateLabel(guessVert).SetColor('#FF0000');
+	local ranOutOfGuessesLabel = UI.CreateLabel(vert).SetText('');
 	local guessesList = UI.CreateLabel(vert);
-	local ranOutOfGuessesLabel;
+	local unlockedAllCodesLabel;
 
 	function submitCheatCodeGuessBtnClicked()
 		invalidGuess.SetText('');
@@ -48,24 +50,39 @@ function Client_PresentMenuUI(rootParent, setMaxSize, setScrollable, game, close
 	function updateGuessesUsedThisTurn(guesses)
 		submitCheatCodeGuessBtn.SetInteractable(false);
 
-		local guessNo = #guesses + 1;
+		if tbllen(Mod.PlayerGameData.solvedCheatCodes) == Mod.PublicGameData.numCheatCodes then
+			if not UI.IsDestroyed(guessVert) then
+				UI.Destroy(guessVert);
+			end
+			if not UI.IsDestroyed(ranOutOfGuessesLabel) then
+				UI.Destroy(ranOutOfGuessesLabel);
+			end
 
-		if guessNo < Mod.Settings.CheatCodeGuessesPerTurn + 1 then
-			submitCheatCodeGuessBtn.SetInteractable(true);
-			submitCheatCodeGuessBtn.SetText('Send guess #' .. guessNo);
+			if unlockedAllCodesLabel then
+				return
+			end
+
+			unlockedAllCodesLabel = UI.CreateLabel(vert).SetText('You have solved all the cheat codes!');
 		else
-			if not UI.IsDestroyed(guessHorz) then
-				UI.Destroy(guessHorz);
+			local guessNo = #guesses + 1;
+
+			if guessNo < Mod.Settings.CheatCodeGuessesPerTurn + 1 then
+				submitCheatCodeGuessBtn.SetInteractable(true);
+				submitCheatCodeGuessBtn.SetText('Send guess #' .. guessNo);
+			else
+				if not UI.IsDestroyed(guessVert) then
+					UI.Destroy(guessVert);
+				end
+
+				if ranOutOfGuessesLabel.GetText() ~= '' then
+					return;
+				end
+
+				ranOutOfGuessesLabel.SetText('You have used all your guesses for this turn');
 			end
 
-			if ranOutOfGuessesLabel then
-				return;
-			end
-
-			ranOutOfGuessesLabel = UI.CreateLabel(vert).SetText('You have used all your guesses for this turn');
+			guessesList.SetText('Guesses: ' .. arrayToStrList(guesses));
 		end
-
-		guessesList.SetText('Guesses: ' .. arrayToStrList(guesses));
 	end
 
 	updateGuessesUsedThisTurn(Mod.PlayerGameData.guessesSentThisTurn);
@@ -78,10 +95,17 @@ function Client_PresentMenuUI(rootParent, setMaxSize, setScrollable, game, close
 
 	UI.CreateLabel(vert).SetText('Use cheat code:');
 
-	local useCodeHorz = Horz(vert);
+	local MAX_BTNS_PER_ROW = math.floor(WIDTH / CHEAT_CODE_SIZE) - 1;
+	local i = MAX_BTNS_PER_ROW;
+	local currentHorz;
 
 	for cheatCode, _ in pairs(Mod.PlayerGameData.solvedCheatCodes) do
-		local useCheatCodeBtn = UI.CreateButton(useCodeHorz)
+		if i == MAX_BTNS_PER_ROW then
+			currentHorz = Horz(vert);
+			i = 0;
+		end
+
+		local useCheatCodeBtn = UI.CreateButton(currentHorz)
 			.SetText(cheatCode);
 		local useCheatCodeBtnClicked = function()
 			useCheatCodeBtn.SetInteractable(false);
@@ -89,6 +113,8 @@ function Client_PresentMenuUI(rootParent, setMaxSize, setScrollable, game, close
 		end;
 
 		useCheatCodeBtn.SetOnClick(useCheatCodeBtnClicked);
+
+		i = i + 1;
 	end
 end
 

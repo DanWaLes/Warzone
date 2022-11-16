@@ -59,7 +59,7 @@ end
 function arrayToStrList(array)
 	local str = '';
 
-	for i, guess in pairs(array) do
+	for i, guess in ipairs(array) do
 		str = str .. guess;
 
 		if i < #array then
@@ -68,4 +68,18 @@ function arrayToStrList(array)
 	end
 
 	return str;
+end
+
+function tbllen(tbl)
+	if not tbl then
+		return 0;
+	end
+
+	local i = 0;
+
+	for _, _ in pairs(tbl) do
+		i = i + 1;
+	end
+
+	return i;
 end

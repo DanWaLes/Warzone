@@ -1,6 +1,12 @@
 function Server_StartGame(game)
+	local cheatCodes = generateCheatCodes(game);
+
+	local publicGameData = Mod.PublicGameData;
+	publicGameData.numCheatCodes = cheatCodes.length;
+	Mod.PublicGameData = publicGameData;
+
 	local privateGameData = Mod.PrivateGameData;
-	privateGameData.cheatCodes = generateCheatCodes(game);
+	privateGameData.cheatCodes = cheatCodes.codes;
 	Mod.PrivateGameData = privateGameData;
 
 	local playerGameData = Mod.PlayerGameData;
@@ -18,17 +24,21 @@ function Server_StartGame(game)
 end
 
 function generateCheatCodes(game)
-	local cheatCodes = {};
+	local cheatCodes = {
+		codes = {},
+		length = 0
+	};
 
 	for id, _ in pairs(game.Settings.Cards) do
 		local code = generateCheatCode();
 		-- print(code);-- so that i can't cheat
 
-		if not cheatCodes[code] then
-			cheatCodes[code] = {};
+		if not cheatCodes.codes[code] then
+			cheatCodes.codes[code] = {};
+			cheatCodes.length = cheatCodes.length + 1;
 		end
 
-		table.insert(cheatCodes[code], id);
+		table.insert(cheatCodes.codes[code], id);
 	end
 
 	return cheatCodes;
