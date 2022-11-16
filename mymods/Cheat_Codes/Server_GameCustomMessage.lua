@@ -1,3 +1,5 @@
+require 'util';
+
 function Server_GameCustomMessage(game, playerId, payload, setReturn)
 	if not payload then
 		return;
@@ -30,6 +32,16 @@ function Server_GameCustomMessage(game, playerId, payload, setReturn)
 
 		playerGameData[playerId].codesToUse[payload.useCode] = 1;
 		Mod.PlayerGameData = playerGameData;
+	elseif payload.deleteGuess ~= nil then
+		local playerGameData = Mod.PlayerGameData;
+		local index = indexOf(playerGameData[playerId].guessesSentThisTurn, payload.deleteGuess);
+
+		if index > 0 then
+			table.remove(playerGameData[playerId].guessesSentThisTurn, index);
+			Mod.PlayerGameData = playerGameData;
+		end
+
+		ret = Mod.PlayerGameData[playerId].guessesSentThisTurn;
 	end
 
 	setReturn(ret);

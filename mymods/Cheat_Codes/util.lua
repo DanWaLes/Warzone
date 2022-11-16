@@ -83,3 +83,17 @@ function tbllen(tbl)
 
 	return i;
 end
+
+function indexOf(array, toFind)
+	if not array then
+		return 0;
+	end
+
+	for i, value in ipairs(array) do
+		if value == toFind then
+			return i;
+		end
+	end
+
+	return -1;
+end

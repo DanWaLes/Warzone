@@ -31,7 +31,7 @@ function generateCheatCodes(game)
 
 	for id, _ in pairs(game.Settings.Cards) do
 		local code = generateCheatCode();
-		-- print(code);-- so that i can't cheat
+		--print(code);-- so that i can't cheat
 
 		if not cheatCodes.codes[code] then
 			cheatCodes.codes[code] = {};
