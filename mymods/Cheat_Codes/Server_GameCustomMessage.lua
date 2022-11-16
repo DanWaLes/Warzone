@@ -41,7 +41,7 @@ function Server_GameCustomMessage(game, playerId, payload, setReturn)
 			table.remove(playerGameData[playerId].guessesSentThisTurn, index1);
 		end
 		if index2 > 0 then
-			table.remove(playerGameData[playerId].guessesSentThisTurn, index2);
+			table.remove(playerGameData[playerId].solvedCheatCodesToDisplay, index2);
 		end
 
 		Mod.PlayerGameData = playerGameData;
