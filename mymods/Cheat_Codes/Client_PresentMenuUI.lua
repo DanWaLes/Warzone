@@ -48,7 +48,7 @@ function makeMenu(rootParent, guessesSentThisTurn, CHEAT_CODE_SIZE, MAX_BTNS_PER
 	local invalidGuess = UI.CreateLabel(guessVert).SetColor('#FF0000');
 	local ranOutOfGuessesLabel = UI.CreateLabel(vert).SetText('');
 	local guessesListVert = Vert(vert);
-	UI.CreateLabel(guessesListVert).SetText('Guesses: (click guess to delete it)');
+	local guessesLabel = UI.CreateLabel(guessesListVert).SetText('Guesses: (click guess to delete it)');
 	local unlockedAllCodesLabel = UI.CreateLabel(vert).SetText('');
 
 	local uiElements = {
@@ -60,6 +60,7 @@ function makeMenu(rootParent, guessesSentThisTurn, CHEAT_CODE_SIZE, MAX_BTNS_PER
 		submitCheatCodeGuessBtn = submitCheatCodeGuessBtn,
 		ranOutOfGuessesLabel = ranOutOfGuessesLabel,
 		guessesListVert = guessesListVert,
+		guessesLabel = guessesLabel,
 		unlockedAllCodesLabel = unlockedAllCodesLabel
 	};
 	
@@ -130,6 +131,7 @@ function updateGuessesUsedThisTurn(uiElements, guesses, CHEAT_CODE_SIZE, MAX_BTN
 			return;
 		end
 
+		uiElements.guessesLabel.SetText('');
 		uiElements.unlockedAllCodesLabel.SetText('You have solved all the cheat codes!');
 	else
 		local guessNo = #guesses + 1;
