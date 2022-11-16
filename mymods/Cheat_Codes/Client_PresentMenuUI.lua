@@ -17,7 +17,7 @@ function Client_PresentMenuUI(rootParent, setMaxSize, setScrollable, game, close
 	local HEIGHT = 250;
 	setMaxSize(WIDTH, HEIGHT);
 	local CHEAT_CODE_SIZE = Mod.Settings.CheatCodeLength * 10 + 2;
-	local MAX_BTNS_PER_ROW = math.floor(WIDTH / CHEAT_CODE_SIZE) - 2;
+	local MAX_BTNS_PER_ROW = math.ceil(WIDTH / CHEAT_CODE_SIZE);
 
 	makeMenu(rootParent, Mod.PlayerGameData.guessesSentThisTurn, CHEAT_CODE_SIZE, MAX_BTNS_PER_ROW);
 end
