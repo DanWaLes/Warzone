@@ -34,13 +34,17 @@ function Server_GameCustomMessage(game, playerId, payload, setReturn)
 		Mod.PlayerGameData = playerGameData;
 	elseif payload.deleteGuess ~= nil then
 		local playerGameData = Mod.PlayerGameData;
-		local index = indexOf(playerGameData[playerId].guessesSentThisTurn, payload.deleteGuess);
+		local index1 = indexOf(playerGameData[playerId].guessesSentThisTurn, payload.deleteGuess);
+		local index2 = indexOf(playerGameData[playerId].solvedCheatCodesToDisplay, payload.deleteGuess);
 
-		if index > 0 then
-			table.remove(playerGameData[playerId].guessesSentThisTurn, index);
-			Mod.PlayerGameData = playerGameData;
+		if index1 > 0 then
+			table.remove(playerGameData[playerId].guessesSentThisTurn, index1);
+		end
+		if index2 > 0 then
+			table.remove(playerGameData[playerId].guessesSentThisTurn, index2);
 		end
 
+		Mod.PlayerGameData = playerGameData;
 		ret = Mod.PlayerGameData[playerId].guessesSentThisTurn;
 	end
 
