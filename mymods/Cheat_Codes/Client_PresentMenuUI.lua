@@ -101,12 +101,12 @@ function submitCheatCodeGuessBtnClicked(uiElements, CHEAT_CODE_SIZE, MAX_BTNS_PE
 		local sentGuessIndex = indexOf(Mod.PlayerGameData.guessesSentThisTurn, guess);
 		local hasSolvedIndex = indexOf(Mod.PlayerGameData.solvedCheatCodes, guess);
 
-		if sentGuessIndex == -1 and hasSolvedIndex > -1 then
+		if sentGuessIndex == -1 and hasSolvedIndex < 1 then
 			SendGameCustomMessage('Submitting guess...', {guess = guess}, function(guesses)
 				uiElements.guessedCheatCodeInput.SetText('');
 				updateGuessesUsedThisTurn(uiElements, guesses, CHEAT_CODE_SIZE, MAX_BTNS_PER_ROW);
 			end);
-		else
+		elseif sentGuessIndex > 0 and hasSolvedIndex > 0 then
 			uiElements.invalidGuess.SetText('You have already guessed ' .. guess);
 			uiElements.submitCheatCodeGuessBtn.SetInteractable(true);
 		end
