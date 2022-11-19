@@ -208,6 +208,10 @@ function makeUseCheatCodeBtns(vert)
 			SendGameCustomMessage('Acknowledging cheat code usage ...', {useCode = cheatCode}, function() end);
 		end;
 
+		if indexOf(Mod.PlayerGameData.codesToUse, cheatCode) > 0 then
+			useCheatCodeBtn.SetInteractable(false);
+		end
+
 		useCheatCodeBtn.SetOnClick(useCheatCodeBtnClicked);
 
 		i = i + 1;
