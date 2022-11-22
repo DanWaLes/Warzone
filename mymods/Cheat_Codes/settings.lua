@@ -12,7 +12,7 @@ function getSettings()
 			defaultValue = 5,
 			minValue = 1,
 			maxValue = 15,
-			label = 'Max cheat code guesses per turn'
+			label = 'Max unique cheat codes entered per turn'
 		},
 		CheatCodeGuessVisibiltyIsTeamOnly = {
 			inputType = 'bool',

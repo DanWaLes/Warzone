@@ -13,10 +13,11 @@ function Server_StartGame(game)
 
 	for id, _ in pairs(game.ServerGame.Game.Players) do
 		playerGameData[id] = {
-			guessesSentThisTurn = {},
-			solvedCheatCodesToDisplay = {},
-			solvedCheatCodes = nil,
-			codesToUse = {}
+			codesEnteredThisTurn = {},
+			correctGuessesThisTurn = {},
+			guessesThisTurn = {},-- correct and incorrect guesses
+			codesToUseThisTurn = {},-- must be solved to use them
+			solvedCheatCodes = {}-- all solved throughout the course of the game
 		};
 	end
 
@@ -31,7 +32,7 @@ function generateCheatCodes(game)
 
 	for id, _ in pairs(game.Settings.Cards) do
 		local code = generateCheatCode();
-		--print(code);-- so that i can't cheat
+		print(code);-- for debugging, remove this before making it completely public
 
 		if not cheatCodes.codes[code] then
 			cheatCodes.codes[code] = {};

@@ -2,7 +2,7 @@ require 'ui'
 require 'util'
 
 local SendGameCustomMessage;
-local deleteGuessBtnsContainer;
+local deleteCodeBtnsContainer;
 
 function Client_PresentMenuUI(rootParent, setMaxSize, setScrollable, game, close)
 	local playerIsPlaying = (game.Us ~= nil) and (game.Us.State == WL.GamePlayerState.Playing);
@@ -29,48 +29,43 @@ function Client_PresentMenuUI(rootParent, setMaxSize, setScrollable, game, close
 		MAX_BTNS_PER_ROW = MAX_BTNS_PER_ROW - 1;-- fine for 2
 	end
 
-	makeMenu(rootParent, Mod.PlayerGameData.guessesSentThisTurn, CHEAT_CODE_SIZE, MAX_BTNS_PER_ROW);
+	makeMenu(rootParent, Mod.PlayerGameData.codesEnteredThisTurn, CHEAT_CODE_SIZE, MAX_BTNS_PER_ROW);
 end
 
-function makeMenu(rootParent, guessesSentThisTurn, CHEAT_CODE_SIZE, MAX_BTNS_PER_ROW)
+function makeMenu(rootParent, codesEnteredThisTurn, CHEAT_CODE_SIZE, MAX_BTNS_PER_ROW)
 	local vert = Vert(rootParent);
-	local guessVert = Vert(vert);
+	local codesVert = Vert(vert);
 
-	UI.CreateLabel(guessVert).SetText('Enter cheat code');
-	local guessHorz = Horz(guessVert);
+	UI.CreateLabel(codesVert).SetText('Enter cheat code');
+	local codesHorz = Horz(codesVert);
 
-	local guessedCheatCodeInput = UI.CreateTextInputField(guessHorz)
+	local codesEnteredInput = UI.CreateTextInputField(codesHorz)
 		.SetPreferredWidth(CHEAT_CODE_SIZE + 2)
 		.SetCharacterLimit(Mod.Settings.CheatCodeLength)
 		.SetPlaceholderText(generateCheatCodePlaceholderText());
 
-	local submitCheatCodeGuessBtn = UI.CreateButton(guessHorz);
-	local invalidGuess = UI.CreateLabel(guessVert).SetColor('#FF0000');
-	local ranOutOfGuessesLabel = UI.CreateLabel(vert).SetText('');
-	local guessesListVert = Vert(vert);
-	local guessesLabel = UI.CreateLabel(guessesListVert).SetText('Guesses: (click guess to delete it)');
-	local unlockedAllCodesLabel = UI.CreateLabel(vert).SetText('');
+	local submitCheatCodeBtn = UI.CreateButton(codesHorz);
+	local invalidCode = UI.CreateLabel(codesVert).SetColor('#FF0000');
+	local ranOutOfCodesLabel = UI.CreateLabel(vert).SetText('');
+	local codesListVert = Vert(vert);
+	local codesLabel = UI.CreateLabel(codesListVert).SetText('Codes: (click to delete)');
 
 	local uiElements = {
 		rootParent = rootParent,
 		vert = vert,
-		guessVert = guessVert,
-		invalidGuess = invalidGuess,
-		guessedCheatCodeInput = guessedCheatCodeInput,
-		submitCheatCodeGuessBtn = submitCheatCodeGuessBtn,
-		ranOutOfGuessesLabel = ranOutOfGuessesLabel,
-		guessesListVert = guessesListVert,
-		guessesLabel = guessesLabel,
-		unlockedAllCodesLabel = unlockedAllCodesLabel
+		codesVert = codesVert,
+		invalidCode = invalidCode,
+		codesEnteredInput = codesEnteredInput,
+		submitCheatCodeBtn = submitCheatCodeBtn,
+		ranOutOfCodesLabel = ranOutOfCodesLabel,
+		codesListVert = codesListVert
 	};
-	
-	updateGuessesUsedThisTurn(uiElements, guessesSentThisTurn, CHEAT_CODE_SIZE, MAX_BTNS_PER_ROW);
 
-	submitCheatCodeGuessBtn.SetOnClick(function()
-		submitCheatCodeGuessBtnClicked(uiElements, CHEAT_CODE_SIZE, MAX_BTNS_PER_ROW);
+	updateCodesEnteredThisTurn(uiElements, codesEnteredThisTurn, CHEAT_CODE_SIZE, MAX_BTNS_PER_ROW);
+
+	submitCheatCodeBtn.SetOnClick(function()
+		submitCheatCodeBtnClicked(uiElements, CHEAT_CODE_SIZE, MAX_BTNS_PER_ROW);
 	end);
-
-	makeUseCheatCodeBtns(vert);
 end
 
 function generateCheatCodePlaceholderText()
@@ -89,130 +84,77 @@ function generateCheatCodePlaceholderText()
 	return placeholder;
 end
 
-function submitCheatCodeGuessBtnClicked(uiElements, CHEAT_CODE_SIZE, MAX_BTNS_PER_ROW)
-	uiElements.invalidGuess.SetText('');
-	uiElements.submitCheatCodeGuessBtn.SetInteractable(false);
+function submitCheatCodeBtnClicked(uiElements, CHEAT_CODE_SIZE, MAX_BTNS_PER_ROW)
+	uiElements.invalidCode.SetText('');
+	uiElements.submitCheatCodeBtn.SetInteractable(false);
 
-	local guess = uiElements.guessedCheatCodeInput.GetText();
-	local isValidGuess = string.len(guess) == Mod.Settings.CheatCodeLength and not string.match(guess, '[^%d]');
+	local code = uiElements.codesEnteredInput.GetText();
+	local isValidGuess = string.len(code) == Mod.Settings.CheatCodeLength and not string.match(code, '[^%d]');
 	-- https://www.lua.org/pil/20.2.html
 
 	if isValidGuess then
-		local sentGuessIndex = indexOf(Mod.PlayerGameData.guessesSentThisTurn, guess);
-		local hasSolvedIndex = indexOf(Mod.PlayerGameData.solvedCheatCodes, guess);
-
-		if sentGuessIndex == -1 and hasSolvedIndex < 1 then
-			SendGameCustomMessage('Submitting guess...', {guess = guess}, function(guesses)
-				uiElements.guessedCheatCodeInput.SetText('');
-				updateGuessesUsedThisTurn(uiElements, guesses, CHEAT_CODE_SIZE, MAX_BTNS_PER_ROW);
+		if Mod.PlayerGameData.codesEnteredThisTurn[code] then
+			uiElements.invalidCode.SetText('You have already entered ' .. code);
+			uiElements.submitCheatCodeBtn.SetInteractable(true);
+		else
+			SendGameCustomMessage('Submitting code...', {enterCode = code}, function(codes)
+				uiElements.codesEnteredInput.SetText('');
+				updateCodesEnteredThisTurn(uiElements, codes, CHEAT_CODE_SIZE, MAX_BTNS_PER_ROW);
 			end);
-		elseif sentGuessIndex > 0 and hasSolvedIndex > 0 then
-			uiElements.invalidGuess.SetText('You have already guessed ' .. guess);
-			uiElements.submitCheatCodeGuessBtn.SetInteractable(true);
 		end
 	else
-		uiElements.invalidGuess.SetText(guess .. ' is not a valid cheat code');
-		uiElements.submitCheatCodeGuessBtn.SetInteractable(true);
+		uiElements.invalidCode.SetText(code .. ' is not a valid cheat code');
+		uiElements.submitCheatCodeBtn.SetInteractable(true);
 	end
 end
 
-function updateGuessesUsedThisTurn(uiElements, guesses, CHEAT_CODE_SIZE, MAX_BTNS_PER_ROW)
-	uiElements.submitCheatCodeGuessBtn.SetInteractable(false);
+function updateCodesEnteredThisTurn(uiElements, codes, CHEAT_CODE_SIZE, MAX_BTNS_PER_ROW)
+	uiElements.submitCheatCodeBtn.SetInteractable(false);
 
-	if tbllen(Mod.PlayerGameData.solvedCheatCodes) == Mod.PublicGameData.numCheatCodes then
-		if not UI.IsDestroyed(uiElements.guessVert) then
-			UI.Destroy(uiElements.guessVert);
-		end
-		if not UI.IsDestroyed(uiElements.ranOutOfGuessesLabel) then
-			UI.Destroy(uiElements.ranOutOfGuessesLabel);
+	local codeNo = tbllen(codes) + 1;
+
+	if codeNo < Mod.Settings.CheatCodeGuessesPerTurn + 1 then
+		uiElements.submitCheatCodeBtn.SetInteractable(true);
+		uiElements.submitCheatCodeBtn.SetText('Send code #' .. codeNo);
+	else
+		if not UI.IsDestroyed(uiElements.codesVert) then
+			UI.Destroy(uiElements.codesVert);
 		end
 
-		if uiElements.unlockedAllCodesLabel.GetText() ~= '' then
+		if uiElements.ranOutOfCodesLabel.GetText() ~= '' then
 			return;
 		end
 
-		uiElements.guessesLabel.SetText('');
-		uiElements.unlockedAllCodesLabel.SetText('You have solved all the cheat codes!');
-	else
-		local guessNo = #guesses + 1;
-
-		if guessNo < Mod.Settings.CheatCodeGuessesPerTurn + 1 then
-			uiElements.submitCheatCodeGuessBtn.SetInteractable(true);
-			uiElements.submitCheatCodeGuessBtn.SetText('Send guess #' .. guessNo);
-		else
-			if not UI.IsDestroyed(uiElements.guessVert) then
-				UI.Destroy(uiElements.guessVert);
-			end
-
-			if uiElements.ranOutOfGuessesLabel.GetText() ~= '' then
-				return;
-			end
-
-			uiElements.ranOutOfGuessesLabel.SetText('You have used all your guesses for this turn');
-		end
-
-		makeDeleteGuessBtns(uiElements, guesses, CHEAT_CODE_SIZE, MAX_BTNS_PER_ROW);
+		uiElements.ranOutOfCodesLabel.SetText('You have used all cheat codes for this turn');
 	end
+
+	makeDeleteCodeBtns(uiElements, codes, CHEAT_CODE_SIZE, MAX_BTNS_PER_ROW);
 end
 
-function makeDeleteGuessBtns(uiElements, guesses, CHEAT_CODE_SIZE, MAX_BTNS_PER_ROW)
-	if not UI.IsDestroyed(deleteGuessBtnsContainer) then
-		UI.Destroy(deleteGuessBtnsContainer);
+function makeDeleteCodeBtns(uiElements, codes, CHEAT_CODE_SIZE, MAX_BTNS_PER_ROW)
+	if not UI.IsDestroyed(deleteCodeBtnsContainer) then
+		UI.Destroy(deleteCodeBtnsContainer);
 	end
 
-	deleteGuessBtnsContainer = Vert(uiElements.guessesListVert);
+	deleteCodeBtnsContainer = Vert(uiElements.codesListVert);
 
 	local i = MAX_BTNS_PER_ROW;
 	local currentHorz;
 
-	for _, guess in ipairs(guesses) do
+	for code, _ in pairs(codes) do
 		if i == MAX_BTNS_PER_ROW then
-			currentHorz = Horz(deleteGuessBtnsContainer);
+			currentHorz = Horz(deleteCodeBtnsContainer);
 			i = 0;
 		end
 
-		local deleteGuessBtn = UI.CreateButton(currentHorz)
-			.SetText(guess);
-		deleteGuessBtn.SetOnClick(function()
+		local deleteCodeBtn = UI.CreateButton(currentHorz)
+			.SetText(code);
+		deleteCodeBtn.SetOnClick(function()
 			UI.Destroy(uiElements.vert);
-			SendGameCustomMessage('Deleting guess...', {deleteGuess = guess}, function(guessesSentThisTurn)
-				makeMenu(uiElements.rootParent, guessesSentThisTurn, CHEAT_CODE_SIZE, MAX_BTNS_PER_ROW);
+			SendGameCustomMessage('Deleting code...', {deleteCode = code}, function(codesEnteredThisTurn)
+				makeMenu(uiElements.rootParent, codesEnteredThisTurn, CHEAT_CODE_SIZE, MAX_BTNS_PER_ROW);
 			end);
 		end);
-
-		i = i + 1;
-	end
-end
-
-function makeUseCheatCodeBtns(vert)
-	if not Mod.PlayerGameData.solvedCheatCodes then
-		-- print('no solved cheat codes');
-		return;
-	end
-
-	UI.CreateLabel(vert).SetText('Use cheat code:');
-
-	local i = MAX_BTNS_PER_ROW;
-	local currentHorz;
-
-	for cheatCode, _ in pairs(Mod.PlayerGameData.solvedCheatCodes) do
-		if i == MAX_BTNS_PER_ROW then
-			currentHorz = Horz(vert);
-			i = 0;
-		end
-
-		local useCheatCodeBtn = UI.CreateButton(currentHorz)
-			.SetText(cheatCode);
-		local useCheatCodeBtnClicked = function()
-			useCheatCodeBtn.SetInteractable(false);
-			SendGameCustomMessage('Acknowledging cheat code usage ...', {useCode = cheatCode}, function() end);
-		end;
-
-		if Mod.PlayerGameData.codesToUse[cheatCode] then
-			useCheatCodeBtn.SetInteractable(false);
-		end
-
-		useCheatCodeBtn.SetOnClick(useCheatCodeBtnClicked);
 
 		i = i + 1;
 	end

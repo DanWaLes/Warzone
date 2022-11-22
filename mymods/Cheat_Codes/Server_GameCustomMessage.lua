@@ -7,70 +7,48 @@ function Server_GameCustomMessage(game, playerId, payload, setReturn)
 
 	local ret = {};
 
-	if payload.guess ~= nil then
-		ret = processGuess(playerId, payload.guess);
-	elseif payload.useCode ~= nil then
-		local playerGameData = Mod.PlayerGameData;
-		if not playerGameData[playerId].solvedCheatCodes then
-			playerGameData[playerId].solvedCheatCodes = {};
-		end
-
-		if not playerGameData[playerId].solvedCheatCodes[payload.useCode] then
-			print('cant use this code because youve not guessed it yet');
-			return;
-		end
-
-		if not Mod.PrivateGameData.cheatCodes[payload.useCode] then
-			-- hacked somehow
-			return;
-		end
-
-		if playerGameData[playerId].codesToUse[payload.useCode] then
-			-- hacked somehow
-			return;
-		end
-
-		playerGameData[playerId].codesToUse[payload.useCode] = 1;
-		Mod.PlayerGameData = playerGameData;
-	elseif payload.deleteGuess ~= nil then
-		local playerGameData = Mod.PlayerGameData;
-		local index1 = indexOf(playerGameData[playerId].guessesSentThisTurn, payload.deleteGuess);
-		local index2 = indexOf(playerGameData[playerId].solvedCheatCodesToDisplay, payload.deleteGuess);
-
-		if index1 > 0 then
-			table.remove(playerGameData[playerId].guessesSentThisTurn, index1);
-		end
-		if index2 > 0 then
-			table.remove(playerGameData[playerId].solvedCheatCodesToDisplay, index2);
-		end
-
-		Mod.PlayerGameData = playerGameData;
-		ret = Mod.PlayerGameData[playerId].guessesSentThisTurn;
+	if payload.enterCode ~= nil then
+		ret = codeEntered(playerId, payload.enterCode);
+	elseif payload.deleteCode ~= nil then
+		ret = deleteCode(playerId, payload.deleteCode);
 	end
 
 	setReturn(ret);
 end
 
-function processGuess(playerId, guess)
+function codeEntered(playerId, code)
 	local playerGameData = Mod.PlayerGameData;
-	local guessNo = #playerGameData[playerId].guessesSentThisTurn;
+	local codeNo = tbllen(playerGameData[playerId].codesEnteredThisTurn);
 
-	-- print('server guessNo = ' .. guessNo + 1);
-
-	if guessNo >= Mod.Settings.CheatCodeGuessesPerTurn then
-		-- print('ran out of guesses');
+	if codeNo >= Mod.Settings.CheatCodeGuessesPerTurn then
 		return {};
 	end
 
-	table.insert(playerGameData[playerId].guessesSentThisTurn, guess);
+	playerGameData[playerId].codesEnteredThisTurn[code] = 1;-- makes deleting a code faster
 
-	local solved = Mod.PrivateGameData.cheatCodes[guess] ~= nil;
+	if playerGameData[playerId].solvedCheatCodes[code] then
+		playerGameData[playerId].codesToUseThisTurn[code] = 1;
+	else
+		playerGameData[playerId].guessesThisTurn[code] = 1;
 
-	if solved then
-		table.insert(playerGameData[playerId].solvedCheatCodesToDisplay, guess);
+		if Mod.PrivateGameData.cheatCodes[code] then
+			playerGameData[playerId].correctGuessesThisTurn[code] = 1;
+		end
 	end
 
 	Mod.PlayerGameData = playerGameData;
 
-	return Mod.PlayerGameData[playerId].guessesSentThisTurn;
+	return Mod.PlayerGameData[playerId].codesEnteredThisTurn;
+end
+
+function deleteCode(playerId, code)
+	local playerGameData = Mod.PlayerGameData;
+
+	playerGameData[playerId].codesEnteredThisTurn[code] = nil;
+	playerGameData[playerId].codesToUseThisTurn[code] = nil;
+	playerGameData[playerId].guessesThisTurn[code] = nil;
+	playerGameData[playerId].correctGuessesThisTurn[code] = nil;
+
+	Mod.PlayerGameData = playerGameData;
+	return Mod.PlayerGameData[playerId].codesEnteredThisTurn;
 end

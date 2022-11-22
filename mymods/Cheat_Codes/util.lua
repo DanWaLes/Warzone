@@ -56,20 +56,6 @@ function tblprint(tbl)
 	print(tprint(tbl));
 end
 
-function arrayToStrList(array)
-	local str = '';
-
-	for i, guess in ipairs(array) do
-		str = str .. guess;
-
-		if i < #array then
-			str = str .. ', ';
-		end
-	end
-
-	return str;
-end
-
 function tbllen(tbl)
 	if not tbl then
 		return 0;
