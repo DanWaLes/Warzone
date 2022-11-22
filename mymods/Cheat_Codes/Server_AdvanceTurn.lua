@@ -18,7 +18,7 @@ function Server_AdvanceTurn_End(game, addNewOrder)
 		if serverPlayer.State == WL.GamePlayerState.Playing then
 			displayGuesses(playerId, stored, guessVisibility, addNewOrder);
 			playerGameData = displaySolvedCodes(playerId, playerGameData, stored.correctGuessesThisTurn, solvedVisibility, addNewOrder);
-			useCode(playerGameData, playerId, addNewOrder);
+			useCode(playerGameData, playerId, addNewOrder, game);
 		end
 
 		playerGameData[playerId].codesEnteredThisTurn = {};
@@ -100,7 +100,7 @@ function displaySolvedCodes(playerId, playerGameData, correctGuesses, solvedVisi
 	return playerGameData;
 end
 
-function useCode(playerGameData, playerId, addNewOrder)
+function useCode(playerGameData, playerId, addNewOrder, game)
 	for codeUsed, _ in pairs(playerGameData[playerId].codesToUseThisTurn) do
 		addNewOrder(WL.GameOrderEvent.Create(playerId, 'Used a cheat code', nil));
 
