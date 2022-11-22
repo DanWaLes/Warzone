@@ -2,7 +2,7 @@ function Server_StartGame(game)
 	local cheatCodes = generateCheatCodes(game);
 
 	local publicGameData = Mod.PublicGameData;
-	publicGameData.numCheatCodes = cheatCodes.length;
+	publicGameData.numCheatCodes = cheatCodes.length;-- this isnt used
 	Mod.PublicGameData = publicGameData;
 
 	local privateGameData = Mod.PrivateGameData;

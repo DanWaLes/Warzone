@@ -13,58 +13,12 @@ function Server_AdvanceTurn_End(game, addNewOrder)
 	end
 
 	for playerId, stored in pairs(playerGameData) do
-		local guessed = '';
-		local i = 0;
-		local numGuessed = tbllen(stored.guessesThisTurn);
+		local serverPlayer = game.ServerGame.Game.Players[playerId];
 
-		for code, _ in pairs(stored.guessesThisTurn) do
-			guessed = guessed .. code;
-
-			if i + 1 < numGuessed then
-				guessed = guessed .. ', ';
-			end
-
-			i = i + 1;
-		end
-
-		if guessed ~= '' then
-			addNewOrder(WL.GameOrderEvent.Create(playerId, 'Guessed cheat codes: ' .. guessed, guessVisibility));
-		end
-
-		local correct = '';
-		i = 0;
-		local numCorrect = tbllen(stored.correctGuessesThisTurn);
-
-		for code, _ in pairs(stored.correctGuessesThisTurn) do
-			playerGameData[playerId].solvedCheatCodes[code] = 1;
-			correct = correct .. code;
-
-			if i + 1 < numCorrect then
-				correct = correct .. ', ';
-			end
-
-			i = i + 1;
-		end
-
-		if correct ~= '' then
-			addNewOrder(WL.GameOrderEvent.Create(playerId, 'Solved cheat codes: ' .. correct, solvedVisibility));
-		end
-
-		for codeUsed, _ in pairs(playerGameData[playerId].codesToUseThisTurn) do
-			addNewOrder(WL.GameOrderEvent.Create(playerId, 'Used a cheat code', nil));
-
-			for _, cardId in pairs(Mod.PrivateGameData.cheatCodes[codeUsed]) do
-				-- https://www.warzone.com/wiki/Mod_API_Reference:GameOrderReceiveCard
-				local cardInstance;
-
-				if cardId == WL.CardID.Reinforcement then
-					cardInstance = WL.ReinforcementCardInstance.Create(decideRCVal(game));
-				else
-					cardInstance = WL.NoParameterCardInstance.Create(cardId);
-				end
-
-				addNewOrder(WL.GameOrderReceiveCard.Create(playerId, {cardInstance}));
-			end
+		if serverPlayer.State == WL.GamePlayerState.Playing then
+			displayGuesses(playerId, stored, guessVisibility, addNewOrder);
+			playerGameData = displaySolvedCodes(playerId, playerGameData, stored.correctGuessesThisTurn, solvedVisibility, addNewOrder);
+			useCode(playerGameData, playerId, addNewOrder);
 		end
 
 		playerGameData[playerId].codesEnteredThisTurn = {};
@@ -101,4 +55,66 @@ function numTerritoriesOwnedByPlayers(territories)
 	end
 
 	return i;
+end
+
+function displayGuesses(playerId, stored, guessVisibility, addNewOrder)
+	local guessed = '';
+	local i = 0;
+	local numGuessed = tbllen(stored.guessesThisTurn);
+
+	for code, _ in pairs(stored.guessesThisTurn) do
+		guessed = guessed .. code;
+
+		if i + 1 < numGuessed then
+			guessed = guessed .. ', ';
+		end
+
+		i = i + 1;
+	end
+
+	if guessed ~= '' then
+		addNewOrder(WL.GameOrderEvent.Create(playerId, 'Guessed cheat codes: ' .. guessed, guessVisibility));
+	end
+end
+
+function displaySolvedCodes(playerId, playerGameData, correctGuesses, solvedVisibility, addNewOrder)
+	local correct = '';
+	local i = 0;
+	local numCorrect = tbllen(correctGuesses);
+
+	for code, _ in pairs(correctGuesses) do
+		playerGameData[playerId].solvedCheatCodes[code] = 1;
+		correct = correct .. code;
+
+		if i + 1 < numCorrect then
+			correct = correct .. ', ';
+		end
+
+		i = i + 1;
+	end
+
+	if correct ~= '' then
+		addNewOrder(WL.GameOrderEvent.Create(playerId, 'Solved cheat codes: ' .. correct, solvedVisibility));
+	end
+
+	return playerGameData;
+end
+
+function useCode(playerGameData, playerId, addNewOrder)
+	for codeUsed, _ in pairs(playerGameData[playerId].codesToUseThisTurn) do
+		addNewOrder(WL.GameOrderEvent.Create(playerId, 'Used a cheat code', nil));
+
+		for _, cardId in pairs(Mod.PrivateGameData.cheatCodes[codeUsed]) do
+			-- https://www.warzone.com/wiki/Mod_API_Reference:GameOrderReceiveCard
+			local cardInstance;
+
+			if cardId == WL.CardID.Reinforcement then
+				cardInstance = WL.ReinforcementCardInstance.Create(decideRCVal(game));
+			else
+				cardInstance = WL.NoParameterCardInstance.Create(cardId);
+			end
+
+			addNewOrder(WL.GameOrderReceiveCard.Create(playerId, {cardInstance}));
+		end
+	end
 end
