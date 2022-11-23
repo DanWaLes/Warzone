@@ -2,17 +2,31 @@ function getSettings()
 	return {
 		CheatCodeLength = {
 			inputType = 'int',
-			defaultValue = 4,
-			minValue = 2,
-			maxValue = 8,
+			defaultValue = 2,
+			minValue = 1,
+			maxValue = 3,
 			label = 'Cheat code length'
 		},
 		CheatCodeGuessesPerTurn = {
 			inputType = 'int',
-			defaultValue = 5,
+			defaultValue = 20,
 			minValue = 1,
-			maxValue = 15,
+			maxValue = 200,
 			label = 'Max unique cheat codes entered per turn'
+		},
+		LimitCheatCodesUsedPerTurn = {
+			inputType = 'bool',
+			defaultValue = false,
+			label = 'Limit number of unique cheat codes used per turn',
+			subsettings = {
+				CodesUsedPerTurnLimit = {
+					inputType = 'int',
+					defaultValue = 1,
+					minValue = 1,
+					maxValue = 13,
+					label = 'Limit'
+				}
+			}
 		},
 		CheatCodeGuessVisibiltyIsTeamOnly = {
 			inputType = 'bool',
@@ -26,3 +40,6 @@ function getSettings()
 		}
 	};
 end
+
+-- number of cards currently available in core game is 13
+-- card mods replace existing cards

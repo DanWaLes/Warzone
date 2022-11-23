@@ -2,7 +2,9 @@ require 'ui'
 require 'util'
 
 local SendGameCustomMessage;
-local deleteCodeBtnsContainer;
+local deleteCodeBtnsContainer = nil;
+-- todo imp LimitCheatCodesUsedPerTurn
+-- todo imp CodesUsedPerTurnLimit
 
 function Client_PresentMenuUI(rootParent, setMaxSize, setScrollable, game, close)
 	local playerIsPlaying = (game.Us ~= nil) and (game.Us.State == WL.GamePlayerState.Playing);
@@ -97,10 +99,21 @@ function submitCheatCodeBtnClicked(uiElements, CHEAT_CODE_SIZE, MAX_BTNS_PER_ROW
 			uiElements.invalidCode.SetText('You have already entered ' .. code);
 			uiElements.submitCheatCodeBtn.SetInteractable(true);
 		else
-			SendGameCustomMessage('Submitting code...', {enterCode = code}, function(codes)
-				uiElements.codesEnteredInput.SetText('');
-				updateCodesEnteredThisTurn(uiElements, codes, CHEAT_CODE_SIZE, MAX_BTNS_PER_ROW);
-			end);
+			local codesUsedWithinLimit = true;
+
+			if Mod.Settings.LimitCheatCodesUsedPerTurn and Mod.PlayerGameData.solvedCheatCodes[code] then
+				codesUsedWithinLimit = (tbllen(Mod.PlayerGameData.codesToUseThisTurn) + 1) <= Mod.Settings.CodesUsedPerTurnLimit;
+			end
+
+			if codesUsedWithinLimit then
+				SendGameCustomMessage('Submitting code...', {enterCode = code}, function(codes)
+					uiElements.codesEnteredInput.SetText('');
+					updateCodesEnteredThisTurn(uiElements, codes, CHEAT_CODE_SIZE, MAX_BTNS_PER_ROW);
+				end);
+			else
+				uiElements.invalidCode.SetText('You have reached the limit of cheat codes you can use per turn');
+				uiElements.submitCheatCodeBtn.SetInteractable(true);
+			end
 		end
 	else
 		uiElements.invalidCode.SetText(code .. ' is not a valid cheat code');
@@ -125,7 +138,7 @@ function updateCodesEnteredThisTurn(uiElements, codes, CHEAT_CODE_SIZE, MAX_BTNS
 			return;
 		end
 
-		uiElements.ranOutOfCodesLabel.SetText('You have used all cheat codes for this turn');
+		uiElements.ranOutOfCodesLabel.SetText('You have entered all cheat codes for this turn');
 	end
 
 	makeDeleteCodeBtns(uiElements, codes, CHEAT_CODE_SIZE, MAX_BTNS_PER_ROW);

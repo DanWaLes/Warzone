@@ -25,7 +25,7 @@ function cpc(rootParent, settings)
 				.SetIsChecked(initialSettingValue);
 
 			if setting.subsettings then
-				local vert3;
+				local vert3 = nil;
 				local subsettingEnabledOrDisabled = function()
 					if GLOBALS[settingName].GetIsChecked() then
 						vert3 = Vert(vert2);

@@ -21,13 +21,21 @@ function codeEntered(playerId, code)
 	local codeNo = tbllen(playerGameData[playerId].codesEnteredThisTurn);
 
 	if codeNo >= Mod.Settings.CheatCodeGuessesPerTurn then
-		return {};
+		return playerGameData[playerId].codesEnteredThisTurn;
 	end
 
 	playerGameData[playerId].codesEnteredThisTurn[code] = 1;-- makes deleting a code faster
 
 	if playerGameData[playerId].solvedCheatCodes[code] then
 		playerGameData[playerId].codesToUseThisTurn[code] = 1;
+
+		if Mod.Settings.LimitCheatCodesUsedPerTurn then
+			if tbllen(playerGameData[playerId].codesToUseThisTurn) > Mod.Settings.CodesUsedPerTurnLimit then
+				-- only happens if hacked
+				playerGameData[playerId].codesEnteredThisTurn[code] = nil;
+				playerGameData[playerId].codesToUseThisTurn[code] = nil;
+			end
+		end
 	else
 		playerGameData[playerId].guessesThisTurn[code] = 1;
 
