@@ -3,8 +3,6 @@ require 'util'
 
 local SendGameCustomMessage;
 local deleteCodeBtnsContainer = nil;
--- todo imp LimitCheatCodesUsedPerTurn
--- todo imp CodesUsedPerTurnLimit
 
 function Client_PresentMenuUI(rootParent, setMaxSize, setScrollable, game, close)
 	local playerIsPlaying = (game.Us ~= nil) and (game.Us.State == WL.GamePlayerState.Playing);
