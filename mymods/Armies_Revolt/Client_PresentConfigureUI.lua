@@ -1,4 +1,5 @@
 require 'settings'
+require 'ui'
 
 GLOBALS = {};
 
@@ -7,7 +8,7 @@ function Client_PresentConfigureUI(rootParent)
 end
 
 function cpc(rootParent, settings)
-	local vert = UI.CreateVerticalLayoutGroup(rootParent);
+	local vert = Vert(rootParent);
 
 	for settingName, setting in pairs(settings) do
 		local initialSettingValue = Mod.Settings[settingName];
@@ -17,17 +18,17 @@ function cpc(rootParent, settings)
 		end
 
 		if setting.inputType == 'bool' then
-			local vert2 = UI.CreateVerticalLayoutGroup(vert);
+			local vert2 = Vert(vert);
 
 			GLOBALS[settingName] = UI.CreateCheckBox(vert2)
 				.SetText(setting.label)
 				.SetIsChecked(initialSettingValue);
 
 			if setting.subsettings then
-				local vert3;
+				local vert3 = nil;
 				local subsettingEnabledOrDisabled = function()
 					if GLOBALS[settingName].GetIsChecked() then
-						vert3 = UI.CreateVerticalLayoutGroup(vert2);
+						vert3 = Vert(vert2);
 						cpc(vert3, setting.subsettings);
 					elseif not UI.IsDestroyed(vert3) then
 						UI.Destroy(vert3);
@@ -38,7 +39,7 @@ function cpc(rootParent, settings)
 				subsettingEnabledOrDisabled();
 			end
 		else
-			local horz = UI.CreateHorizontalLayoutGroup(rootParent);
+			local horz = Horz(rootParent);
 
 			UI.CreateLabel(horz).SetText(setting.label);
 

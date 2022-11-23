@@ -17,7 +17,7 @@ function cps(rootParent, settings)
 			-- new settings must be a setting with subsettings that is by default not enabled
 		end
 
-		UI.CreateLabel(vert).SetText(setting.label .. ': ' .. tostring(settingValue));
+		UI.CreateLabel(vert).SetText(setting.label .. ': ' .. settingValue);
 
 		if setting.subsettings and settingValue then
 			cps(vert, setting.subsettings);
