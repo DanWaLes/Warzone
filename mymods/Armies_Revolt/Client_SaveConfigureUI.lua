@@ -26,6 +26,10 @@ function csc(errMsg, settingValues, settings)
 		else
 			settingVal = GLOBALS[settingName].GetValue();
 
+			if setting.inputType == 'float' then
+				settingVal = round(settingVal, setting.dp);
+			end
+
 			if settingVal < setting.minValue or settingVal > setting.maxValue then
 				if errMsg == nil then
 					errMsg = '';
@@ -50,4 +54,11 @@ function csc(errMsg, settingValues, settings)
 		errMsg = errMsg,
 		settingValues = settingValues
 	};
+end
+
+function round(n, dp)
+	-- http://lua-users.org/wiki/SimpleRound
+	local multi = 10 ^ (dp or 0);
+
+	return math.floor((n * multi + 0.5)) / multi;
 end
