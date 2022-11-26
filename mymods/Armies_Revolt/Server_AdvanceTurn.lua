@@ -74,7 +74,7 @@ function doSwaps(game, addNewOrder, swaps)
 		end
 	end
 
-	addNewOrder(WL.GameOrderEvent.Create(WL.PlayerID.Neutral, 'Armies revolt!', {}, mods));
+	addNewOrder(WL.GameOrderEvent.Create(WL.PlayerID.Neutral, 'Swap territories!', {}, mods));
 end
 
 function doSwap(territory, swapWith)
