@@ -26,7 +26,7 @@ function getSettings()
 					inputType = 'int',
 					defaultValue = 5,
 					minValue = 0,
-					maxValue = 1000,
+					maxValue = 100,
 					absoluteMax = 100000,
 					label = 'Wasteland size'
 				},
