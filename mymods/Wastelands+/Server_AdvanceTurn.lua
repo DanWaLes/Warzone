@@ -16,7 +16,7 @@ function makeRuntimeWastelands(game, addNewOrder)
 			if territory.IsNeutral then
 				publicGameData.data.wastelandData[tIdIndex][1] = {existingArmies};
 			else
-				table.remove(publicGameData.data.wastelandData, tIdIndex);
+				publicGameData.data.wastelandData[tIdIndex] = nil;
 				publicGameData.data.wastelandedIndexes[terrId] = nil;
 			end
 		else
@@ -27,15 +27,21 @@ function makeRuntimeWastelands(game, addNewOrder)
 					terr[1] = {existingArmies};
 				end
 
-				table.insert(publicGameData.data.wastelandData, terr);
+				publicGameData.data.wastelandData[terrId] = terr;
 			end
 		end
 	end
 
 	local maxExtraWastelands = 4;
 	local n = 1;
+	local length = tbllen(publicGameData.data.wastelandData);
+	local keys = getKeys(publicGameData.data.wastelandData);
 
 	while n < maxExtraWastelands do
+		if length < 1 then
+			break;
+		end
+	
 		if Mod.Settings['EnabledW' .. n] then
 			local numWastelands = Mod.Settings['W' .. n .. 'Num'];
 
@@ -54,13 +60,14 @@ function makeRuntimeWastelands(game, addNewOrder)
 					size = 100000;
 				end
 
-				local i = math.random(1, #publicGameData.data.wastelandData);
+				local i = math.random(1, length);
+				local terrId = keys[i];
 
-				if not publicGameData.data.wastelandData[i][1] then
-					publicGameData.data.wastelandData[i][1] = {};
+				if not publicGameData.data.wastelandData[terrId][1] then
+					publicGameData.data.wastelandData[terrId][1] = {};
 				end
 
-				table.insert(publicGameData.data.wastelandData[i][1], size);
+				table.insert(publicGameData.data.wastelandData[terrId][1], size);
 				numWastelands = numWastelands - 1;
 			end
 		end
@@ -93,9 +100,11 @@ function makeRuntimeWastelands(game, addNewOrder)
 				end
 			end
 
-			local territoryMod = WL.TerritoryModification.Create(terr.id);
-			territoryMod.SetArmiesTo = terr[1];
-			table.insert(territoryMods, territoryMod);
+			if terr[1] ~= game.ServerGame.LatestTurnStanding.Territories[terr.id].NumArmies.NumArmies then
+				local territoryMod = WL.TerritoryModification.Create(terr.id);
+				territoryMod.SetArmiesTo = terr[1];
+				table.insert(territoryMods, territoryMod);
+			end
 
 			publicGameData.data.wastelandedIndexes[terr.id] = i;
 		else
@@ -103,8 +112,6 @@ function makeRuntimeWastelands(game, addNewOrder)
 		end
 	end
 
-	local publicGameData = Mod.PublicGameData;
-	publicGameData.data = data;
 	Mod.PublicGameData = publicGameData;
 
 	addNewOrder(WL.GameOrderEvent.Create(WL.PlayerID.Neutral, 'Made runtime wastelands', {}, territoryMods));

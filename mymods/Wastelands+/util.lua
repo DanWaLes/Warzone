@@ -70,6 +70,16 @@ function tbllen(tbl)
 	return i;
 end
 
+function getKeys(tbl)
+	local keys = {};
+
+	for k, _ in pairs(tbl) do
+		table.insert(keys, k);
+	end
+
+	return keys;
+end
+
 function round(n, dp)
 	-- http://lua-users.org/wiki/SimpleRound
 	local multi = 10 ^ (dp or 0);
