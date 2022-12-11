@@ -18,7 +18,7 @@ function getSettings()
 					defaultValue = 5,
 					minValue = 1,
 					maxValue = 15,
-					absoluteMax = false,
+					absoluteMax = 4000,-- 4000 is max territories a map can have
 					label = 'Number of wastelands'
 				},
 				{
@@ -27,7 +27,7 @@ function getSettings()
 					defaultValue = 5,
 					minValue = 0,
 					maxValue = 100,
-					absoluteMax = 100000,
+					absoluteMax = 100000,-- highest allowed in custom scenario
 					label = 'Wasteland size'
 				},
 				{
@@ -100,6 +100,7 @@ function getSettings()
 		extraWastelandSetting(1),
 		extraWastelandSetting(2),
 		extraWastelandSetting(3),
-		extraWastelandSetting(4)
+		extraWastelandSetting(4),
+		extraWastelandSetting(5)
 	};
 end
