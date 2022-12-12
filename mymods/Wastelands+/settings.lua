@@ -60,8 +60,8 @@ function getSettings()
 			defaultValue = false,
 			label = 'Create distribution wastelands after picks',
 			help = function(parent)
-				UI.CreateLabel('Takes affect on all distribution wastelands');
-				UI.CreateLabel('Only does a difference in manual distribution games');
+				UI.CreateLabel(parent).SetText('Takes affect on all distribution wastelands');
+				UI.CreateLabel(parent).SetText('Only does a difference in manual distribution games');
 			end
 		},
 		{
