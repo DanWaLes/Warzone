@@ -15,9 +15,9 @@ function cps(rootParent, settings)
 		local vert2 = UI.CreateVerticalLayoutGroup(vert);
 		local horz = UI.CreateHorizontalLayoutGroup(vert2);
 
-		UI.CreateLabel(horz).SetText(setting.label .. ': ' .. tostring(settingValue));
-
+		UI.CreateLabel(horz).SetText(setting.label .. ': ');
 		createHelpBtn(horz, vert2, setting);
+		UI.CreateLabel(horz).SetText(tostring(settingValue));
 
 		if setting.subsettings and settingValue then
 			local btn = UI.CreateButton(horz).SetText(expand).SetColor('#23A0FF');

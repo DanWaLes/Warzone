@@ -44,6 +44,7 @@ function cpc(rootParent, settings)
 			end
 		else
 			UI.CreateLabel(horz).SetText(setting.label);
+			createHelpBtn(horz, vert2, setting);
 
 			GLOBALS[settingName] = UI.CreateNumberInputField(horz)
 				.SetSliderMinValue(setting.minValue)
@@ -53,8 +54,6 @@ function cpc(rootParent, settings)
 			if setting.inputType == 'float' then
 				GLOBALS[settingName].SetWholeNumbers(false);
 			end
-
-			createHelpBtn(horz, vert2, setting);
 		end
 	end
 end

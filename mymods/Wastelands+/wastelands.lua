@@ -1,4 +1,8 @@
-function generateWastelands(numNeutrals, neutrals, wastelands)
+function generateWastelands(numNeutrals, neutrals, wastelands, notIncluding, wastelandData)
+	if wastelandData then
+		wastelands = generateWastelandGroup(numNeutrals, neutrals, wastelands, wastelandData[1], wastelandData[2], 0);
+	end
+
 	local maxExtraWastelands = 5;
 	local n = 1;
 
@@ -6,34 +10,40 @@ function generateWastelands(numNeutrals, neutrals, wastelands)
 		if Mod.Settings['EnabledW' .. n] then
 			local numWastelands = Mod.Settings['W' .. n .. 'Num'];
 
-			if Mod.Settings['W' .. n .. 'Type'] == 2 then
+			if Mod.Settings['W' .. n .. 'Type'] == notIncluding then
 				numWastelands = 0;
 			end
 
-			while numWastelands > 0 do
-				local size = Mod.Settings['W' .. n .. 'Size'];
-				local rand = Mod.Settings['W' .. n .. 'Rand'];
+			local size = Mod.Settings['W' .. n .. 'Size'];
+			local rand = Mod.Settings['W' .. n .. 'Rand'];
 
-				size = size + math.random(-rand, rand);
-				if size < 0 then
-					size = 0;
-				elseif size > 100000 then
-					size = 100000;
-				end
-
-				local i = math.random(1, numNeutrals);
-				local neutral = neutrals[i];
-
-				if not wastelands[neutral.id] then
-					wastelands[neutral.id] = {};
-				end
-
-				table.insert(wastelands[neutral.id], size);
-				numWastelands = numWastelands - 1;
-			end
+			wastelands = generateWastelandGroup(numNeutrals, neutrals, wastelands, numWastelands, size, rand);
 		end
 
 		n = n + 1;
+	end
+
+	return wastelands;
+end
+
+function generateWastelandGroup(numNeutrals, neutrals, wastelands, numWastelands, size, rand)
+	while numWastelands > 0 do
+		size = size + math.random(-rand, rand);
+		if size < 0 then
+			size = 0;
+		elseif size > 100000 then
+			size = 100000;
+		end
+
+		local i = math.random(1, numNeutrals);
+		local neutral = neutrals[i];
+
+		if not wastelands[neutral.id] then
+			wastelands[neutral.id] = {};
+		end
+
+		table.insert(wastelands[neutral.id], size);
+		numWastelands = numWastelands - 1;
 	end
 
 	return wastelands;
@@ -63,4 +73,6 @@ function placeWastelands(wastelands, onWastelandSizeDecided)
 
 		onWastelandSizeDecided(terrId, wastelands[terrId][1]);
 	end
+
+	return wastelands;
 end

@@ -1,15 +1,9 @@
 function getSettings()
 	function extraWastelandSetting(n)
-		local defaultVal = false;
-
-		if n == 1 then
-			defaultVal = true;
-		end
-
 		return {
 			name = 'EnabledW' .. n,
 			inputType = 'bool',
-			defaultValue =  defaultVal,
+			defaultValue =  false,
 			label = 'Enable extra wastelands ' .. n,
 			subsettings = {
 				{
@@ -50,7 +44,7 @@ function getSettings()
 					maxValue = 3,
 					label = 'Wasteland type',
 					help = function(parent)
-						UI.CreateLabel(parent).SetText('1 = normal wasteland');
+						UI.CreateLabel(parent).SetText('1 = distribution wasteland');
 						UI.CreateLabel(parent).SetText('2 = runtime wasteland');
 						UI.CreateLabel(parent).SetText('3 = both');
 					end
@@ -61,13 +55,22 @@ function getSettings()
 
 	return {
 		{
+			name = 'CreateDistributionWastelandsAfterPicks',
+			inputType = 'bool',
+			defaultValue = false,
+			label = 'Create distribution wastelands after picks',
+			help = function(parent)
+				UI.CreateLabel('Takes affect on all distribution wastelands');
+				UI.CreateLabel('Only does a difference in manual distribution games');
+			end
+		},
+		{
 			name = 'UseMaxTerrs',
 			inputType = 'bool',
 			defaultValue = true,
 			label = 'Prevent wastelands from reducing max territory limit',
 			help = function(parent)
 				UI.CreateLabel(parent).SetText('If there is no territory limit then all players will have at least one spawn');
-				UI.CreateLabel(parent).SetText('Only takes affect on normal wastelands');
 			end
 		},
 		{
