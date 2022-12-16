@@ -1,6 +1,11 @@
 function generateWastelands(numNeutrals, neutrals, wastelands, notIncluding, wastelandData)
+	local available = {length = 0};
+
 	if wastelandData then
-		wastelands = generateWastelandGroup(numNeutrals, neutrals, wastelands, wastelandData[1], wastelandData[2], 0);
+		local ret = generateWastelandGroup(numNeutrals, neutrals, available, wastelands, wastelandData[1], wastelandData[2], 0);
+
+		wastelands = ret.wastelands;
+		available = ret.available;
 	end
 
 	local maxExtraWastelands = 5;
@@ -16,8 +21,10 @@ function generateWastelands(numNeutrals, neutrals, wastelands, notIncluding, was
 
 			local size = Mod.Settings['W' .. n .. 'Size'];
 			local rand = Mod.Settings['W' .. n .. 'Rand'];
+			local ret = generateWastelandGroup(numNeutrals, neutrals, available, wastelands, numWastelands, size, rand);
 
-			wastelands = generateWastelandGroup(numNeutrals, neutrals, wastelands, numWastelands, size, rand);
+			wastelands = ret.wastelands;
+			available = ret.available;
 		end
 
 		n = n + 1;
@@ -26,7 +33,7 @@ function generateWastelands(numNeutrals, neutrals, wastelands, notIncluding, was
 	return wastelands;
 end
 
-function generateWastelandGroup(numNeutrals, neutrals, wastelands, numWastelands, size, rand)
+function generateWastelandGroup(numNeutrals, neutrals, available, wastelands, numWastelands, size, rand)
 	local overlapMode = Mod.Settings.OverlapMode;
 
 	while numWastelands > 0 do
@@ -37,15 +44,20 @@ function generateWastelandGroup(numNeutrals, neutrals, wastelands, numWastelands
 			size = 100000;
 		end
 
-		local i = math.random(1, numNeutrals);
-		local neutral = neutrals[i];
+		if available.length == 0 then
+			available.length = numNeutrals;
+			available.neutrals = neutrals
+		end
+
+		local i = math.random(1, available.length);
+		local neutral = available.neutrals[i];
 
 		if wastelands[neutral.id] then
 			local w = wastelands[neutral.id][1];
+
 			if overlapMode == 1 then
-				local j = math.random(1, 2);
-				if j == 1 then
-					size = wastelands[neutral.id][1];
+				if math.random(1, 2) == 1 then
+					size = w;
 				end
 			elseif overlapMode == 4 then
 				size = math.min(w, size);
@@ -60,10 +72,13 @@ function generateWastelandGroup(numNeutrals, neutrals, wastelands, numWastelands
 			wastelands[neutral.id] = {size};
 		end
 
+		available.length = available.length - 1;
+		table.remove(available.neutrals, i);
+
 		numWastelands = numWastelands - 1;
 	end
 
-	return wastelands;
+	return {wastelands = wastelands, available = available};
 end
 
 function placeWastelands(wastelands, placeWasteland)
