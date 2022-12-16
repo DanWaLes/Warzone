@@ -45,6 +45,10 @@ function makeDistributionWastelands(game, standing)
 		numTerritories = numTerritories + 1;
 	end
 
+	if minTerritoriesNeeded > numTerritories then
+		minTerritoriesNeeded = numTerritories;
+	end
+
 	local numWastelandsToRemove = -(numTerritories - minTerritoriesNeeded - normalWastelandCount);
 
 	while numWastelandsToRemove > 0 do
