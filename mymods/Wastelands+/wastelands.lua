@@ -1,8 +1,6 @@
 require 'util'
 
-function generateWastelands(numNeutrals, neutrals, wastelands, notIncluding, wastelandData)
-	local available = {length = 0};
-
+function generateWastelands(numNeutrals, neutrals, available, wastelands, notIncluding, wastelandData)
 	if wastelandData then
 		local ret = generateWastelandGroup(numNeutrals, neutrals, available, wastelands, wastelandData[1], wastelandData[2], 0);
 

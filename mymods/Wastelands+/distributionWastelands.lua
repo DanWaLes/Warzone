@@ -14,6 +14,8 @@ function makeDistributionWastelands(game, standing)
 
 	local numNeutrals = 0;
 	local neutrals = {};
+	local available = {neutrals = {}, length = 0};
+	local availableIndexes = {};
 	local wastelands = {};
 	local wastelandIndexes = {};
 	local normalWastelandCount = 0;
@@ -31,6 +33,10 @@ function makeDistributionWastelands(game, standing)
 
 				wastelands[terrId] = {existingArmies};
 				wastelandIndexes[normalWastelandCount] = terrId;
+			else
+				available.length = available.length + 1;
+				available.neutrals[available.length] = terrId;
+				availableIndexes[terrId] = available.length;
 			end
 
 			neutrals[numNeutrals] = {id = terrId};
@@ -39,12 +45,33 @@ function makeDistributionWastelands(game, standing)
 		numTerritories = numTerritories + 1;
 	end
 
+	local numWastelandsToRemove = -(numTerritories - minTerritoriesNeeded - normalWastelandCount);
+
+	while numWastelandsToRemove > 0 do
+		local toRemove = wastelandIndexes[numWastelandsToRemove];
+		table.remove(wastelandIndexes, numWastelandsToRemove);
+		wastelands[toRemove] = nil;
+		standing.Territories[toRemove].OwnerPlayerID = WL.PlayerID.AvailableForDistribution;
+
+		numWastelandsToRemove = numWastelandsToRemove - 1;
+	end
+
+	local i = numNeutrals;
+
 	while numNeutrals > (numTerritories - minTerritoriesNeeded) do
-		if (not wastelandIndexes[numNeutrals]) then
-			table.remove(neutrals, numNeutrals);
+		if not wastelandIndexes[i] then
+			local toRemove = availableIndexes[neutrals[i].id];
+
+			if toRemove then
+				table.remove(available.neutrals, toRemove);
+				available.length = available.length - 1;
+			end
+
+			table.remove(neutrals, i);
+			numNeutrals = numNeutrals - 1;
 		end
 
-		numNeutrals = numNeutrals - 1;
+		i = i - 1;
 	end
 
 	local wastelandData;
@@ -52,7 +79,7 @@ function makeDistributionWastelands(game, standing)
 		wastelandData = {game.Settings.NumberOfWastelands, game.Settings.WastelandSize};
 	end
 
-	wastelands = generateWastelands(numNeutrals, neutrals, wastelands, 2, wastelandData);
+	wastelands = generateWastelands(numNeutrals, neutrals, available, wastelands, 2, wastelandData);
 
 	placeWastelands(wastelands, function(terrId, size)
 		standing.Territories[terrId].OwnerPlayerID = WL.PlayerID.Neutral;

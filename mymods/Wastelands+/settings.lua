@@ -71,7 +71,7 @@ function getSettings()
 			label = 'Prevent wastelands from reducing max territory limit',
 			help = function(parent)
 				UI.CreateLabel(parent).SetText('If there is no territory limit then all players will have at least one spawn');
-				UI.CreateLabel(parent).SetText('Only affects extra distribution wastelands');
+				UI.CreateLabel(parent).SetText('Applies extra distribution wastelands and normal wastelands');
 			end
 		},
 		{

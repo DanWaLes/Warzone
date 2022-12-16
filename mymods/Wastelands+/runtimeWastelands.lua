@@ -6,6 +6,7 @@ function makeRuntimeWastelands(game, addNewOrder)
 	local numNeutrals = 0;
 	local neutrals = {};
 	local wastelands = {};
+	local available = {neutrals = {}, length = 0};
 
 	for terrId, territory in pairs(game.ServerGame.LatestTurnStanding.Territories) do
 		if territory.IsNeutral then
@@ -13,12 +14,15 @@ function makeRuntimeWastelands(game, addNewOrder)
 			neutrals[numNeutrals] = {id = terrId};
 
 			if publicGameData.wastelands[terrId] or Mod.Settings.TreatAllNeutralsAsWastelands then
-				wastelands[terrId] = {territory.NumArmies.NumArmies};				
+				wastelands[terrId] = {territory.NumArmies.NumArmies};
+			else
+				available.length = available.length + 1;
+				available.neutrals[available.length] = {id = terrId};
 			end
 		end
 	end
 
-	wastelands = generateWastelands(numNeutrals, neutrals, wastelands, 1);
+	wastelands = generateWastelands(numNeutrals, neutrals, available, wastelands, 1);
 
 	local territoryMods = {};
 	placeWastelands(wastelands, function(terrId, size)
