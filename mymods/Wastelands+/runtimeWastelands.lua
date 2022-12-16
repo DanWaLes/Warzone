@@ -21,7 +21,7 @@ function makeRuntimeWastelands(game, addNewOrder)
 	wastelands = generateWastelands(numNeutrals, neutrals, wastelands, 1);
 
 	local territoryMods = {};
-	wastelands = placeWastelands(wastelands, function(terrId, size)
+	placeWastelands(wastelands, function(terrId, size)
 		if size ~= game.ServerGame.LatestTurnStanding.Territories[terrId].NumArmies.NumArmies then
 			local territoryMod = WL.TerritoryModification.Create(terrId);
 			territoryMod.SetArmiesTo = size;

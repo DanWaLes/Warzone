@@ -3,7 +3,7 @@ function getSettings()
 		return {
 			name = 'EnabledW' .. n,
 			inputType = 'bool',
-			defaultValue =  false,
+			defaultValue = false,
 			label = 'Enable extra wastelands ' .. n,
 			subsettings = {
 				{
@@ -30,7 +30,7 @@ function getSettings()
 					defaultValue = 0,
 					minValue = 0,
 					maxValue = 15,
-					absoluteMax = false,
+					absoluteMax = 100000,
 					label = 'Random +/- amount',
 					help = function(parent)
 						UI.CreateLabel(parent).SetText('Wastelands will have their size increased or lowered by up to this much');

@@ -27,6 +27,8 @@ function generateWastelands(numNeutrals, neutrals, wastelands, notIncluding, was
 end
 
 function generateWastelandGroup(numNeutrals, neutrals, wastelands, numWastelands, size, rand)
+	local overlapMode = Mod.Settings.OverlapMode;
+
 	while numWastelands > 0 do
 		size = size + math.random(-rand, rand);
 		if size < 0 then
@@ -38,41 +40,34 @@ function generateWastelandGroup(numNeutrals, neutrals, wastelands, numWastelands
 		local i = math.random(1, numNeutrals);
 		local neutral = neutrals[i];
 
-		if not wastelands[neutral.id] then
-			wastelands[neutral.id] = {};
+		if wastelands[neutral.id] then
+			local w = wastelands[neutral.id][1];
+			if overlapMode == 1 then
+				local j = math.random(1, 2);
+				if j == 1 then
+					size = wastelands[neutral.id][1];
+				end
+			elseif overlapMode == 4 then
+				size = math.min(w, size);
+			elseif overlapMode == 5 then
+				size = math.max(w, size);
+			end
+
+			if overlapMode ~= 2 then
+				wastelands[neutral.id][1] = size;
+			end
+		else
+			wastelands[neutral.id] = {size};
 		end
 
-		table.insert(wastelands[neutral.id], size);
 		numWastelands = numWastelands - 1;
 	end
 
 	return wastelands;
 end
 
-function placeWastelands(wastelands, onWastelandSizeDecided)
-	local overlapMode = Mod.Settings.OverlapMode;
-
+function placeWastelands(wastelands, placeWasteland)
 	for terrId, tWastelandData in pairs(wastelands) do
-		if overlapMode == 1 then
-			wastelands[terrId] = {tWastelandData[math.random(1, #tWastelandData)]};
-		elseif overlapMode == 2 then
-			wastelands[terrId] = {tWastelandData[1]};
-		elseif overlapMode == 3 then
-			wastelands[terrId] = {tWastelandData[#tWastelandData]};
-		else
-			table.sort(tWastelandData, function(a, b)
-				return a > b;
-			end);
-
-			if overlapMode == 4 then
-				wastelands[terrId] = {tWastelandData[#tWastelandData]};
-			else
-				wastelands[terrId] = {tWastelandData[1]};
-			end
-		end
-
-		onWastelandSizeDecided(terrId, wastelands[terrId][1]);
+		placeWasteland(terrId, tWastelandData[1]);
 	end
-
-	return wastelands;
 end
