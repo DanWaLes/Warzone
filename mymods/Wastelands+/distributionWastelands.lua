@@ -46,7 +46,7 @@ function makeDistributionWastelands(game, standing)
 	end
 
 	if minTerritoriesNeeded > numTerritories then
-		minTerritoriesNeeded = numTerritories;
+		minTerritoriesNeeded = math.floor(numTerritories / numPlayers) * numPlayers;
 	end
 
 	local numWastelandsToRemove = -(numTerritories - minTerritoriesNeeded - normalWastelandCount);
