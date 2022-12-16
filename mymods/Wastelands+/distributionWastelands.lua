@@ -50,6 +50,7 @@ function makeDistributionWastelands(game, standing)
 	end
 
 	local numWastelandsToRemove = -(numTerritories - minTerritoriesNeeded - normalWastelandCount);
+	local wastelandData = {numWastelandsToRemove, game.Settings.WastelandSize};
 
 	while numWastelandsToRemove > 0 do
 		local toRemove = wastelandIndexes[numWastelandsToRemove];
@@ -78,7 +79,6 @@ function makeDistributionWastelands(game, standing)
 		i = i - 1;
 	end
 
-	local wastelandData;
 	if Mod.Settings.CreateDistributionWastelandsAfterPicks and not game.Settings.AutomaticTerritoryDistribution then
 		wastelandData = {game.Settings.NumberOfWastelands, game.Settings.WastelandSize};
 	end
