@@ -70,14 +70,14 @@ function tbllen(tbl)
 	return i;
 end
 
-function getKeys(tbl)
-	local keys = {};
+function clone(tbl)
+	local clone = {};
 
-	for k, _ in pairs(tbl) do
-		table.insert(keys, k);
+	for k, v in pairs(tbl) do
+		clone[k] = v;
 	end
 
-	return keys;
+	return clone;
 end
 
 function round(n, dp)

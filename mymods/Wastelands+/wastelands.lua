@@ -1,3 +1,5 @@
+require 'util'
+
 function generateWastelands(numNeutrals, neutrals, wastelands, notIncluding, wastelandData)
 	local available = {length = 0};
 
@@ -46,7 +48,7 @@ function generateWastelandGroup(numNeutrals, neutrals, available, wastelands, nu
 
 		if available.length == 0 then
 			available.length = numNeutrals;
-			available.neutrals = neutrals
+			available.neutrals = clone(neutrals);
 		end
 
 		local i = math.random(1, available.length);
