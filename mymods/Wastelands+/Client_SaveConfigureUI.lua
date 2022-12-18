@@ -20,53 +20,60 @@ end
 
 function csc(settings)
 	for _, setting in ipairs(settings) do
-		local settingName = setting.name;
-		local settingVal;
+		if setting.isTemplate then
+			Mod.Settings[setting.name] = GLOBALS[setting.name];
+			local n = 1;
 
-		if setting.inputType == 'bool' then
-			settingVal = GLOBALS[settingName].GetIsChecked();
+			while n < (Mod.Settings[setting.name] + 1) do
+				local toAdd = setting.get(n);
+				cscDoSetting(toAdd);
+				n = n + 1;
+			end
 		else
-			settingVal = GLOBALS[settingName].GetValue();
-
-			if setting.inputType == 'float' then
-				settingVal = round(settingVal, setting.dp);
-			end
-
-			local absoluteMax = setting.absoluteMax or setting.maxValue;
-			local usingMax = type(setting.absoluteMax) == 'number' or setting.absoluteMax == nil;
-			local isTooLow = settingVal < setting.minValue;
-			local isTooHigh = settingVal > absoluteMax;
-
-			if isTooLow or (usingMax and isTooHigh) then
-				if errMsg == nil then
-					errMsg = '';
-				end
-
-				if errMsg ~= '' then
-					errMsg = errMsg .. '\n';
-				end
-
-				errMsg = errMsg .. setting.label .. ' must be ';
-
-				if isTooLow and not usingMax then
-					errMsg = errMsg .. 'at least ' .. tostring(setting.minValue);
-				elseif isTooLow or isTooHigh then
-					errMsg = errMsg .. 'between ' .. tostring(setting.minValue) .. ' and ' .. tostring(absoluteMax);
-				end
-			end
-		end
-
-		settingValues[settingName] = settingVal;
-
-		if settingVal and setting.inputType == 'bool' and setting.subsettings then
-			csc(setting.subsettings);
+			cscDoSetting(setting);
 		end
 	end
 end
 
-function round(n, dp)
-	-- http://lua-users.org/wiki/SimpleRound
-	local multi = 10 ^ (dp or 0);
+function cscDoSetting(setting)
+	local settingVal;
 
-	return math.floor((n * multi + 0.5)) / multi;
+	if setting.inputType == 'bool' then
+		settingVal = GLOBALS[setting.name].GetIsChecked();
+	else
+		settingVal = GLOBALS[setting.name].GetValue();
+
+		if setting.inputType == 'float' then
+			settingVal = round(settingVal, setting.dp);
+		end
+
+		local absoluteMax = setting.absoluteMax or setting.maxValue;
+		local usingMax = type(setting.absoluteMax) == 'number' or setting.absoluteMax == nil;
+		local isTooLow = settingVal < setting.minValue;
+		local isTooHigh = settingVal > absoluteMax;
+
+		if isTooLow or (usingMax and isTooHigh) then
+			if errMsg == nil then
+				errMsg = '';
+			end
+
+			if errMsg ~= '' then
+				errMsg = errMsg .. '\n';
+			end
+
+			errMsg = errMsg .. setting.label .. ' must be ';
+
+			if isTooLow and not usingMax then
+				errMsg = errMsg .. 'at least ' .. tostring(setting.minValue);
+			elseif isTooLow or isTooHigh then
+				errMsg = errMsg .. 'between ' .. tostring(setting.minValue) .. ' and ' .. tostring(absoluteMax);
+			end
+		end
+	end
+
+	settingValues[setting.name] = settingVal;
+
+	if settingVal and setting.inputType == 'bool' and setting.subsettings then
+		csc(setting.subsettings);
+	end
 end

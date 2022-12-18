@@ -35,7 +35,7 @@ function makeDistributionWastelands(game, standing)
 				wastelandIndexes[normalWastelandCount] = terrId;
 			else
 				available.length = available.length + 1;
-				available.neutrals[available.length] = terrId;
+				available.neutrals[available.length] = {id = terrId};
 				availableIndexes[terrId] = available.length;
 			end
 

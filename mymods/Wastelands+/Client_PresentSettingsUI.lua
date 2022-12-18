@@ -1,3 +1,4 @@
+require 'ui'
 require 'settings'
 
 local expand = '˅';-- https://www.amp-what.com/unicode/search/down%20arrow &#709;
@@ -7,25 +8,38 @@ function Client_PresentSettingsUI(rootParent)
 end
 
 function cps(rootParent, settings)
-	local vert = UI.CreateVerticalLayoutGroup(rootParent);
+	local vert = Vert(rootParent);
 
 	for _, setting in ipairs(settings) do
-		local settingName = setting.name;
-		local settingValue = Mod.Settings[settingName];
-		local vert2 = UI.CreateVerticalLayoutGroup(vert);
-		local horz = UI.CreateHorizontalLayoutGroup(vert2);
+		if setting.isTemplate then
+			local n = 1;
 
-		UI.CreateLabel(horz).SetText(setting.label .. ': ');
-		createHelpBtn(horz, vert2, setting);
-		UI.CreateLabel(horz).SetText(tostring(settingValue));
-
-		if setting.subsettings and settingValue then
-			local btn = UI.CreateButton(horz).SetText(expand).SetColor('#23A0FF');
-
-			btn.SetOnClick(function()
-				expandCollapseSubSettingBtnClicked(btn, vert2, setting);
-			end);
+			while n < (Mod.Settings[setting.name] + 1) do
+				local toAdd = setting.get(n);
+				cpsDoSetting(vert, toAdd);
+				n = n + 1;
+			end
+		else
+			cpsDoSetting(vert, setting);
 		end
+	end
+end
+
+function cpsDoSetting(vert, setting)
+	local settingValue = Mod.Settings[setting.name];
+	local vert2 = Vert(vert);
+	local horz = Horz(vert2);
+
+	Label(horz).SetText(setting.label .. ': ');
+	createHelpBtn(horz, vert2, setting);
+	Label(horz).SetText(tostring(settingValue));
+
+	if setting.subsettings and settingValue then
+		local btn = Btn(horz).SetText(expand).SetColor('#23A0FF');
+
+		btn.SetOnClick(function()
+			expandCollapseSubSettingBtnClicked(btn, vert2, setting);
+		end);
 	end
 end
 
@@ -36,9 +50,9 @@ function createHelpBtn(btnParent, helpParent, setting)
 		return;
 	end
 
-	UI.CreateButton(btnParent).SetText('?').SetColor('#23A0FF').SetOnClick(function()
+	Btn(btnParent).SetText('?').SetColor('#23A0FF').SetOnClick(function()
 		if UI.IsDestroyed(settingHelpAreas[setting.name]) then
-			settingHelpAreas[setting.name] = UI.CreateVerticalLayoutGroup(helpParent);
+			settingHelpAreas[setting.name] = Vert(helpParent);
 			setting.help(settingHelpAreas[setting.name]);
 		else
 			UI.Destroy(settingHelpAreas[setting.name]);
@@ -51,7 +65,7 @@ local subsettingsAreas = {};
 function expandCollapseSubSettingBtnClicked(btn, detailsParent, setting)
 	if UI.IsDestroyed(subsettingsAreas[setting.name]) then
 		btn.SetText('^');
-		subsettingsAreas[setting.name] = UI.CreateVerticalLayoutGroup(detailsParent);
+		subsettingsAreas[setting.name] = Vert(detailsParent);
 		cps(subsettingsAreas[setting.name], setting.subsettings);
 	else
 		UI.Destroy(subsettingsAreas[setting.name]);

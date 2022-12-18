@@ -74,7 +74,11 @@ function clone(tbl)
 	local clone = {};
 
 	for k, v in pairs(tbl) do
-		clone[k] = v;
+		if type(v) == 'table' then
+			clone[k] = clone(v);
+		else
+			clone[k] = v;
+		end
 	end
 
 	return clone;

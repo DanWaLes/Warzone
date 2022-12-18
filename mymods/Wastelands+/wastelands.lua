@@ -8,10 +8,10 @@ function generateWastelands(numNeutrals, neutrals, available, wastelands, notInc
 		available = ret.available;
 	end
 
-	local maxExtraWastelands = 5;
-	local n = 1;
+	local numWastelandGroups = (Mod.Settings.extraWasteland or 4) + 1;-- 4+1 is for backwards compatibility
+	local n = 1
 
-	while n < maxExtraWastelands do
+	while n < numWastelandGroups do
 		if Mod.Settings['EnabledW' .. n] then
 			local numWastelands = Mod.Settings['W' .. n .. 'Num'];
 
