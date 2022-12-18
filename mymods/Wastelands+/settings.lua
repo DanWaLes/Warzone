@@ -4,7 +4,8 @@ function getSettings()
 	templates = {
 		extraWasteland = {
 			prefill = 5,
-			btnText = 'Add new wasteland group'
+			btnText = 'Add new wasteland group',
+			bkwrds = 5
 		}
 	};
 

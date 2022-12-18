@@ -11,10 +11,10 @@ function cps(rootParent, settings)
 	local vert = Vert(rootParent);
 
 	for _, setting in ipairs(settings) do
-		if setting.isTemplate then
+		if setting.isTemplate then			
 			local n = 1;
 
-			while n < (Mod.Settings[setting.name] + 1) do
+			while n < ((Mod.Settings[setting.name] or setting.bkwrds) + 1) do
 				local toAdd = setting.get(n);
 				cpsDoSetting(vert, toAdd);
 				n = n + 1;
