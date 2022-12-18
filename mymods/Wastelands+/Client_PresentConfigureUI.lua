@@ -12,25 +12,24 @@ function cpc(parent, settings)
 
 	for _, setting in ipairs(settings) do
 		if setting.isTemplate then
-			GLOBALS[setting.name] = 0;
-			local vert2 = Vert(vert);
+			GLOBALS[setting.name] = Mod.Settings[setting.name] or 0;
 
-			while (setting.latestId or 1) < (setting.prefill or 0) do
-				createFromTemplate(vert2, setting);
+			local vert2 = Vert(vert);
+			local i = 1;
+
+			while i < (GLOBALS[setting.name] + 1) do
+				cpcDoSetting(vert2, setting.get(i));
+				i = i + 1;
 			end
 
 			Btn(vert).SetColor('#00FF05').SetText(setting.btnText).SetOnClick(function()
-				createFromTemplate(vert2, setting);
+				GLOBALS[setting.name] = GLOBALS[setting.name] + 1;
+				cpcDoSetting(vert2, setting.get(GLOBALS[setting.name]));
 			end);
 		else
 			cpcDoSetting(vert, setting);
 		end
 	end
-end
-
-function createFromTemplate(vert, template)
-	GLOBALS[template.name] = template.add();
-	cpcDoSetting(vert, template.get(GLOBALS[template.name]));
 end
 
 function cpcDoSetting(vert, setting)

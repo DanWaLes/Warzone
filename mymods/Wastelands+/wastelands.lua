@@ -8,7 +8,7 @@ function generateWastelands(numNeutrals, neutrals, available, wastelands, notInc
 		available = ret.available;
 	end
 
-	local numWastelandGroups = (Mod.Settings.extraWasteland or 4) + 1;-- 4+1 is for backwards compatibility
+	local numWastelandGroups = (Mod.Settings.extraWasteland or 5) + 1;-- 5+1 is for backwards compatibility
 	local n = 1
 
 	while n < numWastelandGroups do

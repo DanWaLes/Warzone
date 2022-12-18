@@ -3,7 +3,6 @@ require 'ui'
 function getSettings()
 	templates = {
 		extraWasteland = {
-			prefill = 5,
 			btnText = 'Add new wasteland group',
 			bkwrds = 5
 		}
@@ -12,18 +11,13 @@ function getSettings()
 	for name in pairs(templates) do
 		templates[name].name = name;
 		templates[name].isTemplate = true;
-		templates[name].add = function()
-			local id = (templates[name].latestId or 0) + 1;
-			templates[name].latestId = id;
-			return id;
-		end;
 	end
 
 	templates.extraWasteland.get = function(id)
 		return {
 			name = 'EnabledW' .. id,
 			inputType = 'bool',
-			defaultValue = false,
+			defaultValue = true,
 			label = 'Enable extra wastelands ' .. id,
 			subsettings = {
 				{
