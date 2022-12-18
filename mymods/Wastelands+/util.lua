@@ -71,17 +71,17 @@ function tbllen(tbl)
 end
 
 function clone(tbl)
-	local clone = {};
+	local c = {};
 
 	for k, v in pairs(tbl) do
 		if type(v) == 'table' then
-			clone[k] = clone(v);
+			c[k] = clone(v);
 		else
-			clone[k] = v;
+			c[k] = v;
 		end
 	end
 
-	return clone;
+	return c;
 end
 
 function round(n, dp)
