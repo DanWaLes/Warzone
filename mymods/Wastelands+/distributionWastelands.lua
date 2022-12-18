@@ -10,6 +10,7 @@ function makeDistributionWastelands(game, standing)
 
 	if Mod.Settings.UseMaxTerrs and game.Settings.LimitDistributionTerritories > 0 then
 		minTerritoriesNeeded = minTerritoriesNeeded * game.Settings.LimitDistributionTerritories;
+		print('minTerritoriesNeeded ' .. minTerritoriesNeeded);
 	end
 
 	local numNeutrals = 0;
@@ -49,18 +50,22 @@ function makeDistributionWastelands(game, standing)
 		minTerritoriesNeeded = math.floor(numTerritories / numPlayers) * numPlayers;
 	end
 
-	local numWastelandsToRemove = -(numTerritories - minTerritoriesNeeded - normalWastelandCount);
-	local wastelandData = {numWastelandsToRemove, game.Settings.WastelandSize};
+	-- print('numTerritories ' .. numTerritories)
+	-- print('numPlayers ' .. numPlayers)
+	-- print('minTerritoriesNeeded ' .. minTerritoriesNeeded)
+	-- print('normalWastelandCount ' .. normalWastelandCount)
+	-- print('numTerritories - normalWastelandCount - minTerritoriesNeeded' .. tostring(numTerritories - normalWastelandCount - minTerritoriesNeeded))
 
-	while numWastelandsToRemove > 0 do
-		local toRemove = wastelandIndexes[numWastelandsToRemove];
-		table.remove(wastelandIndexes, numWastelandsToRemove);
+	local i = 0;
+	while (numTerritories - normalWastelandCount + i - minTerritoriesNeeded) < 0 do
+		local toRemove = wastelandIndexes[normalWastelandCount - i];
+		table.remove(wastelandIndexes, normalWastelandCount - i);
 		wastelands[toRemove] = nil;
 		standing.Territories[toRemove].OwnerPlayerID = WL.PlayerID.AvailableForDistribution;
-
-		numWastelandsToRemove = numWastelandsToRemove - 1;
+		i = i + 1;
 	end
-
+	-- print('numWastelandsToRemove ' .. i);
+	local wastelandData = {i, game.Settings.WastelandSize};
 	local i = numNeutrals;
 
 	while numNeutrals > (numTerritories - minTerritoriesNeeded) do
