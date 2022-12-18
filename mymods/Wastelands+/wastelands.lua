@@ -52,6 +52,13 @@ function generateWastelandGroup(numNeutrals, neutrals, available, wastelands, nu
 		local i = math.random(1, available.length);
 		local neutral = available.neutrals[i];
 
+		if type(neutral) ~= 'table' then
+			-- fixes a bug that was introduced in https://github.com/DanWaLes/Warzone/commit/d0574014dbcd98bd934f0b5e20d4b905d9cf78aa#diff-e21c5e081036d4af35859ff1b46bb37dc00df958e53b059a70538223a6122b90
+			-- bug was prevented in https://github.com/DanWaLes/Warzone/commit/93e567f9e1bdfb13f8ef95e7901ce9538acc5597#diff-e21c5e081036d4af35859ff1b46bb37dc00df958e53b059a70538223a6122b90
+			available.neutrals[i] = {id = neutral};
+			neutral = available.neutrals[i];
+		end
+
 		if wastelands[neutral.id] then
 			local w = wastelands[neutral.id][1];
 
