@@ -87,3 +87,10 @@ function Table(parent)
 	tbl.Td = Td;
 	return tbl;
 end
+
+uiConstants = {
+	textSize = 16,
+	padding = 10,
+	left = 3,
+	pcpuiWidth = 363
+};
