@@ -267,7 +267,7 @@ function useCheatCodeClicked(tabData)
 
 	Game.SendGameCustomMessage('Loading your team\'s unlocked codes...', {getTeamSolvedCodes = true}, function(solved)
 		local btnSize = (uiConstants.textSize * Mod.Settings.CheatCodeLength) + (uiConstants.padding * 2) + uiConstants.left;
-		local MAX_USE_CODE_BTNS_PER_ROW = math.ceil((uiConstants.pcpuiWidth + uiConstants.left) / btnSize);
+		local MAX_USE_CODE_BTNS_PER_ROW = math.floor((uiConstants.pcpuiWidth + uiConstants.left) / btnSize);
 		local i = MAX_USE_CODE_BTNS_PER_ROW;
 		local currentHorz;
 
