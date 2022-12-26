@@ -1,6 +1,11 @@
 require 'eliminate'
 
 function Server_AdvanceTurn_Start(game, addNewOrder)
+	if (not WL.IsVersionOrHigher or not WL.IsVersionOrHigher('5.22')) then
+		UI.Alert('You must update your app to the latest version to use this mod');
+		return;
+	end
+
 	local players = {};
 	local numPlaying = 0;
 	local numVoted = 0;
