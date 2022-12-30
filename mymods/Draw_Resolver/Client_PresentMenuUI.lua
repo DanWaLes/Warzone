@@ -62,7 +62,7 @@ function makeMenu(game, uiElements, votes)
 				local name = player.DisplayName(nil, false);
 
 				if playersVoted then
-					playersVoted = playersVoted = ', ' .. name;
+					playersVoted = playersVoted .. ', ' .. name;
 				else
 					playersVoted = name;
 				end
