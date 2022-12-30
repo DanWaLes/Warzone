@@ -20,18 +20,25 @@ function Client_PresentMenuUI(rootParent, setMaxSize, setScrollable, game, close
 	makeMenu(game, uiElements, Mod.PublicGameData.votes, nil);
 end
 
-function makeMenu(game, uiElements, votes, playersVoted)
+function makeMenu(game, uiElements, votes)
 	local container = Vert(uiElements.vert);
 	local vtfBtn = Btn(container);
 	local votesList = Vert(container);
 	local hasVoted = votes[game.Us.ID];
+
+	function destroyContainer()
+		if not UI.IsDestroyed(container) then
+			UI.Destroy(container);
+		end
+	end
 
 	if hasVoted then
 		vtfBtn.SetText('Un-vote to decide random winner');
 		vtfBtn.SetOnClick(function()
 			UI.Destroy(container);
 			game.SendGameCustomMessage('Un-voting...', {vote = false}, function(votes)
-				makeMenu(game, uiElements, votes, nil);
+				destroyContainer();
+				makeMenu(game, uiElements, votes);
 			end);
 		end);
 	else
@@ -39,10 +46,13 @@ function makeMenu(game, uiElements, votes, playersVoted)
 		vtfBtn.SetOnClick(function()
 			UI.Destroy(container);
 			game.SendGameCustomMessage('Voting...', {vote = true}, function(votes)
-				makeMenu(game, uiElements, votes, nil);
+				destroyContainer();
+				makeMenu(game, uiElements, votes);
 			end);
 		end);
 	end
+
+	local playersVoted = nil;
 
 	for playerId, voted in pairs(votes) do
 		local player = game.Game.Players[playerId];
