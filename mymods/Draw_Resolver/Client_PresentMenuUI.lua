@@ -17,10 +17,10 @@ function Client_PresentMenuUI(rootParent, setMaxSize, setScrollable, game, close
 		vert = vert
 	};
 
-	makeMenu(game, uiElements, Mod.PublicGameData.votes);
+	makeMenu(game, uiElements, Mod.PublicGameData.votes, nil);
 end
 
-function makeMenu(game, uiElements, votes)
+function makeMenu(game, uiElements, votes, playersVoted)
 	local container = Vert(uiElements.vert);
 	local vtfBtn = Btn(container);
 	local votesList = Vert(container);
@@ -31,7 +31,7 @@ function makeMenu(game, uiElements, votes)
 		vtfBtn.SetOnClick(function()
 			UI.Destroy(container);
 			game.SendGameCustomMessage('Un-voting...', {vote = false}, function(votes)
-				makeMenu(game, uiElements, votes);
+				makeMenu(game, uiElements, votes, nil);
 			end);
 		end);
 	else
@@ -39,12 +39,11 @@ function makeMenu(game, uiElements, votes)
 		vtfBtn.SetOnClick(function()
 			UI.Destroy(container);
 			game.SendGameCustomMessage('Voting...', {vote = true}, function(votes)
-				makeMenu(game, uiElements, votes);
+				makeMenu(game, uiElements, votes, nil);
 			end);
 		end);
 	end
 
-	local playersVoted = nil;
 	for playerId, voted in pairs(votes) do
 		local player = game.Game.Players[playerId];
 		if not player.IsAIOrHumanTurnedIntoAI and player.State == WL.GamePlayerState.Playing then
