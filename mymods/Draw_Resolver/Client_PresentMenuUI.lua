@@ -28,6 +28,7 @@ function makeMenu(game, uiElements, votes)
 
 	function destroyContainer()
 		if not UI.IsDestroyed(container) then
+			print('this line is needed');
 			UI.Destroy(container);
 		end
 	end
@@ -61,7 +62,7 @@ function makeMenu(game, uiElements, votes)
 				local name = player.DisplayName(nil, false);
 
 				if playersVoted then
-					playersVoted = ', ' .. name;
+					playersVoted = playersVoted = ', ' .. name;
 				else
 					playersVoted = name;
 				end
