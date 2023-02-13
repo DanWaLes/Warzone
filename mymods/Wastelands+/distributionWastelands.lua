@@ -1,101 +1,88 @@
 require 'wastelands'
 
+local wastelands = {};
+local wastelanded = {list = {}, length = 0};
+local available = {list = {}, length = 0};
+
 function makeDistributionWastelands(game, standing)
 	local numPlayers = 0;
-	for _, player in pairs(game.ServerGame.Game.Players) do
+	for _ in pairs(game.ServerGame.Game.Players) do
 		numPlayers = numPlayers + 1;
 	end
 
-	local minTerritoriesNeeded = numPlayers;
-
-	if Mod.Settings.UseMaxTerrs and game.Settings.LimitDistributionTerritories > 0 then
-		minTerritoriesNeeded = minTerritoriesNeeded * game.Settings.LimitDistributionTerritories;
-		print('minTerritoriesNeeded ' .. minTerritoriesNeeded);
-	end
-
-	local numNeutrals = 0;
-	local neutrals = {};
-	local available = {neutrals = {}, length = 0};
-	local availableIndexes = {};
-	local wastelands = {};
 	local wastelandIndexes = {};
-	local normalWastelandCount = 0;
-	local numNormalWastelands = game.Settings.NumberOfWastelands;
 	local numTerritories = 0;
 
-	for terrId, territory in pairs(standing.Territories) do
-		if territory.IsNeutral or (not game.Settings.AutomaticTerritoryDistribution and territory.OwnerPlayerID == WL.PlayerID.AvailableForDistribution) then
-			numNeutrals = numNeutrals + 1;
+	for terrId, terr in pairs(standing.Territories) do
+		numTerritories = numTerritories + 1;
 
-			local existingArmies = territory.NumArmies.NumArmies;
-
-			if numNormalWastelands > 0 and normalWastelandCount < numNormalWastelands and game.Settings.WastelandSize == existingArmies then
-				normalWastelandCount = normalWastelandCount + 1;
-
-				wastelands[terrId] = {existingArmies};
-				wastelandIndexes[normalWastelandCount] = terrId;
-			else
-				available.length = available.length + 1;
-				available.neutrals[available.length] = {id = terrId};
-				availableIndexes[terrId] = available.length;
-			end
-
-			neutrals[numNeutrals] = {id = terrId};
+		if terr.IsNeutral or (not game.Settings.AutomaticTerritoryDistribution and terr.OwnerPlayerID == WL.PlayerID.AvailableForDistribution) then
+			available.length = available.length + 1;
+			available.list[available.length] = terrId;
 		end
 
-		numTerritories = numTerritories + 1;
-	end
+		if wastelanded.length < game.Settings.NumberOfWastelands then
+			if terr.IsNeutral and terr.NumArmies.NumArmies == game.Settings.WastelandSize then
+				local ret = addWasteland(terrId, game.Settings.WastelandSize, wastelands, wastelanded);
+				wastelands = ret.wastelands;
+				wastelanded = ret.wastelanded;
 
-	if minTerritoriesNeeded > numTerritories then
-		minTerritoriesNeeded = math.floor(numTerritories / numPlayers) * numPlayers;
-	end
-
-	-- print('numTerritories ' .. numTerritories)
-	-- print('numPlayers ' .. numPlayers)
-	-- print('minTerritoriesNeeded ' .. minTerritoriesNeeded)
-	-- print('normalWastelandCount ' .. normalWastelandCount)
-	-- print('numTerritories - normalWastelandCount - minTerritoriesNeeded' .. tostring(numTerritories - normalWastelandCount - minTerritoriesNeeded))
-
-	local i = 0;
-	while (numTerritories - normalWastelandCount + i - minTerritoriesNeeded) < 0 do
-		local toRemove = wastelandIndexes[normalWastelandCount - i];
-		table.remove(wastelandIndexes, normalWastelandCount - i);
-		wastelands[toRemove] = nil;
-		standing.Territories[toRemove].OwnerPlayerID = WL.PlayerID.AvailableForDistribution;
-		i = i + 1;
-	end
-	-- print('numWastelandsToRemove ' .. i);
-	local wastelandData = {i, game.Settings.WastelandSize};
-	local i = numNeutrals;
-
-	while numNeutrals > (numTerritories - minTerritoriesNeeded) do
-		if not wastelandIndexes[i] then
-			local toRemove = availableIndexes[neutrals[i].id];
-
-			if toRemove then
-				table.remove(available.neutrals, toRemove);
+				wastelandIndexes[wastelanded.length] = terrId;
+				available.list[available.length] = nil;
 				available.length = available.length - 1;
 			end
-
-			table.remove(neutrals, i);
-			numNeutrals = numNeutrals - 1;
 		end
+	end
 
-		i = i - 1;
+	local numPickableTerrs = game.Settings.LimitDistributionTerritories;
+	local maxWastelandedTerrs = numTerritories;
+
+	if Mod.Settings.UseMaxTerrs and numPickableTerrs > 0 then
+		maxWastelandedTerrs = maxWastelandedTerrs - (numPlayers * numPickableTerrs);
+	else
+		maxWastelandedTerrs = maxWastelandedTerrs - numPlayers;
+	end
+
+	while wastelanded.length > maxWastelandedTerrs do
+		local terrId = wastelandIndexes[wastelanded.length];
+		wastelands[terrId] = nil;
+		wastelanded[wastelanded.length] = nil;
+		wastelandIndexes[wastelanded.length] = nil;
+		wastelanded.length = wastelanded.length - 1;
+		standing.Territories[terrId].OwnerPlayerID = WL.PlayerID.AvailableForDistribution;
+	end
+	wastelandIndexes = nil;
+
+	while available.length + wastelanded.length > maxWastelandedTerrs do
+		available.list[available.length] = nil;
+		available.length = available.length - 1;
 	end
 
 	if Mod.Settings.CreateDistributionWastelandsAfterPicks and not game.Settings.AutomaticTerritoryDistribution then
-		wastelandData = {game.Settings.NumberOfWastelands, game.Settings.WastelandSize};
+		dWGenerateWastelandGroup(standing, maxWastelandedTerrs, game.Settings.NumberOfWastelands, game.Settings.WastelandSize, 0);
 	end
 
-	wastelands = generateWastelands(numNeutrals, neutrals, available, wastelands, 2, wastelandData);
-
-	placeWastelands(wastelands, function(terrId, size)
-		standing.Territories[terrId].OwnerPlayerID = WL.PlayerID.Neutral;
-		standing.Territories[terrId].NumArmies = WL.Armies.Create(size);
+	generateWastelands(2, function(numWastelands, size, rand)
+		return dWGenerateWastelandGroup(standing, maxWastelandedTerrs, numWastelands, size, rand);
 	end);
 
-	local publicGameData = Mod.PublicGameData;
-	publicGameData.wastelands = wastelands;
-	Mod.PublicGameData = publicGameData;
+	finish(wastelands, function(terrId, size)
+		placeWasteland(terrId, size, standing);
+	end);
+end
+
+function placeWasteland(terrId, size, standing)
+	standing.Territories[terrId].OwnerPlayerID = WL.PlayerID.Neutral;
+	standing.Territories[terrId].NumArmies = WL.Armies.Create(size);
+end
+
+function dWGenerateWastelandGroup(standing, maxWastelandedTerrs, numWastelands, size, rand)
+	local ret = generateWastelandGroup(numWastelands, size, rand, function(terrId, wSize)
+		placeWasteland(terrId, wSize, standing);
+	end, available, wastelands, wastelanded, maxWastelandedTerrs);
+	available = ret.available;
+	wastelands = ret.wastelands;
+	wastelanded = ret.wastelanded;
+
+	return ret.earlyExit;
 end
