@@ -6,7 +6,7 @@ local available = {list = {}, length = 0};
 local tMods = {
 	byIndex = {},
 	byId = {},
-	length = 0,
+	length = 0
 };
 
 tMods.add = function(terrId, mod)
