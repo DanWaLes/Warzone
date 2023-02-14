@@ -32,6 +32,20 @@ function cpsDoSetting(vert, setting)
 
 	Label(horz).SetText(setting.label .. ': ');
 	createHelpBtn(horz, vert2, setting);
+
+	if settingValue == nil and setting.bkwrds ~= nil then
+		settingValue = setting.bkwrds;
+	end
+
+	-- just for this mod, remove this part if copying this file
+	if Mod.Settings.OverlapsEnabled == nil then
+		if setting.name == 'OverlapMode' then
+			if settingValue > 1 then
+				settingValue = settingValue - 1;
+			end
+		end
+	end
+
 	Label(horz).SetText(tostring(settingValue));
 
 	if setting.subsettings and settingValue then

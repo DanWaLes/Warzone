@@ -29,6 +29,12 @@ function addWasteland(terrId, size, wastelands, wastelanded)
 		wastelands[terrId].numSizes = wastelands[terrId].numSizes + 1;
 		wastelands[terrId].sizes[wastelands[terrId].numSizes] = size;
 	else
+		-- for backwards compatibility
+		-- used to be a oldest preserved setting (as 2). is no longer needed
+		if Mod.Settings.OverlapsEnabled == nil then
+			overlapMode = overlapMode - 1;
+		end
+
 		if wastelands[terrId] then
 			if overlapMode == 3 then
 				wastelands[terrId] = size;
@@ -74,15 +80,18 @@ end
 function generateWastelandGroup(numWastelands, size, rand, placeWasteland, available, wastelands, wastelanded, maxWastelandedTerrs)
 	local isRandomOverlapMode = Mod.Settings.OverlapMode == 1;
 	local terrCount = Mod.PublicGameData.terrCount or 1;
+	local numOverlaps = Mod.PublicGameData.numOverlaps or 0;
 
 	while numWastelands > 0 do
 		if available.length == 0 or (maxWastelandedTerrs and terrCount > maxWastelandedTerrs) then
-			if Mod.Settings.OverlapMode == 2 then
+			numOverlaps = numOverlaps + 1;
+
+			if Mod.Settings.EnableOverlaps == false or (Mod.Settings.EnableOverlaps == nil and Mod.Settings.OverlapMode == 2) or (Mod.Settings.MaxOverlaps > 0 and numOverlaps == Mod.Settings.MaxOverlaps) then
 				return {earlyExit = true, available = available, wastelands = wastelands, wastelanded = wastelanded};
-			else
-				terrCount = 0;
-				available = clone(wastelanded);
 			end
+
+			terrCount = 0;
+			available = clone(wastelanded);
 		end
 
 		local index = math.random(1, available.length);
@@ -106,6 +115,7 @@ function generateWastelandGroup(numWastelands, size, rand, placeWasteland, avail
 
 	local pgd = Mod.PublicGameData;
 	pgd.terrCount = terrCount;
+	pgd.numOverlaps = numOverlaps;
 	Mod.PublicGameData = pgd;
 
 	return {earlyExit = false, available = available, wastelands = wastelands, wastelanded = wastelanded};
@@ -128,5 +138,6 @@ function finish(wastelands, placeWasteland)
 	local pgd = Mod.PublicGameData;
 	pgd.wastelands = wastelands;
 	pgd.terrCount = 1;
+	pgd.numOverlaps = 0;
 	Mod.PublicGameData = pgd;
 end

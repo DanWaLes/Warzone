@@ -89,31 +89,58 @@ function getSettings()
 			end
 		},
 		{
-			name = 'OverlapMode',
-			inputType = 'int',
-			defaultValue = 1,
-			minValue = 1,
-			maxValue = 5,
-			label = 'Wasteland overlap mode',
-			help = function(parent)
-				Label(parent).SetText('In the event of wastelands randomly getting placed on top of each other, what should happen?');
-				Label(parent).SetText('1 = randomly choose which gets used');
-				Label(parent).SetText('2 = oldest preserved');
-				Label(parent).SetText('3 = newest overrides');
-				Label(parent).SetText('4 = use smallest wasteland');
-				Label(parent).SetText('5 = use largest wasteland');
-			end
-		},
-		{
-			name = 'TreatAllNeutralsAsWastelands',
+			name = 'OverlapsEnabled',
 			inputType = 'bool',
-			defaultValue = true,
-			label = 'Treat all neutrals as wastelands',
+			defaultValue = false,
+			bkwrds = true,
+			label = 'Enable wasteland overlaps',
 			help = function(parent)
-				Label(parent).SetText('If enabled the runtime wastelands will follow the wasteland overlap mode for all neutral territories');
-				Label(parent).SetText('If disabled the new wasteland will always replace the territory');
-				Label(parent).SetText('Applies to runtime wastelands only');
-			end
+				Label(parent).SetText('Wastelands occpy as many neutral or pickable territories as possable before replacing an existing wasteland');
+				Label(parent).SetText('The "Overlap mode" will decide how overlaps are dealt with');
+			end,
+			subsettings = {
+				{
+					name = 'OverlapMode',
+					inputType = 'int',
+					defaultValue = 1,
+					minValue = 1,
+					maxValue = 4,
+					label = 'Overlap mode',
+					help = function(parent)
+						Label(parent).SetText('In the event of wastelands randomly getting placed on top of each other, what should happen?');
+						Label(parent).SetText('1 = randomly choose which gets used');
+						Label(parent).SetText('2 = newest overrides');
+						Label(parent).SetText('3 = use smallest wasteland');
+						Label(parent).SetText('4 = use largest wasteland');
+					end
+				},
+				{
+					name = 'TreatAllNeutralsAsWastelands',
+					inputType = 'bool',
+					defaultValue = true,
+					label = 'Treat all neutrals as wastelands',
+					help = function(parent)
+						Label(parent).SetText('If enabled the runtime wastelands will follow the wasteland overlap mode for all neutral territories');
+						Label(parent).SetText('If disabled the new wasteland will always replace the territory');
+						Label(parent).SetText('If "Max overlaps per turn" is 1 then no new wastelands will be created');
+						Label(parent).SetText('Applies to runtime wastelands only');
+					end
+				},
+				{
+					name = 'MaxOverlaps',
+					inputType = 'int',
+					defaultValue = 0,
+					minValue = 0,
+					maxValue = 3,
+					bkwrds = 0,
+					label = 'Max overlaps per turn',
+					help = function(parent)
+						Label(parent).SetText('This setting is only here for performance reasons');
+						Label(parent).SetText('Fewer overlaps is faster; 0 = unlimited');
+						Label(parent).SetText('Existing wastelands are decided first then lowest to highest wasteland group number are created');
+					end
+				}
+			}
 		},
 		templates.extraWasteland
 	};
