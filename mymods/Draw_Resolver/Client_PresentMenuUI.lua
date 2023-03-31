@@ -50,7 +50,7 @@ function makeMenu(game, uiElements, votes)
 	Label(votesContainer).SetText('The following players have voted to decide a random winner:');
 
 	for playerId, voted in pairs(votes) do
-		local player = game.players[playerId];
+		local player = game.Game.Players[playerId];
 
 		if player.State == WL.GamePlayerState.Playing and (player.voted or player.IsAIOrHumanTurnedIntoAI) then
 			Label(votesContainer).SetText(player.DisplayName());

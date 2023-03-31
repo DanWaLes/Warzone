@@ -1,8 +1,8 @@
 require 'eliminate'
 require 'version'
 
-function Server_AdvanceTurn_End(game, addNewOrder)
-	if not canRunMod() then
+function Server_AdvanceTurn_Start(game, addNewOrder)
+	if game.Settings.SinglePlayer and not canRunMod() then
 		return;
 	end
 
