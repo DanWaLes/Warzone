@@ -1,3 +1,1 @@
-This mod decides a random winner if all players vote to decide a random winner. Useful for resolving draws in games that don't have vote to end.
-All AI and human turned into AI players automatically vote to decide a random winner.
-Go to Game > Mod: Draw Resolver to vote.
+This mod decides a random winner if all players vote to flip a coin. Useful for resolving draws in games that don't have vote to end. AIs automatically vote to decide random winner.
