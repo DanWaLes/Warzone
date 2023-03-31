@@ -52,8 +52,8 @@ function makeMenu(game, uiElements, votes)
 	for playerId, voted in pairs(votes) do
 		local player = game.Game.Players[playerId];
 
-		if player.State == WL.GamePlayerState.Playing and (player.voted or player.IsAIOrHumanTurnedIntoAI) then
-			Label(votesContainer).SetText(player.DisplayName());
+		if player.State == WL.GamePlayerState.Playing and (votes[playerId] or player.IsAIOrHumanTurnedIntoAI) then
+			Label(votesContainer).SetText(player.DisplayName(nil, true));
 		end
 	end
 end
