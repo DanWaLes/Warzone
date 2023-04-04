@@ -17,10 +17,10 @@ function Client_PresentMenuUI(rootParent, setMaxSize, setScrollable, game, close
 		vert = vert
 	};
 
-	makeMenu(game, uiElements, Mod.PublicGameData.votes);
+	makeMenu(game, uiElements, Mod.PublicGameData.votes, close);
 end
 
-function makeMenu(game, uiElements, votes)
+function makeMenu(game, uiElements, votes, close)
 	local container = Vert(uiElements.vert);
 	local vtfContainer = Vert(container);
 	local vtfBtn = Btn(vtfContainer);
@@ -32,18 +32,14 @@ function makeMenu(game, uiElements, votes)
 	if hasVoted then
 		vtfBtn.SetText('Un-vote to decide a random winner');
 		vtfBtn.SetOnClick(function()
-			UI.Destroy(container);
-			game.SendGameCustomMessage('Un-voting...', {vote = false}, function(votes)
-				makeMenu(game, uiElements, votes);
-			end);
+			close();
+			game.SendGameCustomMessage('Un-voting...', {vote = false}, function() end);
 		end);
 	else
 		vtfBtn.SetText('Vote to decided a random winner');
 		vtfBtn.SetOnClick(function()
-			UI.Destroy(container);
-			game.SendGameCustomMessage('Voting...', {vote = true}, function(votes)
-				makeMenu(game, uiElements, votes);
-			end);
+			close();
+			game.SendGameCustomMessage('Voting...', {vote = true}, function() end);
 		end);
 	end
 

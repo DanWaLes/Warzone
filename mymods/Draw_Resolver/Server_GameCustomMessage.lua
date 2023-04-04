@@ -1,15 +1,16 @@
 function Server_GameCustomMessage(game, playerId, payload, setReturn)
 	local publicGameData = Mod.PublicGameData;
-
-	if not payload then
-		setReturn(publicGameData.votes);
-		return;
-	end
+	local changed;
 
 	if type(payload.vote) == 'boolean' then
+		changed = 'votes';
 		publicGameData.votes[playerId] = payload.vote;
 	end
 
+	publicGameData.changed = changed;
 	Mod.PublicGameData = publicGameData;
-	setReturn(publicGameData.votes);
+
+	if changed then
+		setReturn(publicGameData[changed]);
+	end
 end
