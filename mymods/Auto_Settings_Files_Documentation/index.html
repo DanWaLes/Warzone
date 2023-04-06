@@ -1,16 +1,14 @@
-The goal of this is to automatically generates the Client_PresentConfigureUI, Client_SaveConfigureUI and Client_PresentSettingsUI lua files. All these files should be left as-is. A settings.lua file will need to be created.
+The goal of this is to automatically generate the Client_PresentConfigureUI, Client_SaveConfigureUI and Client_PresentSettingsUI lua files. All these files should be left as-is. A settings.lua file will need to be created/edited.
 <h1>settings.lua file syntax</h1>
-the file must have a <code>getSettings</code> function. returns <code>settings</code>
-<h2>Settings</h2>
-<code>settings</code> is an array of <code>setting</code>
+the file must have a <code>getSettings</code> function. returns <code>settings</code>. <code>settings</code> is an array of <code>setting</code>s and <code>setting template</code>s
+<h2>Setting</h2>
 <ul>
-	<li><code>setting</code> must have a <code>name</code> - string - all setting names must be unique to function correctly
-	<li><code>setting</code> must have a <code>inputType</code> - one of <code>'int'</code>, <code>'float'</code> or <code>'bool'</code>
-	<li><code>setting</code> must have a <code>defaultValue</code> - any type - the default value for the setting's value in Client_PresentConfigureUI
-	<li><code>setting</code> must have a <code>label</code> - string - summery of what the setting does
-	<li><code>setting</code> can have a <code>bkwrds</code> value - for if the mod is already public and turned something that wasnt configurable before into a setting
-	<li><code>setting</code> can have a <code>help(parent)</code> function. is a more detailed explanation of what the setting does. appears as a ? next to the setting name. help is initially collapsed. every second click is collapsed again (after being expanded)
-	<li><code>setting</code> can have a <code>isTemplate</code> flag. should only be true. for <a href="#templates">templates</a> only
+	<li>must have a <code>name</code> - string - all <code>name</code>s must be unique to function correctly</li>
+	<li>must have a <code>inputType</code> - one of <code>'int'</code>, <code>'float'</code> or <code>'bool'</code></li>
+	<li>must have a <code>defaultValue</code> - any type - the default value for the setting's value in Client_PresentConfigureUI</li>
+	<li>must have a <code>label</code> - string - summery of what the setting does</li>
+	<li>can have a <code>bkwrds</code> value - for if the mod is already public and turned something that wasnt configurable before into a setting</li>
+	<li>can have a <code>help(parent)</code> function. is a more detailed explanation of what the setting does. appears as a ? next to the setting name. help is initially collapsed. every second click is collapsed again (after being expanded)</li>
 	<li>
 		<p>if <code>inputType</code> is <code>'int'</code> or <code>'float'</code> then</p>
 		<ul>
@@ -22,30 +20,31 @@ the file must have a <code>getSettings</code> function. returns <code>settings</
 	<li>
 		<p>if <code>inputType</code> is <code>'float'</code> then</p>
 		<ul>
-			<li><code>setting</code> must have <code>dp</code> - int - the number of decimal places to round the setting value to when saved
+			<li>must have <code>dp</code> - int - the number of decimal places to round the setting value to when saved
 		</ul>
 	<li>
 		<p>if <code>inputType</code> is <code>'bool'</code> then</p>
 		<ul>
-			<li><code>setting</code> can have <code>subsettings</code>. <code>subsettings</code> defined same way as <code>settings</code></li>
+			<li>can have <code>subsettings</code>. <code>subsettings</code> defined same way as <code>settings</code></li>
 		</ul>
 	</li>
 </ul>
 
-<h2 id="templates">Templates</h2>
-In the event of wanting to have infinite groups of settings, setting templates can be used. <code>templates</code> is a table indexed by <code>name</code>s.
+<h2 id="templates">Setting templates</h2>
+In the event of wanting to have infinite groups of settings, setting templates can be used. any settings that require this should have <code>subsettings</code>
 <ul>
-	<li>templated settings must have <code>btnText</code> - string - what the appears on the button to add a new group</li>
-	<li>templated settings must have a <code>get(id)</code> function. must return <code>setting</code></li>
-	<li>templated settings must have a <code>name</code> (same as <code>name</code> key) and <code>isTemplate</code> (always true) - would recommend looping over templates to add them</li>
-	<li>templated settings can a <code>bkwrds</code> value - for if the mod is public and goes from limited to unlimited amounts of setting groups. <code>bkwrds</code> number of setting groups will be generated. to avoid nil in Client_PresentSettingsUI</li>
+	<li>must have a <code>name</code> - string - all <code>name</code>s must be unique to function correctly</li>
+	<li>must have a <code>isTemplate</code> flag - always </code>true</code>
+	<li>must have <code>btnText</code> - string - what the appears on the button to add a new group</li>
+	<li>must have a <code>get(n)</code> function. must return <code>setting</code>. <code>n</code> starts at 1</li>
+	<li>can a <code>bkwrds</code> value - for if the mod is public and goes from limited to unlimited amounts of setting groups. <code>bkwrds</code> number of setting groups will be generated. to avoid nil in Client_PresentSettingsUI</li>
 </ul>
 
 <h1>Accessing setting values</h1>
 Each setting is stored in Mod.Settings[<code>name</code>]
 
 <h1>Examples</h1>
-Note that the settings-related files may be different (not as up to date or have mod-specific backward compatibility) from this documentation
+See settings.lua. For actual usage see the following mods. Note that the settings-related files for them may be different from this documentation
 <ul>
 	<li><a href="https://github.com/DanWaLes/Warzone/tree/master/mymods/Wastelands%2B">Wastelands+</a></li>
 	<li><a href="https://github.com/DanWaLes/Warzone/tree/master/mymods/Cheat_Codes2">Cheat Codes</a></li>
