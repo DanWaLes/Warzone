@@ -17,39 +17,52 @@ function Client_PresentMenuUI(rootParent, setMaxSize, setScrollable, game, close
 		vert = vert
 	};
 
-	makeMenu(game, uiElements, Mod.PublicGameData.votes, close);
+	makeMenu(game, uiElements, Mod.PublicGameData.votes);
 end
 
-function makeMenu(game, uiElements, votes, close)
+function makeMenu(game, uiElements, votes)
 	local container = Vert(uiElements.vert);
-	local vtfContainer = Vert(container);
-	local vtfBtn = Btn(vtfContainer);
-	local votesList = Vert(vtfContainer);
-	local votesContainer = Vert(container);
-
+	local vtfBtn = Btn(container);
+	local votesList = Vert(container);
 	local hasVoted = votes[game.Us.ID];
 
 	if hasVoted then
-		vtfBtn.SetText('Un-vote to decide a random winner');
+		vtfBtn.SetText('Un-vote to decide random winner');
 		vtfBtn.SetOnClick(function()
-			close();
-			game.SendGameCustomMessage('Un-voting...', {vote = false}, function() end);
+			UI.Destroy(container);
+			game.SendGameCustomMessage('Un-voting...', {vote = false}, function(votes)
+				makeMenu(game, uiElements, votes);
+			end);
 		end);
 	else
-		vtfBtn.SetText('Vote to decided a random winner');
+		vtfBtn.SetText('Vote to decide random winner');
 		vtfBtn.SetOnClick(function()
-			close();
-			game.SendGameCustomMessage('Voting...', {vote = true}, function() end);
+			UI.Destroy(container);
+			game.SendGameCustomMessage('Voting...', {vote = true}, function(votes)
+				makeMenu(game, uiElements, votes);
+			end);
 		end);
 	end
 
-	Label(votesContainer).SetText('The following players have voted to decide a random winner:');
-
+	local playersVoted = nil;
 	for playerId, voted in pairs(votes) do
 		local player = game.Game.Players[playerId];
+		if not player.IsAIOrHumanTurnedIntoAI and player.State == WL.GamePlayerState.Playing then
+			if voted then
+				local name = player.DisplayName(nil, false);
 
-		if player.State == WL.GamePlayerState.Playing and (votes[playerId] or player.IsAIOrHumanTurnedIntoAI) then
-			Label(votesContainer).SetText(player.DisplayName(nil, true));
+				if playersVoted then
+					playersVoted = ', ' .. name;
+				else
+					playersVoted = name;
+				end
+			end
 		end
+	end
+
+	if playersVoted then
+		Label(votesList).SetText('The following players have voted to decide a random winner: ' .. playersVoted);
+	else
+		Label(votesList).SetText('Nobody has voted to decide a random winner');
 	end
 end
