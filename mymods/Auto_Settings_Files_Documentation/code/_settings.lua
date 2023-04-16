@@ -24,9 +24,7 @@ function getSettings()
 				})
 			}
 		}),
-		-- nil 1 is btnColor. default is '#00FF05'
-		-- nil 2 is btnTextColor. default is wz default
-		addSettingTemplate('SettingTemplate', 'add new setting template group', nil, nil, function(n)
+		addSettingTemplate('SettingTemplate', 'add new setting template group', nil, function(n)
 			return {
 				label = 'enable setting template group ' .. n,
 				labelColor = '#aaccdd',

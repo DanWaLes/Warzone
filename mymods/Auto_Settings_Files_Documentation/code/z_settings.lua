@@ -48,6 +48,16 @@ function addSetting(name, label, inputType, defaultValue, otherProps)
 		labelColor = 'string'
 	};
 
+	if otherProps.bkwrds ~= nil then
+		if inputType == 'bool' then
+			optionalProps.bkwrds = 'boolean';
+		elseif inputType == 'text' then
+			optionalProps.bkwrds = 'string';
+		else
+			optionalProps.bkwrds = 'number';
+		end
+	end
+
 	if inputType == 'bool' then
 		optionalProps.subsettings = 'table';
 	elseif inputType == 'text' then
@@ -92,7 +102,8 @@ function addSetting(name, label, inputType, defaultValue, otherProps)
 	return setting;
 end
 
-function addSettingTemplate(name, btnText, btnColor, btnTextColor, get)
+function addSettingTemplate(name, btnText, options, get)
+	-- todo add bkwards
 	if type(name) ~= 'string' then
 		print('name in addSettingTemplate must be a string\nname is');
 		print(name);
@@ -105,13 +116,23 @@ function addSettingTemplate(name, btnText, btnColor, btnTextColor, get)
 		return;
 	end
 
+	if options == nil then
+		options = {};
+	else
+		if type(options) ~= 'table' then
+			print('options in addSettingTemplate must be a table or nil\noptions is');
+			print(options);
+			return;
+		end
+	end
+
 	if type(get) ~= 'function' then
 		print('get in addSettingTemplate must be a function(n)\nget is');
 		print(groupLabel);
 		return;
 	end
 
-	local setting = {name = name, btnText = btnText, btnColor = btnColor, btnTextColor = btnTextColor, isTemplate = true};
+	local setting = {name = name, btnText = btnText, isTemplate = true, btnColor = options.btnColor, btnTextColor = options.btnTextColor, bkwards = options.bkwards};
 	setting.get = function(n)
 		local tmp = get(n);
 		if type(tmp) ~= 'table' then

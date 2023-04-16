@@ -1,50 +1,95 @@
-The goal of this is to automatically generate the Client_PresentConfigureUI, Client_SaveConfigureUI and Client_PresentSettingsUI lua files. All these files should be left as-is. A settings.lua file will need to be created/edited.
-<h1>settings.lua file syntax</h1>
-the file must have a <code>getSettings</code> function. returns <code>settings</code>. <code>settings</code> is an array of <code>setting</code>s and <code>setting template</code>s
-<h2>Setting</h2>
+The goal of this is to automatically generate the Client_PresentConfigureUI, Client_SaveConfigureUI and Client_PresentSettingsUI lua files. All files other than _settings.lua are not meant to be edited. _settings.lua is where to define settings.
+<h1>_settings.lua</h1>
+<p>The file must have a <code>getSettings</code> function. returns <code>settings</code></p>
+<p><code>settings</code> is a table which has components generated from the <code>addSetting</code> and <code>addSettingTemplate</code> functions</p>
+<h2>addSetting</h2>
+Arguments:
 <ul>
-	<li>must have a <code>name</code> - string - all <code>name</code>s must be unique to function correctly</li>
-	<li>must have a <code>inputType</code> - one of <code>'int'</code>, <code>'float'</code> or <code>'bool'</code></li>
-	<li>must have a <code>defaultValue</code> - any type - the default value for the setting's value in Client_PresentConfigureUI</li>
-	<li>must have a <code>label</code> - string - summery of what the setting does</li>
-	<li>can have a <code>bkwrds</code> value - for if the mod is already public and turned something that wasnt configurable before into a setting</li>
-	<li>can have a <code>help(parent)</code> function. is a more detailed explanation of what the setting does. appears as a ? next to the setting name. help is initially collapsed. every second click is collapsed again (after being expanded)</li>
+	<li><code>name</code> - string - name of the setting. all names must be unique to function correctly</li>
+	<li><code>label</code> - string - summery of what the setting does</li>
+	<li><code>inputType</code> - one of <code>'int'</code>, <code>'float'</code>, <code>'bool'</code> or <code>'text'</code></li>
+	<li><code>defaultValue</code> - same type as <code>inputType</code> - the default value for the setting's value in Client_PresentConfigureUI
 	<li>
-		<p>if <code>inputType</code> is <code>'int'</code> or <code>'float'</code> then</p>
+		<code>otherProps</code> - table or nil - if table then these keys are optional:
 		<ul>
-			<li><code>setting</code> must have <code>minValue</code> - lowest allowed value while saving settings</li>
-			<li><code>setting</code> must have <code>maxValue</code> - maximum allowed value while saving settings</li>
-			<li><code>setting</code> can have <code>absoluteMax</code> - if used the settings slider wont go higher than <code>maxValue</code>, but while saving settings the setting value must be below this</li>
-		</ul>
-	</li>
-	<li>
-		<p>if <code>inputType</code> is <code>'float'</code> then</p>
-		<ul>
-			<li>must have <code>dp</code> - int - the number of decimal places to round the setting value to when saved
-		</ul>
-	<li>
-		<p>if <code>inputType</code> is <code>'bool'</code> then</p>
-		<ul>
-			<li>can have <code>subsettings</code>. <code>subsettings</code> defined same way as <code>settings</code></li>
+			<li>
+				<code>help</code> - <code>function(parent)</code> - gives a more detailed explanation of what the setting does when a help button (?) is clicked</p>
+			</li>
+			<li><code>labelColor</code> - string - color of the setting's label text</li>
 		</ul>
 	</li>
 </ul>
-
-<h2 id="templates">Setting templates</h2>
-In the event of wanting to have infinite groups of settings, setting templates can be used. any settings that require this should have <code>subsettings</code>
+<h3>inputType</h3>
+Depending on the <code>inputType</code> certain keys on <code>otherProps</code> are forced and some become optional
+<h4>int</h4>
+Forced keys:
 <ul>
-	<li>must have a <code>name</code> - string - all <code>name</code>s must be unique to function correctly</li>
-	<li>must have a <code>isTemplate</code> flag - always </code>true</code>
-	<li>must have <code>btnText</code> - string - what the appears on the button to add a new group</li>
-	<li>must have a <code>get(n)</code> function. must return <code>setting</code>. <code>n</code> starts at 1</li>
-	<li>can a <code>bkwrds</code> value - for if the mod is public and goes from limited to unlimited amounts of setting groups. <code>bkwrds</code> number of setting groups will be generated. to avoid nil in Client_PresentSettingsUI</li>
+	<li><code>minValue</code> - number - the lowest the setting's value can be</li>
+	<li><code>maxValue</code> - number - the highest the setting's value can be while using the setting slider</li>
+</ul>
+Optional keys:
+<ul>
+	<li><code>absoluteMax</code> - number - allows user to enter a higher number than <code>maxValue</code></li>
+</ul>
+<h4>float</h4>
+Forced keys:
+<ul>
+	<li><code>dp</code> - number - the number of decimal places to round the setting's value when saving the settings</li>
+	<li><code>minValue</code> - number - the lowest the setting's value can be</li>
+	<li><code>maxValue</code> - number - the highest the setting's value can be while using the setting slider</li>
+</ul>
+Optional keys:
+<ul>
+	<li><code>absoluteMax</code> - number - allows user to enter a higher number than <code>maxValue</code></li>
+</ul>
+<h4>bool</h4>
+Optional keys:
+<ul>
+	<li><code>subsettings</code> - table or nil. if table then is a table of <code>settings</code></li>
+</ul>
+<h4>text</h4>
+Optional keys:
+<ul>
+	<li><code>placeholder</code> - string - the placeholder text</li>
+	<li><code>charLimit</code> - number - the maximum number of characters that can be entered</li>
+</ul>
+
+<h2>addSettingTemplate</h2>
+<p>In the event of wanting to have infinite groups of settings, setting templates can be used.</p>
+Arguments:
+<ul>
+	<li><code>name</code> - string - name of the setting. all names must be unique to function correctly</li>
+	<li><code>btnText</code> - string - text that goes on a button that user presses to add a new group of settings</li>
+	<li>
+		<p><code>options</code> - nil or table with keys:</p>
+		<ul>
+			<li><code>btnColor</code> - nil or string - color of the button; nil = #00FF05</li>
+			<li><code>btnTextColor</code> - nil or string - color of <code>btnText</code>; nil = wz default</li>
+			<li><code>bkwrds</code> - nil or int - for if the mod is public and goes from limited to unlimited amounts of setting groups. <code>bkwrds</code> number of setting groups will be generated. to avoid nil in Client_PresentSettingsUI</li>
+		</ul>
+	</li>
+	<li>
+		<p><code>get(n)</code> - function - <code>n</code> starts at 1. <code>get</code> must return table with keys:</p>
+		<ul>
+			<li><code>label</code> - string - description of the setting group</li>
+			<li><code>labelColor</code> - nil or string - color of the label; nil = wz default</li>
+			<li><code>settings</code> - <code>settings</code></li>
+		</ul>
+	</li>
 </ul>
 
 <h1>Accessing setting values</h1>
-Each setting is stored in Mod.Settings[<code>name</code>]
+<p>Each setting is written to Mod.Settings[<code>name</code>]. <code>name</code> in <code>addSettingTemplate</code> is altered to only apply to the correct setting group. Use the <code>getSetting(name, template)</code> function defined in <code>z_settings.lua</code>. Returns the value stored in Mod.Settings</p>
+<p><code>name</code> string - name of the setting, same as what was used in <code>addSetting</code> or <code>addSettingTemplate</code></p>
+<p><code>template</code> - nil or table - containing the following keys:</p>
+<ul>
+	<li><code>n</code> - number - setting group number</li>
+	<li><code>name</code> - string - the name of the setting template</li>
+</ul>
 
 <h1>Examples</h1>
-See settings.lua. For actual usage see the following mods. Note that the settings-related files for them may be different from this documentation
+<p>See /code/_settings.lua and /img/</p>
+The following mods implement an old version of this:
 <ul>
 	<li><a href="https://github.com/DanWaLes/Warzone/tree/master/mymods/Wastelands%2B">Wastelands+</a></li>
 	<li><a href="https://github.com/DanWaLes/Warzone/tree/master/mymods/Cheat_Codes2">Cheat Codes</a></li>
