@@ -1,5 +1,5 @@
-require '_settings'
-require 'z_util'
+require '__settings'
+require '_util'
 
 local errMsg;
 local settingValues;

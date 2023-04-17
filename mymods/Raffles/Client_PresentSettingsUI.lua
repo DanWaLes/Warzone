@@ -1,5 +1,5 @@
-require '_settings'
-require 'z_ui'
+require '__settings'
+require '_ui'
 
 local expand = '˅';-- https://www.amp-what.com/unicode/search/down%20arrow &#709;
 

@@ -1,6 +1,6 @@
-require '_version'
-require 'z_settings'
--- require 'z_util'
+require '__version'
+require '_settings'
+-- require '_util'
 
 local isMegaRaffle;
 local reward;
