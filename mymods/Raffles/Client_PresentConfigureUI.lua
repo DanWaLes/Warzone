@@ -95,14 +95,16 @@ function cpcDoSetting(vert, setting)
 				GLOBALS[setting.name].SetCharacterLimit(setting.charLimit);
 			end
 		else
-			GLOBALS[setting.name] = NumInput(horz)
-				.SetSliderMinValue(setting.minValue)
-				.SetSliderMaxValue(setting.maxValue)
-				.SetValue(initialSettingValue);
+			GLOBALS[setting.name] = NumInput(horz);
 
 			if setting.inputType == 'float' then
 				GLOBALS[setting.name].SetWholeNumbers(false);
 			end
+
+			GLOBALS[setting.name]
+				.SetSliderMinValue(setting.minValue)
+				.SetSliderMaxValue(setting.maxValue)
+				.SetValue(initialSettingValue);
 		end
 	end
 end
