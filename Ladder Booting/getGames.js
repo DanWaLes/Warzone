@@ -59,7 +59,7 @@
 			const contents = await fileUtil.load(['games/feed/' + file]);
 
 			for (let game of contents.games) {
-				const result = await postData('https://www.warzone.com/API/GameFeed?GameID=' + game + '&GetSettings=true', {
+				const result = await postData('https://www.warzone.com/API/GameFeed?GameID=' + game + '&GetSettings=true&GetHistory=true', {
 					'email': settings.email,
 					'APIToken': settings.apiToken
 				});
