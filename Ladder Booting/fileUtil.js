@@ -16,6 +16,12 @@
 
 		return new Promise(async (resolve, reject) => {
 			for (let file of files) {
+				const dir = file.name.match(/(?:[^\/\n]+\/)+/);
+				if (dir) {
+					// auto make dir if it doesnt exist
+					await fsPromises.mkdir(dir[0], {recursive: true});
+				}
+
 				const fileHandle = await fsPromises.open(file.name, 'w');
 
 				fileHandles.push(fileHandle);
