@@ -30,8 +30,7 @@
 			};
 
 			ladder.dateRequestedFeed = new Date().toJSON();
-			const result = await postData('https://www.warzone.com/API/GameIDFeed', {
-				'LadderID': ladder.id,
+			const result = await postData('https://www.warzone.com/API/GameIDFeed?LadderID=' + ladder.id, {
 				'Email': settings.email,
 				'APIToken': settings.apiToken
 			});
