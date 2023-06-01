@@ -30,8 +30,9 @@
 			};
 
 			ladder.dateRequestedFeed = new Date().toJSON();
-			const result = await postData('https://www.warzone.com/API/GameIDFeed?LadderID=' + ladder.id, {
-				'email': settings.email,
+			const result = await postData('https://www.warzone.com/API/GameIDFeed', {
+				'LadderID': ladder.id,
+				'Email': settings.email,
 				'APIToken': settings.apiToken
 			});
 
@@ -48,6 +49,8 @@
 
 			await sleep(1000);// to not overwhelm the servers
 		}
+
+		console.log('done getGameIds');
 	}
 
 	async function getGameDetails() {
@@ -78,8 +81,12 @@
 				await sleep(1000);// to not overwhelm the servers
 			}
 		}
+
+		console.log('done getGameDetails');
 	}
 
+	console.log('starting');
 	await getGameIds();
 	await getGameDetails();
+	console.log('done')
 })();
