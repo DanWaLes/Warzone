@@ -5,7 +5,6 @@
 /* jshint devel: true */
 
 (async () => {
-	const sleep = require('./sleep').sleep;
 	const postData = require('./postData').postData;
 	const fileUtil = require('./fileUtil');
 	const settingsFileName = 'settings.json';
@@ -33,7 +32,7 @@
 			const result = await postData('https://www.warzone.com/API/GameIDFeed?LadderID=' + ladder.id, {
 				'Email': settings.email,
 				'APIToken': settings.apiToken
-			});
+			}, true);
 
 			ladder.games = result.gameIDs || [];
 
@@ -45,8 +44,6 @@
 				name: 'games/feed/' + ladderName + '.json',
 				content: JSON.stringify(ladder)
 			}]);
-
-			await sleep(1000);// to not overwhelm the servers
 		}
 
 		console.log('done getGameIds');
@@ -56,13 +53,19 @@
 		const files = await fileUtil.readdir('games/feed');
 
 		for (let file of files) {
-			const contents = await fileUtil.load(['games/feed/' + file]);
+			console.log('using feed ' + file);
+
+			const ladderName = file.replace(/\.json/, '');
+			const path = 'games/feed/' + file;
+			const contents = (await fileUtil.load([path]))[path];
 
 			for (let game of contents.games) {
+				console.log('on game ' + game);
+				// i booted turn 9 https://www.warzone.com/API/GameFeed?GameID=32950738&GetSettings=true&GetHistory=true
 				const result = await postData('https://www.warzone.com/API/GameFeed?GameID=' + game + '&GetSettings=true&GetHistory=true', {
 					'email': settings.email,
 					'APIToken': settings.apiToken
-				});
+				}, true);
 
 				if (result.map) {
 					// dont need to store all the map's details for this
@@ -73,11 +76,9 @@
 				}
 
 				await fileUtil.save([{
-					name: 'games/details/' + game + '.json',
+					name: 'games/details/' + ladderName + '/' + game + '.json',
 					content: JSON.stringify(result)
 				}]);
-
-				await sleep(1000);// to not overwhelm the servers
 			}
 		}
 
@@ -85,7 +86,7 @@
 	}
 
 	console.log('starting');
-	await getGameIds();
+	// await getGameIds();
 	await getGameDetails();
 	console.log('done')
 })();
