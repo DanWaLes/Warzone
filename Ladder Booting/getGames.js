@@ -86,7 +86,7 @@
 	}
 
 	console.log('starting');
-	// await getGameIds();
+	await getGameIds();
 	await getGameDetails();
 	console.log('done')
 })();
