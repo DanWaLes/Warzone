@@ -71,8 +71,8 @@ function Server_AdvanceTurn_End(game, addNewOrder)
 		end
 	end
 
-	-- print('specialUnitDetails1 =');
-	-- tblprint(specialUnitDetails);
+	print('specialUnitDetails1 =');
+	tblprint(specialUnitDetails);
 
 	local swapList = decideSwaps(game);
 
@@ -100,8 +100,8 @@ function Server_AdvanceTurn_End(game, addNewOrder)
 		end
 	end
 
-	-- print('specialUnitDetails3 =');
-	-- tblprint(specialUnitDetails);
+	print('specialUnitDetails2 =');
+	tblprint(specialUnitDetails);
 
 	addNewOrder(WL.GameOrderEvent.Create(WL.PlayerID.Neutral, 'Swap territories!', {}, doSwaps(game, swapList)));
 
