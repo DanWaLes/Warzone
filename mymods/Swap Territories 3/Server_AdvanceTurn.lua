@@ -26,6 +26,8 @@ function Server_AdvanceTurn_End(game, addNewOrder)
 
 	swapSpecialUnits = getSetting('SpecialUnitSwappingEnabled');
 
+	local terrIdsForSpecialUnitDetails = {};
+
 	for tId, terr in pairs(game.ServerGame.LatestTurnStanding.Territories) do
 		if not terr.IsNeutral then
 			if not playerOwnedTerritories[terr.OwnerPlayerID] then
@@ -41,6 +43,7 @@ function Server_AdvanceTurn_End(game, addNewOrder)
 						table.remove(playerOwnedTerritories[terr.OwnerPlayerID]);
 					else
 						specialUnitDetails[tId] = {};
+						table.insert(terrIdsForSpecialUnitDetails, tId);
 
 						for _, unit in pairs(terr.NumArmies.SpecialUnits) do
 							local obj = {
@@ -57,50 +60,62 @@ function Server_AdvanceTurn_End(game, addNewOrder)
 		end
 	end
 
-	-- print('specialUnitDetails0 =');
-	-- tblprint(specialUnitDetails);
-
-	-- if there's a unit type that can't be swapped, mark all other units on that territory as not able to swap
-	for terrId in pairs(specialUnitDetails) do
-		for i, obj in pairs(specialUnitDetails[terrId]) do
-			if not obj.canBeSwapped then
-				for j, obj2 in pairs(specialUnitDetails[terrId]) do
-					specialUnitDetails[terrId][j].canBeSwapped = false;
-				end
-			end
-		end
-	end
-
-	print('specialUnitDetails1 =');
+	print('specialUnitDetails0 =');
 	tblprint(specialUnitDetails);
 
 	local swapList = decideSwaps(game);
 
 	-- if swap with has a special unit that can't be swapped, mark it and all other units on the territory its on
-	for p1, p2 in pairs(swapList) do
-		if p1 ~= p2 then
-			for tId in pairs(specialUnitDetails) do
-				for _, obj in pairs(specialUnitDetails[tId]) do
-					if obj.unit.OwnerID == p1 then
-						if not obj.canBeSwapped then
-							for terrId in pairs(specialUnitDetails) do
-								for i, obj2 in pairs(specialUnitDetails[terrId]) do
-									if obj2.unit.OwnerID == p2 then
-										specialUnitDetails[terrId][i].canBeSwapped = false;
-										for j in pairs(specialUnitDetails[terrId]) do
-											specialUnitDetails[terrId][j].canBeSwapped = false;
-										end
-									end
-								end
-							end
+	local i = 0;
+	while i < #terrIdsForSpecialUnitDetails do
+		i = i + 1;
+
+		local tId = terrIdsForSpecialUnitDetails[i];
+		local markAllInTerr = false;
+		local j = 0;
+		local traceback = false;
+
+		while j < #specialUnitDetails[tId] do
+			j = j + 1;
+
+			local obj = specialUnitDetails[tId][j];
+
+			if markAllInTerr then
+				specialUnitDetails[tId][j].canBeSwapped = false;
+
+				local unitType1 = getUnitType(obj.unit);
+				local p1 = obj.unit.OwnerID;
+				local p2 = swapList[p1];
+				local broken = false;
+
+				for terrId in pairs(specialUnitDetails) do
+					for k, obj2 in pairs(specialUnitDetails[terrId]) do
+						local unitType2 = getUnitType(obj2.unit);
+
+						if obj2.canBeSwapped and obj2.unit.OwnerID == p2 and unitType1 == unitType2 then
+							specialUnitDetails[terrId][k].canBeSwapped = false;
+							broken = true;
+							traceback = true;
+							break;
 						end
 					end
+
+					if broken then
+						break;
+					end
 				end
+			elseif not obj.canBeSwapped then
+				markAllInTerr = true;
+				j = 0;
 			end
+		end
+
+		if traceback then
+			i = 0;
 		end
 	end
 
-	print('specialUnitDetails2 =');
+	print('specialUnitDetails1 =');
 	tblprint(specialUnitDetails);
 
 	addNewOrder(WL.GameOrderEvent.Create(WL.PlayerID.Neutral, 'Swap territories!', {}, doSwaps(game, swapList)));
@@ -175,14 +190,14 @@ function doSwaps(game, swaps)
 		if swaps[pId] ~= pId then
 			for _, tId in pairs(playerTerrs) do
 				local mod = nil;-- if not set to nil then there's a bug which doesnt make sense
-				print('tId = ');
-				print(tId);
+				-- print('tId = ');
+				-- print(tId);
 
 				if specialUnitDetails[tId] then
-					print('special units on this territory');
+					-- print('special units on this territory');
 					-- all units on same territory have same canBeSwapped flag
 					if specialUnitDetails[tId][1].canBeSwapped then
-						print('can be swapped');
+						-- print('can be swapped');
 						mod = WL.TerritoryModification.Create(tId);
 						mod.SetOwnerOpt = swaps[pId];
 
@@ -201,14 +216,15 @@ function doSwaps(game, swaps)
 						mod.RemoveSpecialUnitsOpt = specialUnitsToRemove;
 						mod.AddSpecialUnits = specialUnitsToAdd;
 					else
-						print('cant be swapped');
+						-- print('cant be swapped');
 					end
 				else
 					mod = WL.TerritoryModification.Create(tId);
 					mod.SetOwnerOpt = swaps[pId];
 				end
-				print('mod = ');
-				tblprint(mod);
+
+				-- print('mod = ');
+				-- tblprint(mod);
 
 				if mod then
 					table.insert(mods, mod);
@@ -252,8 +268,8 @@ function decideSwaps(game)
 		swaps[xId] = yId;
 	end
 
-	-- print('swaps = ');
-	-- tblprint(swaps);
+	print('swaps = ');
+	tblprint(swaps);
 	return swaps;
 end
 
