@@ -34,26 +34,28 @@ function Server_AdvanceTurn_End(game, addNewOrder)
 				playerOwnedTerritories[terr.OwnerPlayerID] = {};
 			end
 
-			if isSwappable(terr) then
+			local numSpecialUnits = #terr.NumArmies.SpecialUnits;
+
+			if numSpecialUnits == 0 and isSwappable(terr) then
+				table.insert(playerOwnedTerritories[terr.OwnerPlayerID], tId);
+			elseif swapSpecialUnits and numSpecialUnits > 0 then
 				table.insert(playerOwnedTerritories[terr.OwnerPlayerID], tId);
 
-				if swapSpecialUnits and #terr.NumArmies.SpecialUnits > 0 then
-					-- 0 armies stand guard required to create special units
-					if game.Settings.OneArmyStandsGuard then
-						table.remove(playerOwnedTerritories[terr.OwnerPlayerID]);
-					else
-						specialUnitDetails[tId] = {};
-						table.insert(terrIdsForSpecialUnitDetails, tId);
+				-- 0 armies stand guard required to create special units
+				if game.Settings.OneArmyStandsGuard then
+					table.remove(playerOwnedTerritories[terr.OwnerPlayerID]);
+				else
+					specialUnitDetails[tId] = {};
+					table.insert(terrIdsForSpecialUnitDetails, tId);
 
-						for _, unit in pairs(terr.NumArmies.SpecialUnits) do
-							local obj = {
-								unit = unit,
-								terrId = tId,
-								canBeSwapped = getSetting('Swap' .. unit.proxyType)
-							};
+					for _, unit in pairs(terr.NumArmies.SpecialUnits) do
+						local obj = {
+							unit = unit,
+							terrId = tId,
+							canBeSwapped = getSetting('Swap' .. unit.proxyType) and isSwappable(terr)
+						};
 
-							table.insert(specialUnitDetails[tId], obj);
-						end
+						table.insert(specialUnitDetails[tId], obj);
 					end
 				end
 			end
