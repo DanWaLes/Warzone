@@ -13,6 +13,7 @@ function Server_Created(game, settings)
 
 	settings.AIsSurrenderWhenOneHumanRemains = false;
 	settings.AtStartDivideIntoTeamsOf = 1;
+	settings.FogLevel = WL.GameFogLevel.NoFog;
 
 	settings.AutomaticTerritoryDistribution = true;
 	settings.LimitDistributionTerritories = 1;
@@ -56,6 +57,5 @@ function listTerritoryNamesAlphabetically(game)
 		return a.name < b.name;
 	end);
 
-	Mod.PublicGameData.terrNames = names;
-	Mod.PublicGameData.terrNo = 1;
+	Mod.PublicGameData = {terrNames = names};
 end
