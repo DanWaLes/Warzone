@@ -9,13 +9,8 @@ function Server_StartGame(game, standing)
 	end
 
 	local n = 1;
-	local numTerritories = #Mod.PublicGameData.terrNames;
-
 	for id, player in pairs(game.ServerGame.Game.Players) do
-		if n > numTerritories then
-			-- map choice when trying to create a game prevents this from happening
-			break;
-		end
+		-- map choice when trying to create a game prevents n > #Mod.PublicGameData.terrNames from happening
 
 		local terr = Mod.PublicGameData.terrNames[n];
 
