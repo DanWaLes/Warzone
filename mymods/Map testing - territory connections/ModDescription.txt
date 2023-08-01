@@ -1,7 +1,7 @@
 This mod is designed to only be used by map makers/testers. The map must be in the testing phase.
 Attacks are issued from every territory in alphabetical order.
-Each player has 1 or 0 territories at any given point. For the game to take few turns to end, include more players.
-Settings are adjusted make this run.
+Each player has 1 or 0 territories at any given point. For the game to take fewer turns to end, include more players.
+Settings are adjusted to make this run.
 Do not mix this mod with any others otherwise this mod may not behave correctly.
 Is easier to use Autopilot (Game > Autopilot; hotkey: U) than commit with no orders.
 Attacks from same territory are done back to back. Go through the game history one order at a time to ensure no connections are missing or invalid.
