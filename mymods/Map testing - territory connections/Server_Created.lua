@@ -4,12 +4,13 @@
 require '_util';
 
 function Server_Created(game, settings)
-	print('created');
 	-- if not settings.MapTestingGame then
-		-- print('not map testing game')
 		-- return;
 	-- end
-	-- print('is map testing game');
+
+	settings.BootedPlayersTurnIntoAIs = true;
+	settings.SurrenderedPlayersTurnIntoAIs = true;
+	settings.TimesCanComeBackFromAI = 0;
 
 	settings.AIsSurrenderWhenOneHumanRemains = false;
 	settings.AtStartDivideIntoTeamsOf = 1;

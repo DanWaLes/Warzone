@@ -19,5 +19,6 @@ function Server_StartGame(game, standing)
 
 	local pgd = Mod.PublicGameData;
 	pgd.terrNo = n;
+	pgd.numPlayers = n - 1;
 	Mod.PublicGameData = pgd;
 end

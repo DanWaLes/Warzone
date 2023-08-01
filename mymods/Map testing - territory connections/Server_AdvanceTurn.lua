@@ -13,26 +13,119 @@ end
 function Server_AdvanceTurn_End(game, addNewOrder)
 	if game.ServerGame.Game.TurnNumber == 1 then
 		doneSkippingTurn1 = true;
-		setTurn1IncomesToZero(game, addNewOrder);
-		return;
 	end
 
-	-- todo the actual mod
+	makeDeployments(game, addNewOrder);
+	makeAttacks(game, addNewOrder);
 
 	local playerOwnedTerrs = setupNextTurn(game, addNewOrder);
 	setIncomesToZero(game, addNewOrder, playerOwnedTerrs);
 end
 
-function setTurn1IncomesToZero(game, addNewOrder)
-	local incomeMods = {};
+function makeDeployments(game, addNewOrder)
+	local mods = {};
+	local n = Mod.PublicGameData.terrNo - Mod.PublicGameData.numPlayers;
 
-	for id, player in pairs(game.ServerGame.Game.PlayingPlayers) do
-		local income = player.Income(0, game.ServerGame.LatestTurnStanding, false, false).Total;
+	while n < Mod.PublicGameData.terrNo do
+		local terrId = Mod.PublicGameData.terrNames[n].id;
+		local terr = game.Map.Territories[terrId];
+		local mod = WL.TerritoryModification.Create(terrId);
 
-		table.insert(incomeMods, WL.IncomeMod.Create(id, -income, 'Removed all income'));
+		mod.SetArmiesTo = #terr.ConnectedTo + numConnectionsWithPlayers(game, n);
+		table.insert(mods, mod);
+		n = n + 1;
 	end
 
-	addNewOrder(WL.GameOrderEvent.Create(WL.PlayerID.Neutral, 'Removed everyones income', nil, nil, nil, incomeMods));
+	addNewOrder(WL.GameOrderEvent.Create(WL.PlayerID.Neutral, 'Made deployments', nil, mods));
+end
+
+function numConnectionsWithPlayers(game, attackFromN)
+	local terrId = Mod.PublicGameData.terrNames[attackFromN].id;
+	local terr = game.Map.Territories[terrId];
+	local numPlayerConnections = 0;
+
+	for connectedTerrId in pairs(terr.ConnectedTo) do
+		local n = Mod.PublicGameData.terrNo - Mod.PublicGameData.numPlayers;
+
+		while n < Mod.PublicGameData.terrNo do
+			if connectedTerrId == Mod.PublicGameData.terrNames[n].id then
+				numPlayerConnections = numPlayerConnections + 1;
+			end
+
+			n = n + 1;
+		end
+	end
+
+	return numPlayerConnections;
+end
+
+function makeAttacks(game, addNewOrder)
+	local n = Mod.PublicGameData.terrNo - Mod.PublicGameData.numPlayers;
+
+	while n < Mod.PublicGameData.terrNo do
+		local terrId = Mod.PublicGameData.terrNames[n].id;
+		local terr = game.Map.Territories[terrId];
+		local terr2 = game.ServerGame.LatestTurnStanding.Territories[terrId];
+
+		for connectedTerrId in pairs(terr.ConnectedTo) do
+			addNewOrder(WL.GameOrderAttackTransfer.Create(terr2.OwnerPlayerID, terrId, connectedTerrId, WL.AttackTransferEnum.AttackTransfer, false, WL.Armies.Create(1), false));
+		end
+
+		n = n + 1;
+	end
+end
+
+function setupNextTurn(game, addNewOrder)
+	local mods = {};
+
+	-- only update the territories that need changing
+	-- LatestTurnStanding doesnt know territories have been attacked
+	local n = Mod.PublicGameData.terrNo - Mod.PublicGameData.numPlayers;
+
+	while n < Mod.PublicGameData.terrNo do
+		local terrId = Mod.PublicGameData.terrNames[n].id;
+		local terr = game.Map.Territories[terrId];
+		local mod = WL.TerritoryModification.Create(terrId);
+
+		mod.SetArmiesTo = 0;
+		mod.SetOwnerOpt = WL.PlayerID.Neutral;
+		table.insert(mods, mod);
+
+		for connectedTerrId in pairs(terr.ConnectedTo) do
+			local mod = WL.TerritoryModification.Create(connectedTerrId);
+
+			mod.SetArmiesTo = 0;
+			mod.SetOwnerOpt = WL.PlayerID.Neutral;
+			table.insert(mods, mod);
+		end
+
+		n = n + 1;
+	end
+
+	local playerOwnedTerrs = {};
+	local terrNo = Mod.PublicGameData.terrNo;
+	local numTerrs = #Mod.PublicGameData.terrNames;
+
+	for playerId in pairs(game.ServerGame.Game.PlayingPlayers) do
+		if terrNo > numTerrs then
+			break;
+		end
+
+		local terrId = Mod.PublicGameData.terrNames[terrNo].id;
+		local mod = WL.TerritoryModification.Create(terrId);
+
+		mod.SetOwnerOpt = playerId;
+		table.insert(mods, mod);
+		playerOwnedTerrs[playerId] = terrId;
+		terrNo = terrNo + 1;
+	end
+
+	local pgd = Mod.PublicGameData;
+	pgd.terrNo = terrNo;
+	Mod.PublicGameData = pgd;
+
+	addNewOrder(WL.GameOrderEvent.Create(WL.PlayerID.Neutral, 'Setup next turn', nil, mods));
+	return playerOwnedTerrs;
 end
 
 function setIncomesToZero(game, addNewOrder, playerOwnedTerrs)
@@ -62,58 +155,4 @@ function setIncomesToZero(game, addNewOrder, playerOwnedTerrs)
 	end
 
 	addNewOrder(WL.GameOrderEvent.Create(WL.PlayerID.Neutral, 'Removed everyones income', nil, nil, nil, incomeMods));
-end
-
-function setupNextTurn(game, addNewOrder)
-	print('in setupNextTurn');
-	local mods = {};
-
-	for terrId, terr in pairs(game.ServerGame.LatestTurnStanding.Territories) do
-		local numSpecialUnits = #terr.NumArmies.SpecialUnits;
-
-		if numSpecialUnits > 0 or terr.NumArmies.NumArmies ~= 0 or not terr.IsNeutral then
-			-- so that only territories that need changing are changed
-			local mod = WL.TerritoryModification.Create(terrId);
-
-			mod.SetArmiesTo = 0;
-			mod.SetOwnerOpt = WL.PlayerID.Neutral;
-
-			if numSpecialUnits > 0 then
-				-- only happens if another mod is enabled - no other mod should be enabled
-				local specialUnitsToRemove = {};
-
-				for _, unit in pairs(terr.NumArmies.SpecialUnits) do
-					table.insert(specialUnitsToRemove, unit.ID);
-				end
-
-				mod.RemoveSpecialUnitsOpt = specialUnitsToRemove;
-			end
-
-			table.insert(mods, mod);
-		end
-	end
-
-	local playerOwnedTerrs = {};
-	local terrNo = Mod.PublicGameData.terrNo;
-	local numTerrs = #Mod.PublicGameData.terrNames;
-
-	for playerId in pairs(game.ServerGame.Game.PlayingPlayers) do
-		if terrNo > numTerrs then
-			break;
-		end
-
-		local terrId = Mod.PublicGameData.terrNames[terrNo].id;
-		local mod = WL.TerritoryModification.Create(terrId);
-
-		mod.SetOwnerOpt = playerId;
-		table.insert(mods, mod);
-		playerOwnedTerrs[playerId] = terrId;
-		terrNo = terrNo + 1;
-	end
-
-	Mod.PublicGameData.terrNo = terrNo;
-	print('about to make Setup next turn order')
-
-	addNewOrder(WL.GameOrderEvent.Create(WL.PlayerID.Neutral, 'Setup next turn', nil, mods));
-	return playerOwnedTerrs;
 end
