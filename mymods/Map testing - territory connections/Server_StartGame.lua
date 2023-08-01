@@ -11,12 +11,13 @@ function Server_StartGame(game, standing)
 	local n = 1;
 	for id, player in pairs(game.ServerGame.Game.Players) do
 		-- map choice when trying to create a game prevents n > #Mod.PublicGameData.terrNames from happening
-
 		local terr = Mod.PublicGameData.terrNames[n];
 
 		standing.Territories[terr.id].OwnerPlayerID = id;
 		n = n + 1;
 	end
 
-	Mod.PublicGameData.terrNo = n;
+	local pgd = Mod.PublicGameData;
+	pgd.terrNo = n;
+	Mod.PublicGameData = pgd;
 end
