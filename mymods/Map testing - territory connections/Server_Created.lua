@@ -1,13 +1,11 @@
--- overwrite all relevant settings
--- list territories alphabetically
-
 require '_util';
 
 function Server_Created(game, settings)
-	-- if not settings.MapTestingGame then
-		-- return;
-	-- end
+	if not settings.MapTestingGame then
+		return;
+	end
 
+	settings.RankedGame = false;
 	settings.BootedPlayersTurnIntoAIs = true;
 	settings.SurrenderedPlayersTurnIntoAIs = true;
 	settings.TimesCanComeBackFromAI = 0;

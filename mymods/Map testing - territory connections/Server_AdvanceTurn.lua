@@ -1,20 +1,29 @@
 require '_util';
+require 'version';
 
 local doneSkippingTurn1 = false;
 
 function Server_AdvanceTurn_Order(game, order, result, skipThisOrder)
+	if not game.Settings.MapTestingGame or not canRun(game) then
+		return;
+	end
+
 	if game.ServerGame.Game.TurnNumber == 1 and not doneSkippingTurn1 then
 		-- if turn 1 prevent all orders - get income from bonuses and no income mod turn before
 		skipThisOrder(WL.ModOrderControl.SkipAndSupressSkippedMessage);
-		return;
 	end
 end
 
 function Server_AdvanceTurn_End(game, addNewOrder)
+	if not game.Settings.MapTestingGame or not canRun(game) then
+		return;
+	end
+
 	if game.ServerGame.Game.TurnNumber == 1 then
 		doneSkippingTurn1 = true;
 	end
 
+	-- print('numPlayers = ' .. getNumPlayers());
 	makeDeployments(game, addNewOrder);
 	makeAttacks(game, addNewOrder);
 
@@ -22,9 +31,27 @@ function Server_AdvanceTurn_End(game, addNewOrder)
 	setIncomesToZero(game, addNewOrder, playerOwnedTerrs);
 end
 
+function canRun(game)
+	if game.Settings.SinglePlayer then
+		return canRunMod();
+	end
+
+	return true;
+end
+
+function getNumPlayers()
+	local numTerrs = #Mod.PublicGameData.terrNames;
+
+	if (Mod.PublicGameData.terrNo + Mod.PublicGameData.numPlayers) < numTerrs then
+		return Mod.PublicGameData.numPlayers;
+	end
+
+	return numTerrs % Mod.PublicGameData.numPlayers;
+end
+
 function makeDeployments(game, addNewOrder)
 	local mods = {};
-	local n = Mod.PublicGameData.terrNo - Mod.PublicGameData.numPlayers;
+	local n = Mod.PublicGameData.terrNo - getNumPlayers();
 
 	while n < Mod.PublicGameData.terrNo do
 		local terrId = Mod.PublicGameData.terrNames[n].id;
@@ -45,7 +72,7 @@ function numConnectionsWithPlayers(game, attackFromN)
 	local numPlayerConnections = 0;
 
 	for connectedTerrId in pairs(terr.ConnectedTo) do
-		local n = Mod.PublicGameData.terrNo - Mod.PublicGameData.numPlayers;
+		local n = Mod.PublicGameData.terrNo - getNumPlayers();
 
 		while n < Mod.PublicGameData.terrNo do
 			if connectedTerrId == Mod.PublicGameData.terrNames[n].id then
@@ -60,9 +87,11 @@ function numConnectionsWithPlayers(game, attackFromN)
 end
 
 function makeAttacks(game, addNewOrder)
-	local n = Mod.PublicGameData.terrNo - Mod.PublicGameData.numPlayers;
+	local n = Mod.PublicGameData.terrNo - getNumPlayers();
 
 	while n < Mod.PublicGameData.terrNo do
+		-- print('n = ' .. n);
+
 		local terrId = Mod.PublicGameData.terrNames[n].id;
 		local terr = game.Map.Territories[terrId];
 		local terr2 = game.ServerGame.LatestTurnStanding.Territories[terrId];
@@ -130,7 +159,7 @@ end
 
 function setIncomesToZero(game, addNewOrder, playerOwnedTerrs)
 	-- LatestTurnStanding doesnt update in time after terr mods are made
-	local incomeMods = {};
+	local mods = {};
 
 	for playerId, terrId in pairs(playerOwnedTerrs) do
 		local income = 0;
@@ -150,9 +179,9 @@ function setIncomesToZero(game, addNewOrder, playerOwnedTerrs)
 		end
 
 		if income > 0 then
-			table.insert(incomeMods, WL.IncomeMod.Create(playerId, -income, 'Removed all income'));
+			table.insert(mods, WL.IncomeMod.Create(playerId, -income, 'Removed all income'));
 		end
 	end
 
-	addNewOrder(WL.GameOrderEvent.Create(WL.PlayerID.Neutral, 'Removed everyones income', nil, nil, nil, incomeMods));
+	addNewOrder(WL.GameOrderEvent.Create(WL.PlayerID.Neutral, 'Removed everyones income', nil, nil, nil, mods));
 end

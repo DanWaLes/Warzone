@@ -1,8 +1,10 @@
--- if there is a custom scenario remove it and match with the overwritten settings
--- give players territories alphabetically
 require '_util';
 
 function Server_StartGame(game, standing)
+	if not game.Settings.MapTestingGame then
+		return;
+	end
+
 	for id, terr in pairs(standing.Territories) do
 		standing.Territories[id].NumArmies = WL.Armies.Create(0);
 		standing.Territories[id].OwnerPlayerID = WL.PlayerID.Neutral;
