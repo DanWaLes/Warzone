@@ -1,2 +1,3 @@
 This mod allows card pieces to be earned by each player without the need for capturing territories. Card pieces are given at the end of every X turns, starting on the first.
 Only takes affect on cards that have been enabled in the Cards settings.
+Note that you should you should change the minimum pieces awarded per turn for each affected card to 0.
