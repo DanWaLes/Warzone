@@ -13,7 +13,7 @@ function Server_AdvanceTurn_Order(game, order)
 	end
 
 	local playerId = order.PlayerID;
-	local cardId = order.cardID;
+	local cardId = order.CardID;
 	local player = game.ServerGame.Game.PlayingPlayers[playerId];
 	local numPiecesInCard = game.Settings.Cards[cardId].NumPieces;
 	local pgd = Mod.PublicGameData;
