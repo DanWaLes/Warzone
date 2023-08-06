@@ -30,7 +30,7 @@ function Server_AdvanceTurn_Order(game, order)
 	end
 
 	-- reduce from team total
-	if player.Team == 1 then
+	if player.Team == -1 then
 		pgd.teams.noTeam[playerId].currentCardPieces[cardId] = pgd.teams.noTeam[playerId].currentCardPieces[cardId] - numPiecesInCard;
 	else
 		pgd.teams.teamed[player.Team].currentCardPieces[cardId] = pgd.teams.teamed[player.Team].currentCardPieces[cardId] - numPiecesInCard;
