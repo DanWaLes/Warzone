@@ -19,7 +19,7 @@ function Server_AdvanceTurn_Order(game, order)
 	local pgd = Mod.PublicGameData;
 
 	-- check to make sure a mod didnt create and play a card on player behalf
-	if player.Team == 1 then
+	if player.Team == -1 then
 		if (pgd.teams.noTeam[playerId].currentCardPieces[cardId] or 0) < numPiecesInCard then
 			return;
 		end
