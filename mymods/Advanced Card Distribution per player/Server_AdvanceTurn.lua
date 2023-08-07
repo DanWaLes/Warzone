@@ -160,37 +160,39 @@ function getEndOfTurnCardPieces(game)
 	for playerId, playerCards in pairs(game.ServerGame.LatestTurnStanding.Cards) do
 		local player = game.ServerGame.Game.PlayingPlayers[playerId];
 
-		if player.Team == -1 then
-			clone.noTeam[playerId] = {
-				currentCardPieces = {}
-			};
-		else
-			if not clone.teamed[player.Team] then
-				clone.teamed[player.Team] = {
-					members = {},
+		if player then
+			if player.Team == -1 then
+				clone.noTeam[playerId] = {
 					currentCardPieces = {}
 				};
+			else
+				if not clone.teamed[player.Team] then
+					clone.teamed[player.Team] = {
+						members = {},
+						currentCardPieces = {}
+					};
+				end
+
+				table.insert(clone.teamed[player.Team].members, playerId);
 			end
 
-			table.insert(clone.teamed[player.Team].members, playerId);
-		end
-
-		for cardId, numPieces in pairs(playerCards.Pieces) do
-			if player.Team == -1 then
-				clone.noTeam[playerId].currentCardPieces[cardId] = numPieces;
-			else
-				clone.teamed[player.Team].currentCardPieces[cardId] = (clone.teamed[player.Team].currentCardPieces[cardId] or 0) + numPieces;
+			for cardId, numPieces in pairs(playerCards.Pieces) do
+				if player.Team == -1 then
+					clone.noTeam[playerId].currentCardPieces[cardId] = numPieces;
+				else
+					clone.teamed[player.Team].currentCardPieces[cardId] = (clone.teamed[player.Team].currentCardPieces[cardId] or 0) + numPieces;
+				end
 			end
-		end
 
-		for _, cardInstance in pairs(playerCards.WholeCards) do
-			local cardId = cardInstance.CardID;
-			local numPieces = game.Settings.Cards[cardId].NumPieces;
+			for _, cardInstance in pairs(playerCards.WholeCards) do
+				local cardId = cardInstance.CardID;
+				local numPieces = game.Settings.Cards[cardId].NumPieces;
 
-			if player.Team == -1 then
-				clone.noTeam[playerId].currentCardPieces[cardId] = (clone.noTeam[playerId].currentCardPieces[cardId] or 0) + numPieces;
-			else
-				clone.teamed[player.Team].currentCardPieces[cardId] = (clone.teamed[player.Team].currentCardPieces[cardId] or 0) + numPieces;
+				if player.Team == -1 then
+					clone.noTeam[playerId].currentCardPieces[cardId] = (clone.noTeam[playerId].currentCardPieces[cardId] or 0) + numPieces;
+				else
+					clone.teamed[player.Team].currentCardPieces[cardId] = (clone.teamed[player.Team].currentCardPieces[cardId] or 0) + numPieces;
+				end
 			end
 		end
 	end
