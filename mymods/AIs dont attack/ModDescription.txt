@@ -1,1 +1,1 @@
-This mod skips all attacks AIs make.
+This mod skips all attacks AIs make on human players. You can choose if AIs can make transfers, attack other AIs and if they can attack neutrals.
