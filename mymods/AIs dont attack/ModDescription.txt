@@ -1,0 +1,1 @@
+This mod skips all attacks AIs make.
