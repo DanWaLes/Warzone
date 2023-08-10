@@ -102,7 +102,7 @@ function Server_Created(game, settings)
 			-- 0 full dist; -1 random warlords; -2 random cities
 			-- >0 ones the map maker made, no way to know how much teams/players are supposed to be in which one
 
-			settings.DistributionModeID = math.random(-2, 0);
+			settings.DistributionModeID = -math.random(0, 2);
 		end
 
 		settings.InitialNeutralsInDistribution = math.random(0, 15);
