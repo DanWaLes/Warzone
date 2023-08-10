@@ -8,12 +8,14 @@ function Server_AdvanceTurn_Order(game, order, result, skipThisOrder, addNewOrde
 		return;
 	end
 
-	if #order.NumArmies.SpecialUnits < 1 then
+	local orderArmies = order[(isAttackTransfer and 'NumArmies' or 'Armies')];
+
+	if #orderArmies.SpecialUnits < 1 then
 		return;
 	end
 
 	local commanders = {};
-	for _, unit in pairs(order.NumArmies.SpecialUnits) do
+	for _, unit in pairs(orderArmies.SpecialUnits) do
 		if unit.proxyType == 'Commander' then
 			table.insert(commanders, unit);
 		end
@@ -49,13 +51,13 @@ function Server_AdvanceTurn_Order(game, order, result, skipThisOrder, addNewOrde
 			-- dont recreate the order because its no split mode
 		end
 	else
-		local numArmies = order[(isAirlift and 'Armies' or 'NumArmies')].Subtract(WL.Armies.Create(0, commanders));
+		local numArmies = orderArmies.Subtract(WL.Armies.Create(0, commanders));
 		local newOrder = nil;
 
 		if isAttackTransfer then
 			newOrder = WL.GameOrderAttackTransfer.Create(order.PlayerID, order.From, order.To, order.AttackTransfer, order.ByPercent, numArmies, order.AttackTeammates);
 		elseif isAirlift then
-			newOrder = WL.GameOrderPlayCardAirlift.Create(order.CardInstanceID, order.PlayerID, order.From, order.To, numArmies);
+			newOrder = WL.GameOrderPlayCardAirlift.Create(order.CardInstanceID, order.PlayerID, order.FromTerritoryID, order.ToTerritoryID, numArmies);
 		end
 
 		skipThisOrder(WL.ModOrderControl.Skip);
