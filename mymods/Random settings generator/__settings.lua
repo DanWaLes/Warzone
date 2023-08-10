@@ -27,12 +27,12 @@ function getSettings()
 				Label(parent).SetText('Enabling allows dense fog, heavy fog and complete fog to be included');
 			end,
 			subsettings = {
-				addSetting('ForceHeavierFogCards', 'Force inclusion of Reconnaissance, Surveillance and or Spy cards', 'bool', true,
+				addSetting('ForceHeavierFogCards', 'Force inclusion of Reconnaissance, Surveillance and or Spy cards', 'bool', true, {
 					bkwrds = false,
 					help = function(parent)
 						Label(parent).SetText('These cards will only be included by force if the fog level is higher than normal fog');
 					end
-				)
+				})
 			}
 		}),
 		addSetting('RandomiseCardsHeldVisibility', 'Randomize cards held and received visibility', 'bool', false, {
