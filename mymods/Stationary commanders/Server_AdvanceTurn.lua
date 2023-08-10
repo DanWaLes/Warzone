@@ -49,7 +49,7 @@ function Server_AdvanceTurn_Order(game, order, result, skipThisOrder, addNewOrde
 			-- dont recreate the order because its no split mode
 		end
 	else
-		local numArmies = order.NumArmies.Subtract(WL.Armies.Create(0, commanders));
+		local numArmies = order[(isAirlift and 'Armies' or 'NumArmies')].Subtract(WL.Armies.Create(0, commanders));
 		local newOrder = nil;
 
 		if isAttackTransfer then
