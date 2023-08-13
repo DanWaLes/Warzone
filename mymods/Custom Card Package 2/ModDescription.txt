@@ -1,0 +1,3 @@
+This mod adds more custom cards to the game.
+New cards:
+Reconnaissance+ - reconnaissance cards with customizable range.
