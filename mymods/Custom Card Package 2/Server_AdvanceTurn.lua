@@ -42,20 +42,18 @@ function parsePayload(game, payload)
 		'Reconnaissance+' = true
 	};
 
-	for _, str in pairs(strs) do
-		local _, _, command, playerId, cards = string.find(str, '^CCP2_([^_]+)_(%d+)_<([^>]+)>$');
-		playerId = tonumber(playerId);
+	local _, _, command, playerId, cards = string.find(payload, '^CCP2_([^_]+)_(%d+)_<([^>]+)>$');
+	playerId = tonumber(playerId);
 
-		if playerId and game.ServerGame.Game.PlayingPlayers[playerId] and command and cards and commands[command] then
-			local player = game.ServerGame.Game.PlayingPlayers[playerId];
-			local commaSplit = split(cards, ',');
+	if playerId and game.ServerGame.Game.PlayingPlayers[playerId] and command and cards and commands[command] then
+		local player = game.ServerGame.Game.PlayingPlayers[playerId];
+		local commaSplit = split(cards, ',');
 
-			for _, str2 in pairs(commaSplit) do
-				local _, _, cardName, param = string.find(str2, '^([^=]+)=%[([^%]]*)%]$');
+		for _, str2 in pairs(commaSplit) do
+			local _, _, cardName, param = string.find(str2, '^([^=]+)=%[([^%]]*)%]$');
 
-				if cardName and param and cardNames[cardName] then
-					commands[command](game, player, cardName, param);
-				end
+			if cardName and param and cardNames[cardName] then
+				commands[command](game, player, cardName, param);
 			end
 		end
 	end
