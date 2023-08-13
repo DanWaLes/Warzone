@@ -20,8 +20,10 @@ function Server_GameCustomMessage(game, playerId, payload, setReturn)
 		Mod[storageType] = stored;
 	end
 
-	setReturn({
+	local ret = {
 		PlayerGameData = Mod.PlayerGameData[playerId],
 		PublicGameData = Mod.PublicGameData
-	});
+	};
+
+	setReturn(ret);
 end

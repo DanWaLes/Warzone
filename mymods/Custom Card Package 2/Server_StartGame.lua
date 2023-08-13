@@ -16,10 +16,18 @@ function Server_StartGame(game)
 
 		for _, cardName in pairs(cards) do
 			if getSetting('Enable' .. cardName) then
-				if player.Team == -1 then
-					cardPieces.noTeam[team].currentPieces[cardName] = getSetting(cardName .. 'StartPieces');
+				local startingPieces = getSetting(cardName .. 'StartPieces');
+				local piecesInCard = getSetting(cardName .. 'PiecesInCard');
 
-					if cardPieces.noTeam[team].currentPieces[cardName] >= getSetting(cardName .. 'PiecesInCard') then
+				if player.Team == -1 then
+					cardPieces.noTeam[team].currentPieces[cardName] = startingPieces;
+
+					if startingPieces > 0 and not cardPieces.noTeam[team].receivedPieces then
+						cardPieces.noTeam[team].receivedPieces = {};
+					end
+					cardPieces.noTeam[team].receivedPieces[cardName] = startingPieces;
+
+					if cardPieces.noTeam[team].currentPieces[cardName] >= piecesInCard then
 						playerGD[team].shownReceivedCardsMsg = false;
 						print('need to show received cards msg for player ' .. team);
 					end
@@ -28,11 +36,16 @@ function Server_StartGame(game)
 						cardPieces.teammed[team].currentPieces[cardName] = 0;
 					end
 
-					cardPieces.teammed[team].currentPieces[cardName] = cardPieces.teammed[team].currentPieces[cardName] + getSetting(cardName .. 'StartPieces');
+					cardPieces.teammed[team].currentPieces[cardName] = cardPieces.teammed[team].currentPieces[cardName] + startingPieces;
 
-					if cardPieces.teammed[team].currentPieces[cardName] >= getSetting(cardName .. 'PiecesInCard') then
+					if cardPieces.teammed[team].currentPieces[cardName] >= piecesInCard then
 						table.insert(teamsNeedingShownReceivedCardsMsg, team);
 					end
+
+					if startingPieces > 0 and not cardPieces.teammed[team].receivedPieces then
+						cardPieces.noTeam[team].receivedPieces = {};
+					end
+					cardPieces.noTeam[team].receivedPieces[cardName] = cardPieces.teammed[team].currentPieces[cardName];
 				end
 			end
 		end

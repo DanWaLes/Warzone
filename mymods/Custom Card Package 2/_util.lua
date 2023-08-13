@@ -112,6 +112,19 @@ function startsWith(str, sub)
 	return string.sub(str, 1, string.len(sub)) == sub;
 end
 
+function split(str, sepperator)
+	-- https://stackoverflow.com/questions/1426954/split-string-in-lua#answer-7615129
+	if not sepperator then
+		sepperator = '%s';
+	end
+
+	local t = {};
+	for str in string.gmatch(str, '([^'.. sepperator ..']+)') do
+		table.insert(t, str);
+	end
+	return t;
+end
+
 function placeOrderInCorrectPosition(clientGame, newOrder)
 	if not newOrder.OccursInPhase then
 		local orders = clientGame.Orders;
