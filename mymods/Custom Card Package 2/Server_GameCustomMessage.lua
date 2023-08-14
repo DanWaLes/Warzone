@@ -4,7 +4,6 @@ function Server_GameCustomMessage(game, playerId, payload, setReturn)
 	if type(payload) ~= 'table' then
 		return;
 	end
-	print('init Server_GameCustomMessage');
 
 	for storageType in pairs(payload) do
 		local stored = Mod[storageType];

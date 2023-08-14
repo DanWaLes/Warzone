@@ -43,7 +43,17 @@ function main(_stored, i)
 end
 
 function cardsClicked(tabData)
-	Label(tabData.tabContents).SetText('cardsClicked todo');
+	Label(tabData.tabContents).SetText('cardsClicked');
+	-- just for testing add a play card order
+	local playerId = game.Us.ID;
+	local terrId = nil;
+	for tId in pairs(game.Map.Territories) do
+		terrId = tId;
+		break;
+	end
+	local order = WL.GameOrderCustom.Create(playerId, 'Play Recon+ Card', 'CCP2_useCard_' .. playerId .. '_<Reconnaissance+=[' .. terrId .. ']>', nil, WL.TurnPhase.SpyingCards);
+	placeOrderInCorrectPosition(game, order);
+
 	-- need to display full cards and card pieces for each card
 	-- need a play card button for full cards
 	-- need to list who used which card

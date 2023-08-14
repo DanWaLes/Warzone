@@ -22,14 +22,8 @@ function Server_StartGame(game)
 				if player.Team == -1 then
 					cardPieces.noTeam[team].currentPieces[cardName] = startingPieces;
 
-					if startingPieces > 0 and not cardPieces.noTeam[team].receivedPieces then
-						cardPieces.noTeam[team].receivedPieces = {};
-					end
-					cardPieces.noTeam[team].receivedPieces[cardName] = startingPieces;
-
 					if cardPieces.noTeam[team].currentPieces[cardName] >= piecesInCard then
 						playerGD[team].shownReceivedCardsMsg = false;
-						print('need to show received cards msg for player ' .. team);
 					end
 				else
 					if not cardPieces.teammed[team].currentPieces[cardName] then
@@ -41,11 +35,6 @@ function Server_StartGame(game)
 					if cardPieces.teammed[team].currentPieces[cardName] >= piecesInCard then
 						table.insert(teamsNeedingShownReceivedCardsMsg, team);
 					end
-
-					if startingPieces > 0 and not cardPieces.teammed[team].receivedPieces then
-						cardPieces.noTeam[team].receivedPieces = {};
-					end
-					cardPieces.noTeam[team].receivedPieces[cardName] = cardPieces.teammed[team].currentPieces[cardName];
 				end
 			end
 		end
@@ -54,8 +43,7 @@ function Server_StartGame(game)
 	for playerId, player in pairs(game.ServerGame.Game.Players) do
 		if player.Team == -1 then
 			cardPieces.noTeam[playerId] = {
-				currentPieces = {},
-				receivedPieces = nil
+				currentPieces = {}
 			};
 		else
 			if not teams[player.Team] then
@@ -64,8 +52,7 @@ function Server_StartGame(game)
 				};
 
 				cardPieces[player.Team] = {
-					currentPieces = {},
-					receivedPieces = nil
+					currentPieces = {}
 				};
 			end
 
@@ -83,7 +70,6 @@ function Server_StartGame(game)
 	for _, teamId in pairs(teamsNeedingShownReceivedCardsMsg) do
 		for _, playerId in pairs(teams[teamId].members) do
 			playerGD[playerId].shownReceivedCardsMsg = false;
-			print('need to show received cards msg for player ' .. playerId);
 		end
 	end
 
