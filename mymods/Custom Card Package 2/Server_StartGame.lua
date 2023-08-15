@@ -7,14 +7,16 @@ function Server_StartGame(game)
 		noTeam = {},
 		teammed = {}
 	};
+	local cardNames = {
+		'Reconnaissance+'
+	};
 	local playerGD = Mod.PlayerGameData;
 	local teamsNeedingShownReceivedCardsMsg = {};
 
 	function addStartingPieces(player)
 		local team = player.Team == -1 and player.ID or player.Team;
-		local cards = {'Reconnaissance+'};
 
-		for _, cardName in pairs(cards) do
+		for _, cardName in pairs(cardNames) do
 			if getSetting('Enable' .. cardName) then
 				local startingPieces = getSetting(cardName .. 'StartPieces');
 				local piecesInCard = getSetting(cardName .. 'PiecesInCard');
@@ -75,7 +77,8 @@ function Server_StartGame(game)
 
 	Mod.PublicGameData = {
 		teams = teams,
-		cardPieces = cardPieces
+		cardPieces = cardPieces,
+		cardNames = cardNames
 	};
 
 	Mod.PlayerGameData = playerGD;

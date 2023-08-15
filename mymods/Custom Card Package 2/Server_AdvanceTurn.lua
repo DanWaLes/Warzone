@@ -24,13 +24,9 @@ function Server_AdvanceTurn_Order(game, order, result, skipThisOrder, addNewOrde
 end
 
 function Server_AdvanceTurn_End(game, addNewOrder)
-	local cardNames = {
-		'Reconnaissance+'
-	};
-
 	local earnedPieces = {};
 
-	for _, cardName in pairs(cardNames) do
+	for _, cardName in pairs(Mod.PublicGameData.cardNames) do
 		local enabled = getSetting('Enable' .. cardName);
 		local numPieces = getSetting(cardName .. 'MinPiecesPerTurn');
 		local needsAttack = getSetting(cardName .. 'NeedsSuccessfulAttackToEarnPiece');
@@ -236,7 +232,7 @@ function processGameOrderAttackTransfer(wz)
 		return;
 	end
 
-	if wz.result.IsSuccessful then
+	if wz.result.IsAttack and wz.result.IsSuccessful then
 		playersWithSuccessfulAttacks[wz.order.PlayerID] = true;
 	end
 end
