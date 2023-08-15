@@ -30,12 +30,12 @@ end
 
 -- useful structures
 
-function Tabs(parent, tabLabels, tabsClicked)
+function Tabs(parent, dir, tabLabels, tabsClicked)
 	local tabData = {
-		tabsContainer = Horz(parent),
+		tabsContainer = dir(parent),
 		tabBtns = {},
 		selectedTab = nil,
-		tabContents = nil
+		tabContents = nil,
 	};
 
 	tabData.tabClicked = function(label, main)
@@ -55,10 +55,17 @@ function Tabs(parent, tabLabels, tabsClicked)
 		main(tabData);
 	end
 
+	local map = {};
+	tabData.clickTab = function(label)
+		tabData.tabClicked(label, tabsClicked[map[label]]);
+	end
+
 	for i, label in ipairs(tabLabels) do
+		map[label] = i;
+
 		local tabBtn = Btn(tabData.tabsContainer).SetText(label);
 		tabBtn.SetOnClick(function() 
-			tabData.tabClicked(label, tabsClicked[i]);
+			tabData.clickTab(label);
 		end);
 
 		tabData.tabBtns[label] = tabBtn;

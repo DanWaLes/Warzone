@@ -51,9 +51,8 @@ end
 function getSettings()
 	return {
 		Card('Reconnaissance+', function(parent)
-			Label(parent).SetText('Like normal reconnaissance cards but with a range');
+			Label(parent).SetText('Like normal reconnaissance cards but with a range and lasts for 1 turn');--no param instance is 1 turn
 			Label(parent).SetText('Reconnaissance cards must be included for the card to work');
-			Label(parent).SetText('Duration is the same as normal reconnaissance cards');
 		end, {
 			addSetting('Reconnaissance+Range', 'Range', 'int', 2, {
 				minValue = 1,

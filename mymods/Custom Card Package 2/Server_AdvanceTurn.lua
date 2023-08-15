@@ -83,18 +83,15 @@ function processGameOrderCustom(wz)
 end
 
 function parseGameOrderCustom(wz)
+	-- https://www.lua.org/pil/20.2.html
 	-- 'CCP2_addCardPieces_1000_<Reconnaissance+=[1],Reconnaissance+=[-1]>'
 	-- 'CCP2_useCard_1000_<Reconnaissance+=[100],Reconnaissance+=[]>'
-
-	local commands = {
-		addCardPieces = addCardPieces,
-		useCard = useCard
-	};
+	-- 'CCP2_buyCard_1000_<Reconnaissance+=[],Reconnaissance+=[]>'
 
 	local _, _, command, playerId, cards = string.find(wz.order.Payload, '^CCP2_([^_]+)_(%d+)_<([^>]+)>$');
 	playerId = round(tonumber(playerId));
 
-	if playerId and wz.game.ServerGame.Game.PlayingPlayers[playerId] and command and cards and commands[command] then
+	if playerId and wz.game.ServerGame.Game.PlayingPlayers[playerId] and command and cards and _G[command] then
 		local player = wz.game.ServerGame.Game.PlayingPlayers[playerId];
 		local commaSplit = split(cards, ',');
 
@@ -106,7 +103,8 @@ function parseGameOrderCustom(wz)
 				-- safe to skip valid ones and create unstoppable events that say what happened
 				wz.skipThisOrder(WL.ModOrderControl.SkipAndSupressSkippedMessage);
 
-				commands[command](wz, player, cardName, param);
+				-- https://stackoverflow.com/questions/1791234/lua-call-function-from-a-string-with-function-name
+				_G[command](wz, player, cardName, param);
 			end
 		end
 	end
@@ -144,9 +142,8 @@ function addCardPieces(wz, player, cardName, param)
 end
 
 function useCard(wz, player, cardName, param)
-	local use = {
-		['Reconnaissance+'] = useCardReconnaissancePlus
-	};
+	-- -- https://stackoverflow.com/questions/1791234/lua-call-function-from-a-string-with-function-name
+	local fnName = 'useCard' .. string.gsub(cardName, '[^%w_]', '');
 
 	-- need to check if enough pieces to play card
 	local piecesInCard = getSetting(cardName .. 'PiecesInCard');
@@ -158,7 +155,7 @@ function useCard(wz, player, cardName, param)
 		return;
 	end
 
-	local success = use[cardName](wz, player, cardName, param);
+	local success = _G[fnName](wz, player, cardName, param);
 	if not success then
 		return;
 	end
@@ -169,7 +166,7 @@ function useCard(wz, player, cardName, param)
 	Mod.PublicGameData = publicGD;
 end
 
-function useCardReconnaissancePlus(wz, player, cardName, param)
+function useCardReconnaissance(wz, player, cardName, param)
 	if not wz.game.Settings.Cards or not wz.game.Settings.Cards[WL.CardID.Reconnaissance] then
 		return;
 	end
@@ -217,6 +214,17 @@ function useCardReconnaissancePlus(wz, player, cardName, param)
 	main(0, {startTerrId});
 
 	return true;
+end
+
+function buyCard(wz, player, cardName)
+	local order = WL.GameOrderEvent.Create(player.ID, 'Bought a ' .. cardName .. ' Card', {});
+	order.AddResourceOpt = {
+		[player.ID] = {
+			[WL.ResourceType.Gold] = -getSetting(cardName .. 'Cost');
+		}
+	};
+
+	wz.addNewOrder(order);
 end
 
 function processGameOrderAttackTransfer(wz)
