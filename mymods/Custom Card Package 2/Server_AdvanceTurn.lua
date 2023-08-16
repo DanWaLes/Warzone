@@ -46,7 +46,7 @@ function Server_AdvanceTurn_End(game, addNewOrder)
 
 	for _, cardName in pairs(Mod.PublicGameData.cardNames) do
 		local enabled = getSetting('Enable' .. cardName);
-		local numPieces = getSetting(cardName .. 'MinPiecesPerTurn');
+		local numPieces = getSetting(cardName .. 'PiecesPerTurn');
 		local needsAttack = getSetting(cardName .. 'NeedsSuccessfulAttackToEarnPiece');
 
 		if enabled and numPieces and numPieces ~= 0 then
@@ -160,7 +160,6 @@ function addCardPieces(wz, player, cardName, param)
 end
 
 function playedCard(wz, player, cardName, param)
-	-- -- https://stackoverflow.com/questions/1791234/lua-call-function-from-a-string-with-function-name
 	local fnName = 'playedCard' .. string.gsub(cardName, '[^%w_]', '');
 
 	-- need to check if enough pieces to play card
@@ -198,6 +197,34 @@ function playedCard(wz, player, cardName, param)
 	local result = publicGD.cardPieces[teamType][teamId].currentPieces[cardName] - piecesInCard;
 	publicGD.cardPieces[teamType][teamId].currentPieces[cardName] = result > -1 and result or 0;
 	Mod.PublicGameData = publicGD;
+end
+
+function playedTerritorySelectionCard(wz, player, cardName, param)
+	local terrId = tonumber(param);
+	local terr = wz.game.Map.Territories[terrId];
+
+	if not terr then
+		return;
+	end
+
+	local msg = 'Played a ' .. cardName .. ' Card on ' .. terr.Name;
+	local visTo = {};
+
+	if Mod.PublicGameData.cardsThatCanBeActive[cardName] then
+		local duration = getSetting(cardName .. 'Duration');
+
+		if duration then
+			msg = msg .. ' for ' .. duration .. ' turns';
+			visTo = nil;
+		end
+	end
+
+	local event = WL.GameOrderEvent.Create(player.ID, msg, visTo);
+	event.JumpToActionSpotOpt = WL.RectangleVM.Create(terr.MiddlePointX, terr.MiddlePointY, terr.MiddlePointX, terr.MiddlePointY);
+
+	wz.addNewOrder(event);
+
+	return true;
 end
 
 function buyCard(wz, player, cardName)
@@ -250,4 +277,50 @@ function removeActiveCardInstance(cardName, i)
 
 	publicGD.activeCards = nil;
 	Mod.PublicGameData = publicGD;
+end
+
+function removeAllActiveCardInstancesOf(cardName)
+	local publicGD = Mod.PublicGameData;
+
+	publicGD.activeCards[cardName] = nil;
+
+	for cardName in pairs(publicGD.activeCards) do
+		if publicGD[cardName] then
+			Mod.PublicGameData = publicGD;
+			return;
+		end
+	end
+
+	publicGD.activeCards = nil;
+	Mod.PublicGameData = publicGD;
+end
+
+function removeExpiredCardInstances(game, addNewOrder, cardName)
+	local duration = getSetting(cardName .. 'Duration');
+	local i = 1;
+
+	while true do
+		if not Mod.PublicGameData.activeCards or not Mod.PublicGameData.activeCards[cardName] then
+			break;
+		end
+
+		local activeCardInstance = Mod.PublicGameData.activeCards[cardName][i];
+
+		if not activeCardInstance then
+			break;
+		end
+
+		if activeCardInstance.playedOnTurn + duration == game.ServerGame.Game.TurnNumber then
+			local terr = game.Map.Territories[tonumber(activeCardInstance.param)];
+			local msg = 'A ' .. cardName .. ' Card that was played on ' .. terr.Name .. ' during turn ' .. activeCardInstance.playedOnTurn .. ' wore off';
+			local event = WL.GameOrderEvent.Create(activeCardInstance.playedBy, msg, nil);
+			event.JumpToActionSpotOpt = WL.RectangleVM.Create(terr.MiddlePointX, terr.MiddlePointY, terr.MiddlePointX, terr.MiddlePointY);
+
+			addNewOrder(event);
+			removeActiveCardInstance(cardName, i);
+			i = i - 1;
+		end
+
+		i = i + 1;
+	end
 end

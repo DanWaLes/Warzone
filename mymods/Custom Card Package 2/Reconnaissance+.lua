@@ -21,17 +21,9 @@ function playedCardReconnaissance(wz, player, cardName, param)
 		return;
 	end
 
-	local startTerrId = tonumber(param);
-	local startTerr = wz.game.Map.Territories[startTerrId];
-
-	if not startTerr then
+	if not playedTerritorySelectionCard(wz, player, cardName, param) then
 		return;
 	end
-
-	local event = WL.GameOrderEvent.Create(player.ID, 'Played a ' .. cardName .. ' Card on ' .. startTerr.Name, {});
-	event.JumpToActionSpotOpt = WL.RectangleVM.Create(terr.MiddlePointX, terr.MiddlePointY, 0, 0);
-
-	wz.addNewOrder(event);
 
 	local range = getSetting(cardName .. 'Range');
 	local doneTerrs = {};
@@ -64,7 +56,7 @@ function playedCardReconnaissance(wz, player, cardName, param)
 		main(i + 1, nextTerrs);
 	end
 
-	main(0, {startTerrId});
+	main(0, {tonumber(param)});
 
 	return true;
 end

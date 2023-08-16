@@ -20,35 +20,11 @@ function playCardTrap(game, tabData, cardName, btn, vert, vert2, data)
 end
 
 function playedCardTrap(wz, player, cardName, param)
-	local terrId = tonumber(param);
-	local terr = wz.game.Map.Territories[terrId];
-
-	if not terr then
-		return;
-	end
-
-	local event = WL.GameOrderEvent.Create(player.ID, 'Played a ' .. cardName .. ' Card on ' .. terr.Name, {});
-	event.JumpToActionSpotOpt = WL.RectangleVM.Create(terr.MiddlePointX, terr.MiddlePointY, 0, 0);
-
-	wz.addNewOrder(event);
-
-	return true;
+	return playedTerritorySelectionCard(wz, player, cardName, param);
 end
 
 function processStartTurnTrap(game, addNewOrder, cardName)
-	local publicGD = Mod.PublicGameData;
-
-	publicGD.activeCards[cardName] = nil;
-
-	for cardName in pairs(publicGD.activeCards) do
-		if publicGD[cardName] then
-			Mod.PublicGameData = publicGD;
-			return;
-		end
-	end
-
-	publicGD.activeCards = nil;
-	Mod.PublicGameData = publicGD;
+	removeAllActiveCardInstancesOf(cardName);
 end
 
 local function doTrapCardEffect(wz, cardName, i, activeCardInstance)
@@ -91,8 +67,16 @@ function processOrderTrap(wz, cardName)
 	end
 
 	local i = 1;
-	while i < #Mod.PublicGameData.activeCards[cardName] do
+	while true do
+		if not Mod.PublicGameData.activeCards or not Mod.PublicGameData.activeCards[cardName] then
+			break;
+		end
+
 		local activeCardInstance = Mod.PublicGameData.activeCards[cardName][i];
+
+		if not activeCardInstance then
+			break;
+		end
 
 		if wz.order.To == tonumber(activeCardInstance.param) then
 			doTrapCardEffect(wz, cardName, i, activeCardInstance);
@@ -100,5 +84,5 @@ function processOrderTrap(wz, cardName)
 		end
 
 		i = i + 1;
-	end	
+	end
 end

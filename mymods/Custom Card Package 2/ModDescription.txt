@@ -1,4 +1,5 @@
 This mod adds more custom cards to the game.
 New cards:
-Reconnaissance+ - Reconnaissance Cards with customizable range.
+Reconnaissance+ - Reconnaissance Cards with customizable range
 Trap - like Blockade Cards except the territory become neutral when an enemy captures it
+Immobilize - prevents all army movement (including airlifts) to and from a territory that is next to or is one of yours

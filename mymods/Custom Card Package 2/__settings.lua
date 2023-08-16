@@ -13,7 +13,7 @@ local function Card(cardName, help, extraSubsettings)
 				maxValue = 10,
 				absoluteMax = 100
 			}),
-			addSetting(cardName .. 'MinPiecesPerTurn', 'Min pieces awarded per turn', 'int', 1, {
+			addSetting(cardName .. 'PiecesPerTurn', 'Pieces awarded per turn', 'int', 1, {
 				minValue = 0,
 				maxValue = 10,
 				absoluteMax = 100
@@ -70,6 +70,14 @@ function getSettings()
 				dp = 2,
 				minValue = 0,
 				maxValue = 8
+			})
+		}),
+		Card('Immobilize', function(parent)
+			Label(parent).SetText('Prevents all army movement (including airlifts) to and from a territory that is next to or is one of yours');
+		end, {
+			addSetting('ImmobilizeDuration', 'Duration (turns)', 'int', 2, {
+				minValue = 1,
+				maxValue = 10
 			})
 		})
 	};

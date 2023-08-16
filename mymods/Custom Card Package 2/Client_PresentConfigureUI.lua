@@ -71,6 +71,13 @@ function cpcDoSetting(vert, setting)
 			local vert4 = nil;
 
 			expandCollapseBtnClicked = function()
+				-- save - destroying otherwise goes back to default setting values
+
+				if not Client_SaveConfigureUI(UI.Alert) then
+					-- if theres an error dont allow settings to collapse
+					return;
+				end
+
 				if expandCollapseBtn.GetText() == expand then
 					expandCollapseBtn.SetText('^');
 				else

@@ -57,7 +57,7 @@ function Server_StartGame(game)
 					members = {}
 				};
 
-				cardPieces[player.Team] = {
+				cardPieces.teammed[player.Team] = {
 					currentPieces = {}
 				};
 			end

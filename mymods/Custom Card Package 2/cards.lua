@@ -9,13 +9,15 @@ end
 function getCardNames()
 	return {
 		'Reconnaissance+',
-		'Trap'
+		'Trap',
+		'Immobilize'
 	};
 end
 
 function getCardsThatCanBeActive()
 	return {
-		Trap = true
+		Trap = true,
+		Immobilize = true
 	};
 end
 
