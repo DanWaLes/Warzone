@@ -77,7 +77,7 @@ function addSetting(name, label, inputType, defaultValue, otherProps)
 		local val = otherProps[prop];
 
 		if type(val) ~= tpe then
-			print(prop .. ' must be a ' + tpe .. ' for inputType ' .. inputType .. ' in addSetting\nis');
+			print(prop .. ' must be a ' .. tpe .. ' for inputType ' .. inputType .. ' in addSetting\nis');
 			print(val)
 			return;
 		end

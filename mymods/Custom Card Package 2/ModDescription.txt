@@ -1,3 +1,4 @@
 This mod adds more custom cards to the game.
 New cards:
-Reconnaissance+ - reconnaissance cards with customizable range.
+Reconnaissance+ - Reconnaissance Cards with customizable range.
+Trap - like Blockade Cards except the territory become neutral when an enemy captures it

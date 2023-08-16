@@ -1,12 +1,21 @@
 require 'version';
 require '_settings';
 require '_util';
+require 'cards';
 
 local playersWithSuccessfulAttacks = {};
 
-function Server_AdvanceTurn_Start(game)
+function Server_AdvanceTurn_Start(game, addNewOrder)
 	for playerId in pairs(game.ServerGame.Game.PlayingPlayers) do
 		playersWithSuccessfulAttacks[playerId] = false;
+	end
+
+	if not Mod.PublicGameData.activeCards then
+		return;
+	end
+
+	for cardName in pairs(Mod.PublicGameData.activeCards) do
+		_G['processStartTurn' .. cardName](game, addNewOrder, cardName);
 	end
 end
 
@@ -20,6 +29,15 @@ function Server_AdvanceTurn_Order(game, order, result, skipThisOrder, addNewOrde
 	};
 
 	processGameOrderCustom(wz);
+
+	if Mod.PublicGameData.activeCards and order.proxyType ~= 'GameOrderCustom' and order.proxyType ~= 'GameOrderEvent' then
+		for cardName, enabled in pairs(Mod.PublicGameData.cardsThatCanBeActive) do
+			if enabled then
+				_G['processOrder' .. cardName](wz, cardName);
+			end
+		end
+	end
+
 	processGameOrderAttackTransfer(wz);
 end
 
@@ -141,9 +159,9 @@ function addCardPieces(wz, player, cardName, param)
 	wz.addNewOrder(WL.GameOrderEvent.Create(player.ID, msg, {}));
 end
 
-function useCard(wz, player, cardName, param)
+function playedCard(wz, player, cardName, param)
 	-- -- https://stackoverflow.com/questions/1791234/lua-call-function-from-a-string-with-function-name
-	local fnName = 'useCard' .. string.gsub(cardName, '[^%w_]', '');
+	local fnName = 'playedCard' .. string.gsub(cardName, '[^%w_]', '');
 
 	-- need to check if enough pieces to play card
 	local piecesInCard = getSetting(cardName .. 'PiecesInCard');
@@ -160,60 +178,26 @@ function useCard(wz, player, cardName, param)
 		return;
 	end
 
+	if publicGD.cardsThatCanBeActive[cardName] then
+		if not publicGD.activeCards then
+			publicGD.activeCards = {};
+		end
+
+		if not publicGD.activeCards[cardName] then
+			publicGD.activeCards[cardName] = {};
+		end
+
+		table.insert(publicGD.activeCards[cardName], {
+			playedBy = player.ID,
+			playedOnTurn = wz.game.ServerGame.Game.TurnNumber,
+			param = param
+		});
+	end
+
 	-- reduce number of current pieces
 	local result = publicGD.cardPieces[teamType][teamId].currentPieces[cardName] - piecesInCard;
 	publicGD.cardPieces[teamType][teamId].currentPieces[cardName] = result > -1 and result or 0;
 	Mod.PublicGameData = publicGD;
-end
-
-function useCardReconnaissance(wz, player, cardName, param)
-	if not wz.game.Settings.Cards or not wz.game.Settings.Cards[WL.CardID.Reconnaissance] then
-		return;
-	end
-
-	local startTerrId = tonumber(param);
-	local startTerr = wz.game.Map.Territories[startTerrId];
-
-	if not startTerr then
-		return;
-	end
-	
-	wz.addNewOrder(WL.GameOrderEvent.Create(player.ID, 'Played a ' .. cardName .. ' Card on ' .. startTerr.Name, {}));
-
-	local range = getSetting(cardName .. 'Range');
-	local doneTerrs = {};
-
-	function main(i, terrIds)
-		if i == range then
-			return;
-		end
-
-		local nextTerrs = {};
-		for _, terrId in pairs(terrIds) do
-			if not doneTerrs[terrId] then
-				local reconCard = WL.NoParameterCardInstance.Create(WL.CardID.Reconnaissance);
-				local order = WL.GameOrderPlayCardReconnaissance.Create(reconCard.ID, player.ID, terrId);
-
-				wz.addNewOrder(order);
-
-				if i + 1 < range then
-					local terr = wz.game.Map.Territories[terrId];
-
-					for connectedTo in pairs(terr.ConnectedTo) do
-						table.insert(nextTerrs, connectedTo);
-					end
-				end
-
-				doneTerrs[terrId] = true;
-			end
-		end
-
-		main(i + 1, nextTerrs);
-	end
-
-	main(0, {startTerrId});
-
-	return true;
 end
 
 function buyCard(wz, player, cardName)
@@ -225,22 +209,45 @@ function buyCard(wz, player, cardName)
 	};
 
 	wz.addNewOrder(order);
+
+	local piecesInCard = getSetting(cardName .. 'PiecesInCard');
+	local publicGD = Mod.PublicGameData;
+	local teamType = player.Team == -1 and 'noTeam' or 'teammed';
+	local teamId = player.Team == -1 and player.ID or player.Team;
+
+	publicGD.cardPieces[teamType][teamId].currentPieces[cardName] = publicGD.cardPieces[teamType][teamId].currentPieces[cardName] + piecesInCard;
+	Mod.PublicGameData = publicGD;
 end
 
 function processGameOrderAttackTransfer(wz)
-	if wz.order.proxyType ~= 'GameOrderAttackTransfer' then
+	if not wz.order or not wz.result then
 		return;
 	end
 
-	if wz.order.PlayerID == WL.PlayerID.Neutral then
-		return;
-	end
-
-	if playersWithSuccessfulAttacks[wz.order.PlayerID] then
+	if wz.order.proxyType ~= 'GameOrderAttackTransfer' or wz.order.PlayerID == WL.PlayerID.Neutral or playersWithSuccessfulAttacks[wz.order.PlayerID] then
 		return;
 	end
 
 	if wz.result.IsAttack and wz.result.IsSuccessful then
 		playersWithSuccessfulAttacks[wz.order.PlayerID] = true;
 	end
+end
+
+function removeActiveCardInstance(cardName, i)
+	local publicGD = Mod.PublicGameData;
+	table.remove(publicGD.activeCards[cardName], i);
+
+	if #publicGD.activeCards[cardName] < 1 then
+		publicGD.activeCards[cardName] = nil;
+	end
+
+	for cardName in pairs(publicGD.cardsThatCanBeActive) do
+		if publicGD.activeCards[cardName] then
+			Mod.PublicGameData = publicGD;
+			return;
+		end
+	end
+
+	publicGD.activeCards = nil;
+	Mod.PublicGameData = publicGD;
 end

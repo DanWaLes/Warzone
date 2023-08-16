@@ -1,14 +1,18 @@
 require '_util';
 require '_settings';
+require 'cards';
 
 function Server_StartGame(game)
+	local cardNames = getCardNames();
+	local cardsThatCanBeActive = getCardsThatCanBeActive();
+
 	local teams = {};
+	-- need to keep track of which cards are active to know if regular orders need to be processed
+	-- else limited to using existing cards and changing territories
+	-- currently cant change normal orders
 	local cardPieces = {
 		noTeam = {},
 		teammed = {}
-	};
-	local cardNames = {
-		'Reconnaissance+'
 	};
 	local playerGD = Mod.PlayerGameData;
 	local teamsNeedingShownReceivedCardsMsg = {};
@@ -75,10 +79,16 @@ function Server_StartGame(game)
 		end
 	end
 
+	for cardName in pairs(cardsThatCanBeActive) do
+		cardsThatCanBeActive[cardName] = getSetting('Enable' .. cardName);
+	end
+
 	Mod.PublicGameData = {
 		teams = teams,
 		cardPieces = cardPieces,
-		cardNames = cardNames
+		cardNames = cardNames,
+		cardsThatCanBeActive = cardsThatCanBeActive,
+		activeCards = nil
 	};
 
 	Mod.PlayerGameData = playerGD;

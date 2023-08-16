@@ -2,6 +2,7 @@ require 'version';
 require '_ui';
 require '_settings';
 require '_util';
+require 'cards';
 
 local rootParent = nil;
 local game = nil;
@@ -73,12 +74,12 @@ function cardNameClicked(tabData, cardName)
 	Label(tabData.tabContents).SetText('Pieces: ' .. (myPieces % piecesInCard));
 
 	-- https://stackoverflow.com/questions/1791234/lua-call-function-from-a-string-with-function-name
-	local fnName = 'useCard' .. string.gsub(cardName, '[^%w_]', '');
+	local fnName = 'playCard' .. string.gsub(cardName, '[^%w_]', '');
 	local btn = Btn(tabData.tabContents).SetText('Use card');
 	local vert = Vert(tabData.tabContents);
 
 	btn.SetOnClick(function()
-		_G[fnName](tabData, cardName, btn, vert, nil, {});
+		_G[fnName](game, tabData, cardName, btn, vert, nil, {});
 	end);
 
 	local isBuyable = getSetting(cardName .. 'IsBuyable') and game.Settings.CommerceGame;
@@ -97,6 +98,54 @@ function cardNameClicked(tabData, cardName)
 			placeOrderInCorrectPosition(game, order);
 		end);
 	end
+end
+
+function createTerritorySelectionCard(game, tabData, cardName, btn, vert, vert2, data)
+	btn.SetInteractable(false);
+
+	if not UI.IsDestroyed(vert2) then
+		UI.Destroy(vert2);
+	end
+
+	local vert2 = Vert(vert);
+	local errMsg = nil;
+
+	Label(vert2).SetText('Select a territory that you want to play a ' .. cardName .. ' Card on');
+	createSelectTerritoryMenu(vert2, data.selectedTerr, function(selectedTerr)
+		if data.validateTerrSelection(selectedTerr) then
+			errMsg.SetText('');
+			data.selectedTerr = selectedTerr;
+			createTerritorySelectionCard(game, tabData, cardName, btn, vert, vert2, data);
+		else
+			errMsg.SetText(data.errMsg);
+		end
+	end);
+
+	errMsg = Label(vert2).SetColor('#FF0000');
+
+	local horz = Horz(vert2);
+	local doneBtn = Btn(horz);
+	local cancelBtn = Btn(horz);
+
+	doneBtn.SetText('Done');
+	doneBtn.SetOnClick(function()
+		if not data.selectedTerr then
+			return;
+		end
+
+		local playerId = game.Us.ID;
+		local msg = 'Play ' .. cardName .. ' Card on ' .. data.selectedTerr.Name;
+		local payload = 'CCP2_playedCard_' .. playerId .. '_<' .. cardName .. '=[' .. data.selectedTerr.ID .. ']>';
+		local order = WL.GameOrderCustom.Create(playerId, msg, payload, nil, data.phase);
+
+		placeOrderInCorrectPosition(game, order);
+		tabData.clickTab(cardName);
+	end);
+
+	cancelBtn.SetText('Cancel');
+	cancelBtn.SetOnClick(function()
+		tabData.clickTab(cardName);
+	end);
 end
 
 function createSelectTerritoryMenu(parent, selectedTerr, newTerrSelectedCallback)
@@ -128,46 +177,6 @@ function createSelectTerritoryMenu(parent, selectedTerr, newTerrSelectedCallback
 			selectTerritoryBtn.SetInteractable(true);
 			newTerrSelectedCallback(terrDetails);
 		end);
-	end);
-end
-
-function useCardReconnaissance(tabData, cardName, btn, vert, vert2, data)
-	btn.SetInteractable(false);
-
-	if not UI.IsDestroyed(vert2) then
-		UI.Destroy(vert2);
-	end
-
-	local vert2 = Vert(vert);
-
-	Label(vert2).SetText('Select a territory that you want to play a ' .. cardName .. ' Card on');
-	createSelectTerritoryMenu(vert2, data.selectedTerr, function(selectedTerr)
-		data.selectedTerr = selectedTerr;
-		useCardReconnaissance(tabData, cardName, btn, vert, vert2, data);
-	end);
-
-	local horz = Horz(vert2);
-	local doneBtn = Btn(horz);
-	local cancelBtn = Btn(horz);
-
-	doneBtn.SetText('Done');
-	doneBtn.SetOnClick(function()
-		if not data.selectedTerr then
-			return;
-		end
-
-		local playerId = game.Us.ID;
-		local msg = 'Play ' .. cardName .. ' Card on ' .. data.selectedTerr.Name;
-		local payload = 'CCP2_useCard_' .. playerId .. '_<' .. cardName .. '=[' .. data.selectedTerr.ID .. ']>';
-		local order = WL.GameOrderCustom.Create(playerId, msg, payload, nil, WL.TurnPhase.SpyingCards);
-
-		placeOrderInCorrectPosition(game, order);
-		tabData.clickTab(cardName);
-	end);
-
-	cancelBtn.SetText('Cancel');
-	cancelBtn.SetOnClick(function()
-		tabData.clickTab(cardName);
 	end);
 end
 

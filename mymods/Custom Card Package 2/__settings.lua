@@ -51,12 +51,25 @@ end
 function getSettings()
 	return {
 		Card('Reconnaissance+', function(parent)
-			Label(parent).SetText('Like normal reconnaissance cards but with a range and lasts for 1 turn');--no param instance is 1 turn
-			Label(parent).SetText('Reconnaissance cards must be included for the card to work');
+			Label(parent).SetText('Like normal Reconnaissance Cards but with a range and lasts for 1 turn');--no param instance is 1 turn
+			Label(parent).SetText('Reconnaissance Cards must be included for the card to work');
 		end, {
 			addSetting('Reconnaissance+Range', 'Range', 'int', 2, {
 				minValue = 1,
 				maxValue = 5
+			})
+		}),
+		Card('Trap', function(parent)
+			Label(parent).SetText('Similar to Blockade Cards except they are triggered by the enemy capturing where the card was played');
+			Label(parent).SetText('Traps must be played on one of your own territories');
+		end, {
+			addSetting('TrapMultiplier', 'Multiplier', 'float', 4, {
+				help = function(parent)
+					Label(parent).SetText('Armies attacking become neutral and are multiplied by this much');
+				end,
+				dp = 2,
+				minValue = 0,
+				maxValue = 8
 			})
 		})
 	};
