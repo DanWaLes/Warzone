@@ -79,6 +79,11 @@ function getSettings()
 				minValue = 1,
 				maxValue = 10
 			})
-		})
+		}),
+		Card('Recycle', function(parent)
+			Label(parent).SetText('Sets the number armies on a territory to be the amount that was on it on the first turn and changes the owner to neutral');
+			Label(parent).SetText('The armies that used to be on the territory get added to your income');
+			Label(parent).SetText('Can only be played on one of your own territories');
+		end)
 	};
 end

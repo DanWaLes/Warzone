@@ -10,7 +10,8 @@ function getCardNames()
 	return {
 		'Reconnaissance+',
 		'Trap',
-		'Immobilize'
+		'Immobilize',
+		'Recycle'
 	};
 end
 

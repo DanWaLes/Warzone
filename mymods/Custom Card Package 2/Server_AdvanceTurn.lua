@@ -199,7 +199,7 @@ function playedCard(wz, player, cardName, param)
 	Mod.PublicGameData = publicGD;
 end
 
-function playedTerritorySelectionCard(wz, player, cardName, param)
+function playedTerritorySelectionCard(wz, player, cardName, param, modifyEvent)
 	local terrId = tonumber(param);
 	local terr = wz.game.Map.Territories[terrId];
 
@@ -219,7 +219,12 @@ function playedTerritorySelectionCard(wz, player, cardName, param)
 		end
 	end
 
-	local event = WL.GameOrderEvent.Create(player.ID, msg, visTo);
+	local modifiedEvent = {};
+	if type(modifyEvent) == 'function' then
+		modifiedEvent = modifyEvent();
+	end
+
+	local event = WL.GameOrderEvent.Create(player.ID, msg, visTo, modifiedEvent.terrModsOpt, modifiedEvent.setResourcesOpt, modifiedEvent.incomeModsOpt);
 	event.JumpToActionSpotOpt = WL.RectangleVM.Create(terr.MiddlePointX, terr.MiddlePointY, terr.MiddlePointX, terr.MiddlePointY);
 
 	wz.addNewOrder(event);
