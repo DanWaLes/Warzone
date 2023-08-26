@@ -20,7 +20,7 @@ function Client_PresentMenuUI(_rootParent, setMaxSize, setScrollable, _game, clo
 		return;
 	end
 
-	setMaxSize(400, 200);
+	setMaxSize(400, 300);
 
 	rootParent = _rootParent;
 	main({
@@ -73,13 +73,11 @@ function cardNameClicked(tabData, cardName)
 	Label(tabData.tabContents).SetText('Whole cards: ' .. math.floor(myPieces / piecesInCard));
 	Label(tabData.tabContents).SetText('Pieces: ' .. (myPieces % piecesInCard));
 
-	-- https://stackoverflow.com/questions/1791234/lua-call-function-from-a-string-with-function-name
-	local fnName = 'playCard' .. string.gsub(cardName, '[^%w_]', '');
 	local btn = Btn(tabData.tabContents).SetText('Use card');
 	local vert = Vert(tabData.tabContents);
 
 	btn.SetOnClick(function()
-		_G[fnName](game, tabData, cardName, btn, vert, nil, {});
+		_G['playCard' .. string.gsub(cardName, '[^%w_]', '')](game, tabData, cardName, btn, vert, nil, {});
 	end);
 
 	local isBuyable = getSetting(cardName .. 'IsBuyable') and game.Settings.CommerceGame;
@@ -98,6 +96,33 @@ function cardNameClicked(tabData, cardName)
 			placeOrderInCorrectPosition(game, order);
 		end);
 	end
+end
+
+function createDoneAndCancelForCardUse(game, tabData, cardName, parent, playerId, calcOrderDetails);
+	local horz = Horz(parent);
+	local doneBtn = Btn(horz);
+	local cancelBtn = Btn(horz);
+
+	doneBtn.SetText('Done');
+	doneBtn.SetOnClick(function()
+		local orderDetails = calcOrderDetails();
+
+		if not orderDetails then
+			return;
+		end
+
+		local fullmsg = 'Play ' .. cardName .. ' Card' .. (orderDetails.msg or '');
+		local payload = 'CCP2_playedCard_' .. playerId .. '_<' .. cardName .. '=[' .. (orderDetails.param or '') .. ']>';
+		local order = WL.GameOrderCustom.Create(playerId, fullmsg, payload, nil, orderDetails.phase);
+
+		placeOrderInCorrectPosition(game, order);
+		tabData.clickTab(cardName);
+	end);
+
+	cancelBtn.SetText('Cancel');
+	cancelBtn.SetOnClick(function()
+		tabData.clickTab(cardName);
+	end);
 end
 
 function createTerritorySelectionCard(game, tabData, cardName, btn, vert, vert2, data)
@@ -123,37 +148,26 @@ function createTerritorySelectionCard(game, tabData, cardName, btn, vert, vert2,
 
 	errMsg = Label(vert2).SetColor('#FF0000');
 
-	local horz = Horz(vert2);
-	local doneBtn = Btn(horz);
-	local cancelBtn = Btn(horz);
-
-	doneBtn.SetText('Done');
-	doneBtn.SetOnClick(function()
+	createDoneAndCancelForCardUse(game, tabData, cardName, vert2, game.Us.ID, function()
 		if not data.selectedTerr then
 			return;
 		end
 
-		local playerId = game.Us.ID;
-		local msg = 'Play ' .. cardName .. ' Card on ' .. data.selectedTerr.Name;
-		local payload = 'CCP2_playedCard_' .. playerId .. '_<' .. cardName .. '=[' .. data.selectedTerr.ID .. ']>';
-		local order = WL.GameOrderCustom.Create(playerId, msg, payload, nil, data.phase);
-
-		placeOrderInCorrectPosition(game, order);
-		tabData.clickTab(cardName);
-	end);
-
-	cancelBtn.SetText('Cancel');
-	cancelBtn.SetOnClick(function()
-		tabData.clickTab(cardName);
+		return {
+			msg = ' on ' .. data.selectedTerr.Name,
+			param = data.selectedTerr.ID,
+			phase = data.phase
+		};
 	end);
 end
 
 function createSelectTerritoryMenu(parent, selectedTerr, newTerrSelectedCallback)
 	local selectTerritoryHorz = Horz(parent);
-	Label(selectTerritoryHorz).SetText('Selected: ');
+	local label = Label(selectTerritoryHorz).SetText('Selected: ');
 	local selectTerritoryBtn = Btn(selectTerritoryHorz);
 	selectTerritoryBtn.SetText(selectedTerr and selectedTerr.Name or 'None');
 	selectTerritoryBtn.SetOnClick(function()
+		label.SetText('');
 		selectTerritoryBtn.SetText('(Selecting)');
 		selectTerritoryBtn.SetInteractable(false);
 
@@ -172,13 +186,103 @@ function createSelectTerritoryMenu(parent, selectedTerr, newTerrSelectedCallback
 				return WL.CancelClickIntercept;
 			end
 
-			UI.Destroy(cancelBtn);
+			if not UI.IsDestroyed(cancelBtn) then
+				UI.Destroy(cancelBtn);
+			end
+
+			label.SetText('Selected: ');
 			selectTerritoryBtn.SetText(terrDetails and terrDetails.Name or 'None');
 			selectTerritoryBtn.SetInteractable(true);
 			newTerrSelectedCallback(terrDetails);
 		end);
 	end);
 end
+
+Dropdowns = {
+	list = {},-- so that incorrect schematics arent used
+	selectedClicked = function(dropdownIndex)
+		local dd = Dropdowns.list[dropdownIndex];
+
+		if type(dd.labels) ~= 'table' then
+			return;
+		end
+
+		dd.label.SetText('');
+		dd.selected.SetText('(Selecting)');
+		dd.selected.SetInteractable(false);
+		dd.cancelBtn = Btn(dd.horz);
+		dd.cancelBtn.SetText('Cancel');
+		dd.cancelBtn.SetOnClick(function()
+			Dropdowns.optionClicked(dropdownIndex);
+		end);
+
+		if not UI.IsDestroyed(dd.vert2) then
+			UI.Destroy(dd.vert2);
+		end
+
+		Dropdowns.list[dropdownIndex].vert2 = Vert(dd.vert);
+
+		for i, label in ipairs(dd.labels) do
+			local option = Btn(Dropdowns.list[dropdownIndex].vert2);
+
+			option.SetText(label);
+			option.SetFlexibleWidth(1);
+			option.SetOnClick(function()
+				Dropdowns.optionClicked(dropdownIndex, i);
+			end);
+		end
+	end,
+	optionClicked = function(dropdownIndex, i)
+		local dd = Dropdowns.list[dropdownIndex];
+
+		if i then
+			Dropdowns.list[dropdownIndex].selectedOptionNo = i;
+			dd.onOptionClicked(i);
+		else
+			i = dd.selectedOptionNo;
+		end
+
+		if not UI.IsDestroyed(dd.cancelBtn) then
+			UI.Destroy(dd.cancelBtn);
+		end
+
+		if not UI.IsDestroyed(dd.vert2) then
+			UI.Destroy(dd.vert2);
+		end
+
+		dd.label.SetText('Selected: ');
+		dd.selected.SetText(i and dd.labels[i] or 'None');
+		dd.selected.SetInteractable(true);
+	end,
+	create = function(parent, labelTxt, selectedOptionNo, labels, onOptionClicked)
+		local index = #Dropdowns.list + 1;
+		local heading = Label(parent).SetText(labelTxt);
+		local horz = Horz(parent);
+		local label = Label(horz).SetText('Selected: ');
+		local selected = Btn(horz);
+		local vert = Vert(parent);
+
+		table.insert(Dropdowns.list, {
+			selectedOptionNo = selectedOptionNo,
+			labels = labels,
+			onOptionClicked = onOptionClicked,
+			heading = heading,
+			horz = horz,
+			label = label,
+			selected = selected,
+			cancelBtn = nil,
+			vert = vert,
+			vert2 = nil
+		});
+
+		local dd = Dropdowns.list[index];
+		dd.selected.SetOnClick(function()
+			Dropdowns.selectedClicked(index);
+		end)
+
+		Dropdowns.optionClicked(index, dd.selectedOptionNo);
+	end
+}
 
 function preferencesClicked(tabData)
 	local preferences = {

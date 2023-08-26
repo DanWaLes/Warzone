@@ -84,6 +84,11 @@ function getSettings()
 			Label(parent).SetText('Sets the number armies on a territory to be the amount that was on it on the first turn and changes the owner to neutral');
 			Label(parent).SetText('The armies that used to be on the territory get added to your income');
 			Label(parent).SetText('Can only be played on one of your own territories');
+		end),
+		Card('Double Tap', function(parent)
+			Label(parent).SetText('Allows you to make a second attack/transfer from a territory that you already issued an attack/transfer from');
+			Label(parent).SetText('If one of your attacks fails but you played a Double Tap Card, a new order will be created using all armies and any special units that are on the territory at the time the card is played');
+			Label(parent).SeText('If using multi-attack and the double tap attack is successful, the multi-attack chain will only continue if it was played before the next attack of the chain');
 		end)
 	};
 end

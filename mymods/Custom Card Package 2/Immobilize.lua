@@ -67,6 +67,10 @@ local function doImmobilizeCardEffect(wz, cardName, i, activeCardInstance)
 end
 
 function processOrderImmobilize(wz, cardName)
+	if not Mod.PublicGameData.activeCards then
+		return;
+	end
+
 	local isAttackTransfer = wz.order.proxyType == 'GameOrderAttackTransfer';
 	local isAirlift = wz.order.proxyType == 'GameOrderPlayCardAirlift';
 

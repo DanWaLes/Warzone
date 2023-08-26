@@ -3,6 +3,11 @@ require '_settings';
 require '_util';
 require 'cards';
 
+function cardNameToFnName(cardName)
+	-- for _G - https://stackoverflow.com/questions/1791234/lua-call-function-from-a-string-with-function-name
+	return string.gsub(cardName, '[^%w_]', '');
+end
+
 local playersWithSuccessfulAttacks = {};
 
 function Server_AdvanceTurn_Start(game, addNewOrder)
@@ -15,7 +20,7 @@ function Server_AdvanceTurn_Start(game, addNewOrder)
 	end
 
 	for cardName in pairs(Mod.PublicGameData.activeCards) do
-		_G['processStartTurn' .. cardName](game, addNewOrder, cardName);
+		_G['processStartTurn' .. cardNameToFnName(cardName)](game, addNewOrder, cardName);
 	end
 end
 
@@ -30,10 +35,10 @@ function Server_AdvanceTurn_Order(game, order, result, skipThisOrder, addNewOrde
 
 	processGameOrderCustom(wz);
 
-	if Mod.PublicGameData.activeCards and order.proxyType ~= 'GameOrderCustom' and order.proxyType ~= 'GameOrderEvent' then
+	if order.proxyType ~= 'GameOrderCustom' and order.proxyType ~= 'GameOrderEvent' then
 		for cardName, enabled in pairs(Mod.PublicGameData.cardsThatCanBeActive) do
 			if enabled then
-				_G['processOrder' .. cardName](wz, cardName);
+				_G['processOrder' .. cardNameToFnName(cardName)](wz, cardName);
 			end
 		end
 	end
@@ -121,7 +126,6 @@ function parseGameOrderCustom(wz)
 				-- safe to skip valid ones and create unstoppable events that say what happened
 				wz.skipThisOrder(WL.ModOrderControl.SkipAndSupressSkippedMessage);
 
-				-- https://stackoverflow.com/questions/1791234/lua-call-function-from-a-string-with-function-name
 				_G[command](wz, player, cardName, param);
 			end
 		end
@@ -160,8 +164,6 @@ function addCardPieces(wz, player, cardName, param)
 end
 
 function playedCard(wz, player, cardName, param)
-	local fnName = 'playedCard' .. string.gsub(cardName, '[^%w_]', '');
-
 	-- need to check if enough pieces to play card
 	local piecesInCard = getSetting(cardName .. 'PiecesInCard');
 	local publicGD = Mod.PublicGameData;
@@ -172,7 +174,7 @@ function playedCard(wz, player, cardName, param)
 		return;
 	end
 
-	local success = _G[fnName](wz, player, cardName, param);
+	local success = _G['playedCard' .. cardNameToFnName(cardName)](wz, player, cardName, param);
 	if not success then
 		return;
 	end
@@ -197,6 +199,10 @@ function playedCard(wz, player, cardName, param)
 	local result = publicGD.cardPieces[teamType][teamId].currentPieces[cardName] - piecesInCard;
 	publicGD.cardPieces[teamType][teamId].currentPieces[cardName] = result > -1 and result or 0;
 	Mod.PublicGameData = publicGD;
+
+	if type(success) == 'function' then
+		success();
+	end
 end
 
 function playedTerritorySelectionCard(wz, player, cardName, param, modifyEvent)

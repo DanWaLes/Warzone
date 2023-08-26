@@ -58,6 +58,10 @@ local function doTrapCardEffect(wz, cardName, i, activeCardInstance)
 end
 
 function processOrderTrap(wz, cardName)
+	if not Mod.PublicGameData.activeCards then
+		return;
+	end
+
 	if wz.order.proxyType ~= 'GameOrderAttackTransfer' then
 		return;
 	end
