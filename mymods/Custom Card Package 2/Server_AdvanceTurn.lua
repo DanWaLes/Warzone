@@ -112,6 +112,9 @@ function parseGameOrderCustom(wz)
 	-- 'CCP2_buyCard_1000_<Reconnaissance+=[],Reconnaissance+=[]>'
 
 	local _, _, command, playerId, cards = string.find(wz.order.Payload, '^CCP2_([^_]+)_(%d+)_<([^>]+)>$');
+	print('command = ' .. tostring(command))
+	print('playerId = ' .. tostring(playerId))
+	print('cards = ' .. tostring(cards))
 	playerId = round(tonumber(playerId));
 
 	if playerId and wz.game.ServerGame.Game.PlayingPlayers[playerId] and command and cards and _G[command] then
