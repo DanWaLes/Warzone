@@ -69,13 +69,15 @@ function cardNameClicked(tabData, cardName)
 	local teamType = game.Us.Team == -1 and 'noTeam' or 'teammed';
 	local teamId = game.Us.Team == -1 and game.Us.ID or game.Us.Team;
 	local myPieces = Mod.PublicGameData.cardPieces[teamType][teamId].currentPieces[cardName];
+	local wholeCards = math.floor(myPieces / piecesInCard);
 
-	Label(tabData.tabContents).SetText('Whole cards: ' .. math.floor(myPieces / piecesInCard));
-	Label(tabData.tabContents).SetText('Pieces: ' .. (myPieces % piecesInCard));
+	Label(tabData.tabContents).SetText('Whole cards: ' .. wholeCards);
+	Label(tabData.tabContents).SetText('Pieces: ' .. (myPieces % piecesInCard) .. '/' .. piecesInCard);
 
 	local btn = Btn(tabData.tabContents).SetText('Use card');
 	local vert = Vert(tabData.tabContents);
 
+	btn.SetInteractable(wholeCards < 1);
 	btn.SetOnClick(function()
 		_G['playCard' .. string.gsub(cardName, '[^%w_]', '')](game, tabData, cardName, btn, vert, nil, {});
 	end);
