@@ -92,6 +92,11 @@ function tblprint(tbl)
 end
 
 function round(n, dp)
+	if not n then
+		print('n is nil');
+		return;
+	end
+
 	-- http://lua-users.org/wiki/SimpleRound
 	local multi = 10 ^ (dp or 0);
 

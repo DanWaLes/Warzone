@@ -30,7 +30,10 @@ function Server_AdvanceTurn_Order(game, order, result, skipThisOrder, addNewOrde
 		order = order,
 		result = result,
 		addNewOrder = addNewOrder,
-		skipThisOrder = skipThisOrder
+		skipThisOrder = skipThisOrder,
+		ERROR = function(msg)
+			addNewOrder(WL.GameOrderEvent.Create(WL.PlayerID.Neutral, msg, nil));
+		end
 	};
 
 	processGameOrderCustom(wz);
@@ -112,26 +115,35 @@ function parseGameOrderCustom(wz)
 	-- 'CCP2_buyCard_1000_<Reconnaissance+=[],Reconnaissance+=[]>'
 
 	local _, _, command, playerId, cards = string.find(wz.order.Payload, '^CCP2_([^_]+)_(%d+)_<([^>]+)>$');
-	print('command = ' .. tostring(command))
-	print('playerId = ' .. tostring(playerId))
-	print('cards = ' .. tostring(cards))
+
+	if not (command and _G[command] and playerId and cards) then
+		wz.ERROR('invalid payload: ' .. wz.order.Payload);
+		wz.skipThisOrder(WL.ModOrderControl.SkipAndSupressSkippedMessage);
+		return;
+	end
+
 	playerId = round(tonumber(playerId));
 
-	if playerId and wz.game.ServerGame.Game.PlayingPlayers[playerId] and command and cards and _G[command] then
-		local player = wz.game.ServerGame.Game.PlayingPlayers[playerId];
-		local commaSplit = split(cards, ',');
+	if not wz.game.ServerGame.Game.PlayingPlayers[playerId] then
+		wz.ERROR('player ' .. tostring(playerId) .. ' isnt playing, payload = ' .. wz.order.Payload);
+		wz.skipThisOrder(WL.ModOrderControl.SkipAndSupressSkippedMessage);
+	end
 
-		for _, str2 in pairs(commaSplit) do
-			local _, _, cardName, param = string.find(str2, '^([^=]+)=%[([^%]]*)%]$');
+	local player = wz.game.ServerGame.Game.PlayingPlayers[playerId];
+	local commaSplit = split(cards, ',');
 
-			if cardName and param and getSetting('Enable' .. cardName) then
-				-- custom orders arent always displayed
-				-- safe to skip valid ones and create unstoppable events that say what happened
-				wz.skipThisOrder(WL.ModOrderControl.SkipAndSupressSkippedMessage);
+	for _, str2 in pairs(commaSplit) do
+		local _, _, cardName, param = string.find(str2, '^([^=]+)=%[([^%]]*)%]$');
 
-				_G[command](wz, player, cardName, param);
-			end
+		if not (cardName and param) then
+			wz.ERROR('cardName and or param is invalid. str2 = ' .. str2);
+			wz.skipThisOrder(WL.ModOrderControl.SkipAndSupressSkippedMessage);
+		elseif cardName and param and getSetting('Enable' .. cardName) then
+			wz.skipThisOrder(WL.ModOrderControl.SkipAndSupressSkippedMessage);
+
+			_G[command](wz, player, cardName, param);
 		end
+	end
 	end
 end
 
