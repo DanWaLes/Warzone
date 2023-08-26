@@ -127,6 +127,7 @@ function parseGameOrderCustom(wz)
 	if not wz.game.ServerGame.Game.PlayingPlayers[playerId] then
 		wz.ERROR('player ' .. tostring(playerId) .. ' isnt playing, payload = ' .. wz.order.Payload);
 		wz.skipThisOrder(WL.ModOrderControl.SkipAndSupressSkippedMessage);
+		return;
 	end
 
 	local player = wz.game.ServerGame.Game.PlayingPlayers[playerId];
@@ -143,7 +144,6 @@ function parseGameOrderCustom(wz)
 
 			_G[command](wz, player, cardName, param);
 		end
-	end
 	end
 end
 
