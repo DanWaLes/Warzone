@@ -88,7 +88,7 @@ function getSettings()
 		Card('Double Tap', function(parent)
 			Label(parent).SetText('Allows you to make a second attack/transfer from a territory that you already issued an attack/transfer from');
 			Label(parent).SetText('If one of your attacks fails but you played a Double Tap Card, a new order will be created using all armies and any special units that are on the territory at the time the card is played');
-			Label(parent).SeText('If using multi-attack and the double tap attack is successful, the multi-attack chain will only continue if it was played before the next attack of the chain');
+			Label(parent).SetText('If using multi-attack and the double tap attack is successful, the multi-attack chain will only continue if it was played before the next attack of the chain');
 		end)
 	};
 end
