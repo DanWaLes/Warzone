@@ -77,7 +77,7 @@ function cardNameClicked(tabData, cardName)
 	local btn = Btn(tabData.tabContents).SetText('Use card');
 	local vert = Vert(tabData.tabContents);
 
-	btn.SetInteractable(wholeCards < 1);
+	btn.SetInteractable(wholeCards > 0);
 	btn.SetOnClick(function()
 		_G['playCard' .. string.gsub(cardName, '[^%w_]', '')](game, tabData, cardName, btn, vert, nil, {});
 	end);
