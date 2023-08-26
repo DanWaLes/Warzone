@@ -11,7 +11,12 @@ end
 local playersWithSuccessfulAttacks = {};
 
 function Server_AdvanceTurn_Start(game, addNewOrder)
+	function LOG(msg)
+		addNewOrder(WL.GameOrderEvent.Create(WL.PlayerID.Neutral, msg, nil));
+	end
+
 	for playerId in pairs(game.ServerGame.Game.PlayingPlayers) do
+		LOG('playerId = ' .. tostring(playerId));
 		playersWithSuccessfulAttacks[playerId] = false;
 	end
 
@@ -50,10 +55,6 @@ function Server_AdvanceTurn_Order(game, order, result, skipThisOrder, addNewOrde
 end
 
 function Server_AdvanceTurn_End(game, addNewOrder)
-	function LOG(msg)
-		addNewOrder(WL.GameOrderEvent.Create(WL.PlayerID.Neutral, msg, nil));
-	end
-
 	local earnedPieces = {};
 
 	for _, cardName in pairs(Mod.PublicGameData.cardNames) do
@@ -61,15 +62,9 @@ function Server_AdvanceTurn_End(game, addNewOrder)
 		local numPieces = getSetting(cardName .. 'PiecesPerTurn');
 		local needsAttack = getSetting(cardName .. 'NeedsSuccessfulAttackToEarnPiece');
 
-		LOG('enabled = ' .. tostring(enabled));
-		LOG('cardName = ' .. tostring(cardName));
-		LOG('numPieces = ' .. tostring(numPieces));
-		LOG('needsAttack = ' .. tostring(numPieces));
-
 		if enabled and numPieces and numPieces ~= 0 then
 			if needsAttack then
 				for playerId, hadSuccessfulAttack in pairs(playersWithSuccessfulAttacks) do
-					LOG('playerId = ' .. tostring(playerId) .. '\nhadSuccessfulAttack = ' .. tostring('hadSuccessfulAttack'));
 					local player = game.ServerGame.Game.Players[playerId];
 
 					if player.State == WL.GamePlayerState.Playing and hadSuccessfulAttack then
@@ -91,8 +86,6 @@ function Server_AdvanceTurn_End(game, addNewOrder)
 			end
 		end
 	end
-
-	LOG('earnedPieces = ' .. tblprint(earnedPieces));
 
 	for playerId in pairs(earnedPieces) do
 		local msgPrefix = game.ServerGame.Game.PlayingPlayers[playerId].DisplayName(nil, false) .. ' received ';
@@ -126,7 +119,8 @@ function parseGameOrderCustom(wz)
 	-- 'CCP2_useCard_1000_<Reconnaissance+=[100],Reconnaissance+=[]>'
 	-- 'CCP2_buyCard_1000_<Reconnaissance+=[],Reconnaissance+=[]>'
 
-	local _, _, command, playerId, cards = string.find(wz.order.Payload, '^CCP2_([^_]+)_(%d+)_<([^>]+)>$');
+	local _, _, command, playerId, cards = string.find(wz.order.Payload, '^CCP2_([^_]+)_(-?%d+)_<([^>]+)>$');
+	-- ai player id is negative in mp team games https://www.warzone.com/MultiPlayer?GameID=35407114
 
 	if not (command and _G[command] and playerId and cards) then
 		wz.ERROR('invalid payload: ' .. wz.order.Payload);
