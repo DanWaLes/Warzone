@@ -50,6 +50,10 @@ function Server_AdvanceTurn_Order(game, order, result, skipThisOrder, addNewOrde
 end
 
 function Server_AdvanceTurn_End(game, addNewOrder)
+	function LOG(msg)
+		addNewOrder(WL.GameOrderEvent.Create(WL.PlayerID.Neutral, msg, nil));
+	end
+
 	local earnedPieces = {};
 
 	for _, cardName in pairs(Mod.PublicGameData.cardNames) do
@@ -57,9 +61,15 @@ function Server_AdvanceTurn_End(game, addNewOrder)
 		local numPieces = getSetting(cardName .. 'PiecesPerTurn');
 		local needsAttack = getSetting(cardName .. 'NeedsSuccessfulAttackToEarnPiece');
 
+		LOG('enabled = ' .. tostring(enabled));
+		LOG('cardName = ' .. tostring(cardName));
+		LOG('numPieces = ' .. tostring(numPieces));
+		LOG('needsAttack = ' .. tostring(numPieces));
+
 		if enabled and numPieces and numPieces ~= 0 then
 			if needsAttack then
 				for playerId, hadSuccessfulAttack in pairs(playersWithSuccessfulAttacks) do
+					LOG('playerId = ' .. tostring(playerId) .. '\nhadSuccessfulAttack = ' .. tostring('hadSuccessfulAttack'));
 					local player = game.ServerGame.Game.Players[playerId];
 
 					if player.State == WL.GamePlayerState.Playing and hadSuccessfulAttack then
@@ -81,6 +91,8 @@ function Server_AdvanceTurn_End(game, addNewOrder)
 			end
 		end
 	end
+
+	LOG('earnedPieces = ' .. tblprint(earnedPieces));
 
 	for playerId in pairs(earnedPieces) do
 		local msgPrefix = game.ServerGame.Game.PlayingPlayers[playerId].DisplayName(nil, false) .. ' received ';
