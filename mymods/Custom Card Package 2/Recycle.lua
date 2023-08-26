@@ -43,10 +43,11 @@ function playedCardRecycle(wz, player, cardName, param)
 			if unit.proxyType == 'CustomSpecialUnit' then
 				if unit.Health then
 					unitValue = unit.Health;
+				else
+					unitValue = unit.DamageToKill;
 				end
 
-				unitValue = unitValue + math.max(unit.AttackPower * unit.AttackPowerPercentage, unit.DefensePower * unit.DefensePowerPercentage , unit.DamageToKill);
-
+				unitValue = unitValue + math.max(unit.AttackPower * unit.AttackPowerPercentage, unit.DefensePower * unit.DefensePowerPercentage);
 				unitValuesStr = unitValuesStr .. unit.Name;
 			else
 				if unit.proxyType == 'Commander' then
@@ -75,7 +76,7 @@ function playedCardRecycle(wz, player, cardName, param)
 
 		return {
 			terrModsOpt = {terrMod},
-			incomeModsOpt = {WL.IncomeMod.Create(player.ID, currArmiesOnTerr, incomeModMsg)}
+			incomeModsOpt = {WL.IncomeMod.Create(player.ID, currArmiesOnTerr + totalSpecialUnitValue, incomeModMsg)}
 		};
 	end);
 end
