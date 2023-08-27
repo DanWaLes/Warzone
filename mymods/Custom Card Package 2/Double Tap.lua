@@ -98,7 +98,6 @@ local failedAttacks = {};
 ]]
 
 local function doDoubleTapCardEffect(wz, player, cardName, param)
-	print('init doDoubleTapCardEffect');
 	for i, activeCardInstance in ipairs(Mod.PublicGameData.activeCards[cardName]) do
 		if activeCardInstance.playedBy == player.ID and activeCardInstance.param == param then
 			local params = split(activeCardInstance.param, '_');

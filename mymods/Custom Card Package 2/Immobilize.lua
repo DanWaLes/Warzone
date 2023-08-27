@@ -60,7 +60,7 @@ local function doImmobilizeCardEffect(wz, cardName, i, activeCardInstance)
 	local msg = 'Skipped ' .. movementType .. ' to ' .. toName .. ' from ' .. fromName;
 	msg = msg .. ' because a ' .. cardName .. ' Card was played on ' .. affectedTerr.Name;
 
-	local event = WL.GameOrderEvent.Create(WL.PlayerID.Neutral, msg, {}, WL.TerritoryModification.Create(affectedTerr.ID));
+	local event = WL.GameOrderEvent.Create(WL.PlayerID.Neutral, msg, {}, {WL.TerritoryModification.Create(affectedTerr.ID)});
 	event.JumpToActionSpotOpt = WL.RectangleVM.Create(affectedTerr.MiddlePointX , affectedTerr.MiddlePointY, affectedTerr.MiddlePointX, affectedTerr.MiddlePointY);
 
 	wz.addNewOrder(event);
