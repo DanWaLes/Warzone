@@ -8,6 +8,26 @@ function cardNameToFnName(cardName)
 	return string.gsub(cardName, '[^%w_]', '');
 end
 
+function visibleToTeammates(assignedPlayer, players)
+	if assignedPlayer == WL.PlayerID.Neutral then
+		return {assignedPlayer};
+	end
+
+	local p = players[assignedPlayer];
+
+	if p.Team == -1 then
+		return {assignedPlayer};
+	end
+
+	local visTo = {};
+
+	for _, playerId in pairs(Mod.PublicGameData.teams[p.Team].members) do
+		table.insert(visTo, playerId);
+	end
+
+	return visTo;
+end
+
 local playersWithSuccessfulAttacks = {};
 
 function Server_AdvanceTurn_Start(game, addNewOrder)
@@ -16,7 +36,6 @@ function Server_AdvanceTurn_Start(game, addNewOrder)
 	end
 
 	for playerId in pairs(game.ServerGame.Game.PlayingPlayers) do
-		LOG('playerId = ' .. tostring(playerId));
 		playersWithSuccessfulAttacks[playerId] = false;
 	end
 
@@ -36,7 +55,7 @@ function Server_AdvanceTurn_Order(game, order, result, skipThisOrder, addNewOrde
 		result = result,
 		addNewOrder = addNewOrder,
 		skipThisOrder = skipThisOrder,
-		ERROR = function(msg)
+		LOG = function(msg)
 			addNewOrder(WL.GameOrderEvent.Create(WL.PlayerID.Neutral, msg, nil));
 		end
 	};
@@ -123,7 +142,7 @@ function parseGameOrderCustom(wz)
 	-- ai player id is negative in mp team games https://www.warzone.com/MultiPlayer?GameID=35407114
 
 	if not (command and _G[command] and playerId and cards) then
-		wz.ERROR('invalid payload: ' .. wz.order.Payload);
+		wz.LOG('invalid payload: ' .. wz.order.Payload);
 		wz.skipThisOrder(WL.ModOrderControl.SkipAndSupressSkippedMessage);
 		return;
 	end
@@ -131,7 +150,7 @@ function parseGameOrderCustom(wz)
 	playerId = round(tonumber(playerId));
 
 	if not wz.game.ServerGame.Game.PlayingPlayers[playerId] then
-		wz.ERROR('player ' .. tostring(playerId) .. ' isnt playing, payload = ' .. wz.order.Payload);
+		wz.LOG('player ' .. tostring(playerId) .. ' isnt playing, payload = ' .. wz.order.Payload);
 		wz.skipThisOrder(WL.ModOrderControl.SkipAndSupressSkippedMessage);
 		return;
 	end
@@ -143,7 +162,7 @@ function parseGameOrderCustom(wz)
 		local _, _, cardName, param = string.find(str2, '^([^=]+)=%[([^%]]*)%]$');
 
 		if not (cardName and param) then
-			wz.ERROR('cardName and or param is invalid. str2 = ' .. str2);
+			wz.LOG('cardName and or param is invalid. str2 = ' .. str2);
 			wz.skipThisOrder(WL.ModOrderControl.SkipAndSupressSkippedMessage);
 		elseif cardName and param and getSetting('Enable' .. cardName) then
 			wz.skipThisOrder(WL.ModOrderControl.SkipAndSupressSkippedMessage);
@@ -181,7 +200,9 @@ function addCardPieces(wz, player, cardName, param)
 
 	local msgPrefix = player.DisplayName(nil, false) .. ' received ';
 	local msg = msgPrefix .. numPieces .. ' piece' .. (numPieces ~= 1 and 's' or '') .. ' of a ' .. cardName .. ' Card';
-	wz.addNewOrder(WL.GameOrderEvent.Create(player.ID, msg, {}));
+	local visTo = visibleToTeammates(player.ID, wz.game.ServerGame.Game.Players);
+
+	wz.addNewOrder(WL.GameOrderEvent.Create(player.ID, msg, visTo));
 end
 
 function playedCard(wz, player, cardName, param)
@@ -235,7 +256,7 @@ function playedTerritorySelectionCard(wz, player, cardName, param, modifyEvent)
 	end
 
 	local msg = 'Played a ' .. cardName .. ' Card on ' .. terr.Name;
-	local visTo = {};
+	local visTo = visibleToTeammates(player.ID, wz.game.ServerGame.Game.Players);
 
 	if Mod.PublicGameData.cardsThatCanBeActive[cardName] then
 		local duration = getSetting(cardName .. 'Duration');
@@ -260,7 +281,8 @@ function playedTerritorySelectionCard(wz, player, cardName, param, modifyEvent)
 end
 
 function buyCard(wz, player, cardName)
-	local order = WL.GameOrderEvent.Create(player.ID, 'Bought a ' .. cardName .. ' Card', {});
+	local visTo = visibleToTeammates(player.ID, wz.game.ServerGame.Game.Players);
+	local order = WL.GameOrderEvent.Create(player.ID, 'Bought a ' .. cardName .. ' Card', visTo);
 	order.AddResourceOpt = {
 		[player.ID] = {
 			[WL.ResourceType.Gold] = -getSetting(cardName .. 'Cost');

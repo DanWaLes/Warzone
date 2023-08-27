@@ -75,7 +75,8 @@ function playCardDoubleTap(game, tabData, cardName, btn, vert, vert2, data)
 		end
 
 		local to = game.Map.Territories[connectedTerrIds[data.to]];
-		local mode = string.gsub(modes[data.mode], '(or|%s+|Only)', '');
+		local mode = string.gsub(string.gsub(modes[data.mode], ' or ', ''), ' Only', '');
+		-- lua doesnt have an or in patterns
 
 		return {
 			msg = ' from ' .. data.from.Name .. ' to ' .. to.Name,
@@ -97,6 +98,7 @@ local failedAttacks = {};
 ]]
 
 local function doDoubleTapCardEffect(wz, player, cardName, param)
+	print('init doDoubleTapCardEffect');
 	for i, activeCardInstance in ipairs(Mod.PublicGameData.activeCards[cardName]) do
 		if activeCardInstance.playedBy == player.ID and activeCardInstance.param == param then
 			local params = split(activeCardInstance.param, '_');
@@ -154,7 +156,7 @@ function playedCardDoubleTap(wz, player, cardName, param)
 	end
 
 	local msg = 'Played a ' .. cardName .. ' Card from ' .. from.Name .. ' to ' .. to.Name;
-	local event = WL.GameOrderEvent.Create(player.ID, msg, {});
+	local event = WL.GameOrderEvent.Create(player.ID, msg, visibleToTeammates(player.ID, wz.game.ServerGame.Game.Players));
 	event.JumpToActionSpotOpt = WL.RectangleVM.Create(from.MiddlePointX, from.MiddlePointY, from.MiddlePointX, from.MiddlePointY);
 
 	wz.addNewOrder(event);
