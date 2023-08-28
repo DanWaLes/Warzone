@@ -93,7 +93,7 @@ function cardNameClicked(tabData, cardName)
 			local msg = 'Buy a ' .. cardName .. ' Card';
 			local payload = 'CCP2_buyCard_' .. game.Us.ID .. '_<' .. cardName .. '=[]>';
 			local costOpt = {[WL.ResourceType.Gold] = cost};
-			local order = WL.GameOrderCustom.Create(game.Us.ID, msg, payload, costOpt);
+			local order = WL.GameOrderCustom.Create(game.Us.ID, msg, payload, costOpt, WL.TurnPhase.Purchase);
 
 			placeOrderInCorrectPosition(game, order);
 		end);
