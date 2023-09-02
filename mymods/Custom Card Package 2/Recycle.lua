@@ -26,6 +26,8 @@ function playedCardRecycle(wz, player, cardName, param)
 		local terrCurrTurn = wz.game.ServerGame.LatestTurnStanding.Territories[terrId];
 		local currArmiesOnTerr = terrCurrTurn.NumArmies.NumArmies;
 		local firstArmiesOnTerr = terrFirstTurn.NumArmies.NumArmies;
+		local eliminateIfCommander = getSetting(cardName .. 'EliminateIfCommander');
+		local eliminatingBecauseCommander = false;
 
 		local terrMod = WL.TerritoryModification.Create(terrId);
 		terrMod.SetOwnerOpt = WL.PlayerID.Neutral;
@@ -34,6 +36,7 @@ function playedCardRecycle(wz, player, cardName, param)
 		local removeSpecialUnitsOpt = {};
 		local totalSpecialUnitValue = 0;
 		local unitValuesStr = '';
+
 		for _, unit in pairs(terrCurrTurn.NumArmies.SpecialUnits) do
 			table.insert(removeSpecialUnitsOpt , unit.ID);
 
@@ -51,6 +54,11 @@ function playedCardRecycle(wz, player, cardName, param)
 				unitValuesStr = unitValuesStr .. unit.Name;
 			else
 				if unit.proxyType == 'Commander' then
+					if eliminateIfCommander then
+						eliminatingBecauseCommander = true;
+						break;
+					end
+
 					unitValue = 7;
 				elseif unit.proxyType == 'Boss1' then
 					unitValue = unit.Health;
@@ -74,9 +82,15 @@ function playedCardRecycle(wz, player, cardName, param)
 			incomeModMsg = incomeModMsg .. '\nArmies = ' .. currArmiesOnTerr .. '\nSpecial units = ' .. totalSpecialUnitValue .. unitValuesStr;
 		end
 
-		return {
-			terrModsOpt = {terrMod},
-			incomeModsOpt = {WL.IncomeMod.Create(player.ID, currArmiesOnTerr + totalSpecialUnitValue, incomeModMsg)}
-		};
+		if eliminatingBecauseCommander then
+			return {
+				terrModsOpt = eliminate({player.ID}, wz.game.ServerGame.LatestTurnStanding.Territories)
+			}
+		else
+			return {
+				terrModsOpt = {terrMod},
+				incomeModsOpt = {WL.IncomeMod.Create(player.ID, currArmiesOnTerr + totalSpecialUnitValue, incomeModMsg)}
+			};
+		end
 	end);
 end

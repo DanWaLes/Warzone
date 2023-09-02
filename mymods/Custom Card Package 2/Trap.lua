@@ -35,6 +35,8 @@ local function doTrapCardEffect(wz, cardName, i, activeCardInstance)
 	local isDifferentPlayer = players[attackedBy].Team == -1 and attackedBy ~= playedById;
 	local isDifferentTeam = players[attackedBy].Team ~= -1 and players[attackedBy].Team ~= players[playedById].Team;
 	local terrName = wz.game.Map.Territories[targetTerr].Name;
+	local eliminateIfCommander = getSetting(cardName .. 'EliminateIfCommander');
+	local eliminatingBecauseCommander = false;
 
 	if not (isDifferentPlayer or isDifferentTeam) then
 		return;
@@ -44,15 +46,26 @@ local function doTrapCardEffect(wz, cardName, i, activeCardInstance)
 
 	local specialUnitsToRemove = {};
 	for _, unit in pairs(armiesTakingOver.SpecialUnits) do
+		if eliminateIfCommander and unit.proxyType == 'Commander' then
+			eliminatingBecauseCommander = true;
+		end
+
 		table.insert(specialUnitsToRemove, unit.ID);
 	end
 
 	local mod = WL.TerritoryModification.Create(targetTerr);
 	mod.SetOwnerOpt = WL.PlayerID.Neutral;
-	mod.SetArmiesTo = armiesTakingOver.NumArmies * getSetting(cardName .. 'Multiplier');
+	mod.SetArmiesTo = round(armiesTakingOver.NumArmies * getSetting(cardName .. 'Multiplier'));
 	mod.RemoveSpecialUnitsOpt = specialUnitsToRemove;
 
-	wz.addNewOrder(WL.GameOrderEvent.Create(playedById, 'Trap activated', {}, {mod}));
+	if eliminatingBecauseCommander then
+		local mods = eliminate({attackedBy}, wz.game.ServerGame.LatestTurnStanding.Territories);
+		table.insert(mods, mod);
+
+		wz.addNewOrder(WL.GameOrderEvent.Create(playedById, 'Trap activated', {}, mods));
+	else
+		wz.addNewOrder(WL.GameOrderEvent.Create(playedById, 'Trap activated', {}, {mod}));
+	end
 
 	removeActiveCardInstance(cardName, i);
 end

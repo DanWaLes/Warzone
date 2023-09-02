@@ -9,17 +9,18 @@ end
 function getCardNames()
 	return {
 		'Reconnaissance+',
-		'Trap',
-		'Immobilize',
 		'Recycle',
-		'Double Tap'
+		'Immobilize',
+		'Trap',
+		'Double Tap',
+		'Rushed Blockade'
 	};
 end
 
 function getCardsThatCanBeActive()
 	return {
-		Trap = true,
 		Immobilize = true,
+		Trap = true,
 		['Double Tap'] = true
 	};
 end

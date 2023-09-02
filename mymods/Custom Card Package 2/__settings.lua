@@ -59,6 +59,26 @@ function getSettings()
 				maxValue = 5
 			})
 		}),
+		Card('Recycle', function(parent)
+			Label(parent).SetText('Sets the number armies on a territory to be the amount that was on it on the first turn and changes the owner to neutral');
+			Label(parent).SetText('The armies that used to be on the territory get added to your income');
+			Label(parent).SetText('Can only be played on one of your own territories');
+		end, {
+			addSetting('RecycleEliminateIfCommander', 'Recycling Commander causes elimination', 'bool', false, {
+				bkwrds = false,
+				help = function(parent)
+					Label(parent).SetText('If a Recycle Card was played on a territory with a Commander, should the player be eliminated?');
+				end
+			})
+		}),
+		Card('Immobilize', function(parent)
+			Label(parent).SetText('Prevents all army movement (including airlifts) to and from a territory that is next to or is one of yours');
+		end, {
+			addSetting('ImmobilizeDuration', 'Duration (turns)', 'int', 2, {
+				minValue = 1,
+				maxValue = 10
+			})
+		}),
 		Card('Trap', function(parent)
 			Label(parent).SetText('Similar to Blockade Cards except they are triggered by the enemy capturing where the card was played');
 			Label(parent).SetText('Traps must be played on one of your own territories');
@@ -70,25 +90,28 @@ function getSettings()
 				dp = 2,
 				minValue = 0,
 				maxValue = 8
+			}),
+			addSetting('TrapEliminateIfCommander', 'Trapping Commander causes elimination', 'bool', true, {
+				bkwrds = false,
+				help = function(parent)
+					Label(parent).SetText('If one of the armies taking over the territory (where a Trap Card was played) was a Commander, should the player be eliminated?');
+				end
 			})
 		}),
-		Card('Immobilize', function(parent)
-			Label(parent).SetText('Prevents all army movement (including airlifts) to and from a territory that is next to or is one of yours');
-		end, {
-			addSetting('ImmobilizeDuration', 'Duration (turns)', 'int', 2, {
-				minValue = 1,
-				maxValue = 10
-			})
-		}),
-		Card('Recycle', function(parent)
-			Label(parent).SetText('Sets the number armies on a territory to be the amount that was on it on the first turn and changes the owner to neutral');
-			Label(parent).SetText('The armies that used to be on the territory get added to your income');
-			Label(parent).SetText('Can only be played on one of your own territories');
-		end),
 		Card('Double Tap', function(parent)
 			Label(parent).SetText('Allows you to make a second attack/transfer from a territory that you already issued an attack/transfer from');
 			Label(parent).SetText('If one of your attacks fails but you played a Double Tap Card, a new order will be created using all armies and any special units that are on the territory at the time the card is played');
 			Label(parent).SetText('If using multi-attack and the double tap attack is successful, the multi-attack chain will only continue if it was played before the next attack of the chain');
-		end)
+		end),
+		Card('Rushed Blockade', function(parent)
+			Label(parent).SetText('Like normal Blockade Cards but happen during the attacks phase');
+			Label(parent).SetText('You must own the territory at the time of the card being played');
+		end, {
+			addSetting('Rushed BlockadeMultiplier', 'Multiplier', 'float', 3, {
+				dp = 2,
+				minValue = 0,
+				maxValue = 8
+			}),
+		})
 	};
 end

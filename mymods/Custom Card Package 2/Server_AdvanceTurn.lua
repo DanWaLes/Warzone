@@ -1,6 +1,7 @@
 require 'version';
 require '_settings';
 require '_util';
+require 'eliminate';
 require 'cards';
 
 function cardNameToFnName(cardName)
