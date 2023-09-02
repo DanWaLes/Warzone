@@ -82,15 +82,20 @@ function playedCardRecycle(wz, player, cardName, param)
 			incomeModMsg = incomeModMsg .. '\nArmies = ' .. currArmiesOnTerr .. '\nSpecial units = ' .. totalSpecialUnitValue .. unitValuesStr;
 		end
 
+		local terrModsOpt = nil;
+		local incomeModsOpt = nil;
+
 		if eliminatingBecauseCommander then
-			return {
-				terrModsOpt = eliminate({player.ID}, wz.game.ServerGame.LatestTurnStanding.Territories)
-			}
+			terrModsOpt = eliminate({player.ID}, wz.game.ServerGame.LatestTurnStanding.Territories)
+			table.insert(terrModsOpt, terrMod);
 		else
-			return {
-				terrModsOpt = {terrMod},
-				incomeModsOpt = {WL.IncomeMod.Create(player.ID, currArmiesOnTerr + totalSpecialUnitValue, incomeModMsg)}
-			};
+			terrModsOpt = {terrMod};
+			incomeModsOpt = {WL.IncomeMod.Create(player.ID, currArmiesOnTerr + totalSpecialUnitValue, incomeModMsg)}
 		end
+
+		return {
+			terrModsOpt = terrModsOpt,
+			incomeModsOpt = incomeModsOpt
+		};
 	end);
 end
