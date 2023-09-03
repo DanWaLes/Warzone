@@ -1,7 +1,19 @@
 require '_settings'
 require '_ui'
 
-local function Card(cardName, help, extraSubsettings)
+local function Card(cardName, p1, p2, p3)
+	local isNewCard = p1 and type(p1) == 'boolean';
+	local help;
+	local extraSubsettings;
+
+	if isNewCard then
+		help = p2;
+		extraSubsettings = p3 or {};
+	else
+		help = p1;
+		extraSubsettings = p2 or {};
+	end
+
 	if not extraSubsettings then
 		extraSubsettings = {};
 	end
@@ -41,11 +53,22 @@ local function Card(cardName, help, extraSubsettings)
 
 	card.help = help;
 
+	if isNewCard then
+		card.bkwrds = false;
+	end
+
 	for _, subsetting in ipairs(extraSubsettings) do
 		table.insert(card.subsettings, subsetting);
 	end
 
 	return card;
+end
+
+local function addDurationSetting(cardName)
+	return addSetting(cardName .. 'Duration', 'Duration (turns)', 'int', 2, {
+		minValue = 1,
+		maxValue = 10
+	});
 end
 
 function getSettings()
@@ -74,10 +97,7 @@ function getSettings()
 		Card('Immobilize', function(parent)
 			Label(parent).SetText('Prevents all army movement (including airlifts) to and from a territory that is next to or is one of yours');
 		end, {
-			addSetting('ImmobilizeDuration', 'Duration (turns)', 'int', 2, {
-				minValue = 1,
-				maxValue = 10
-			})
+			addDurationSetting('Immobilize')
 		}),
 		Card('Trap', function(parent)
 			Label(parent).SetText('Similar to Blockade Cards except they are triggered by the enemy capturing where the card was played');
@@ -103,7 +123,7 @@ function getSettings()
 			Label(parent).SetText('If one of your attacks fails but you played a Double Tap Card, a new order will be created using all armies and any special units that are on the territory at the time the card is played');
 			Label(parent).SetText('If using multi-attack and the double tap attack is successful, the multi-attack chain will only continue if it was played before the next attack of the chain');
 		end),
-		Card('Rushed Blockade', function(parent)
+		Card('Rushed Blockade', true, function(parent)
 			Label(parent).SetText('Like normal Blockade Cards but happen during the attacks phase');
 			Label(parent).SetText('You must own the territory at the time of the card being played');
 		end, {

@@ -16,7 +16,7 @@ function Client_PresentMenuUI(_rootParent, setMaxSize, setScrollable, _game, clo
 		return;
 	end
 
-	if not canRunMod() then
+	if hasNoCardsEnabled() or not canRunMod() then
 		return;
 	end
 
@@ -27,6 +27,16 @@ function Client_PresentMenuUI(_rootParent, setMaxSize, setScrollable, _game, clo
 		PlayerGameData = Mod.PlayerGameData,
 		PublicGameData = Mod.PublicGameData
 	}, 1);
+end
+
+function hasNoCardsEnabled()
+	for cardName in pairs(Mod.PublicGameData.cardNames) do
+		if getSetting('Enabled' .. cardName) then
+			return false;
+		end
+	end
+
+	return true;
 end
 
 function main(_stored, i)
