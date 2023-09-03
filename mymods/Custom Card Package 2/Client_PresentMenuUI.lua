@@ -30,8 +30,8 @@ function Client_PresentMenuUI(_rootParent, setMaxSize, setScrollable, _game, clo
 end
 
 function hasNoCardsEnabled()
-	for cardName in pairs(Mod.PublicGameData.cardNames) do
-		if getSetting('Enabled' .. cardName) then
+	for _, cardName in pairs(Mod.PublicGameData.cardNames) do
+		if getSetting('Enable' .. cardName) then
 			return false;
 		end
 	end
