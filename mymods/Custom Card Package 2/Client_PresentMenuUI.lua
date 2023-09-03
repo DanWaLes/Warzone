@@ -87,7 +87,12 @@ function cardNameClicked(tabData, cardName)
 	local btn = Btn(tabData.tabContents).SetText('Use card');
 	local vert = Vert(tabData.tabContents);
 
-	btn.SetInteractable(wholeCards > 0);
+	if game.Game.State == WL.GameState.Playing then
+		btn.SetInteractable(wholeCards > 0);
+	else
+		btn.SetInteractable(false);
+	end
+
 	btn.SetOnClick(function()
 		_G['playCard' .. string.gsub(cardName, '[^%w_]', '')](game, tabData, cardName, btn, vert, nil, {});
 	end);
@@ -107,6 +112,10 @@ function cardNameClicked(tabData, cardName)
 
 			placeOrderInCorrectPosition(game, order);
 		end);
+
+		if game.Game.State ~= WL.GameState.Playing then
+			btn.SetInteractable(false);
+		end
 	end
 end
 
