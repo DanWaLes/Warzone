@@ -94,6 +94,11 @@ function generateWastelandGroup(numWastelands, size, rand, placeWasteland, avail
 			available = clone(wastelanded);
 		end
 
+		if available.length < 1 then
+			-- no neutrals left
+			return {earlyExit = true, available = available, wastelands = wastelands, wastelanded = wastelanded};
+		end
+
 		local index = math.random(1, available.length);
 		local terrId = available.list[index];
 		local wSize = decideWastelandSize(size, rand);
