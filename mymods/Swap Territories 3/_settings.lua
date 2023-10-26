@@ -77,7 +77,7 @@ function addSetting(name, label, inputType, defaultValue, otherProps)
 		local val = otherProps[prop];
 
 		if type(val) ~= tpe then
-			print(prop .. ' must be a ' + tpe .. ' for inputType ' .. inputType .. ' in addSetting\nis');
+			print(prop .. ' must be a ' .. tpe .. ' for inputType ' .. inputType .. ' in addSetting\nis');
 			print(val)
 			return;
 		end
@@ -90,7 +90,7 @@ function addSetting(name, label, inputType, defaultValue, otherProps)
 
 		if val ~= nil then
 			if type(val) ~= tpe then
-				print(prop .. ' must be a ' + tpe .. ' for inputType ' .. inputType .. ' or non-existent in addSetting\nis');
+				print(prop .. ' must be a ' .. tpe .. ' for inputType ' .. inputType .. ' or non-existent in addSetting\nis');
 				print(val);
 				return;
 			end
@@ -158,7 +158,7 @@ function addSettingTemplate(name, btnText, options, get)
 		for i, ss in ipairs(tmp.settings) do
 			local name = tmp.settings[i].name;
 			if type(name) ~= 'string' then
-				print('get(n).settings[' + i + '].name must be a string\nis');
+				print('get(n).settings[' .. i .. '].name must be a string\nis');
 				print(ss.name);
 				return;
 			end
