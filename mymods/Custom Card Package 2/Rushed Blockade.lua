@@ -39,7 +39,7 @@ function playedCardRushedBlockade(wz, player, cardName, param)
 		local terr = wz.game.ServerGame.LatestTurnStanding.Territories[terrId];
 
 		if terr.OwnerPlayerID ~= player.ID then
-			return;
+			return {};
 		end
 
 		local terrMod = WL.TerritoryModification.Create(terrId);
