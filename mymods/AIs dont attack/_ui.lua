@@ -30,12 +30,18 @@ end
 
 -- useful structures
 
-function Tabs(parent, tabLabels, tabsClicked)
+function Tabs(parent, dir, tabLabels, tabsClicked)
+	local container = parent;
+
+	if dir == Vert then
+		container = Horz(parent);
+	end
+
 	local tabData = {
-		tabsContainer = Horz(parent),
+		tabsContainer = dir(container),
 		tabBtns = {},
 		selectedTab = nil,
-		tabContents = nil
+		tabContents = nil,
 	};
 
 	tabData.tabClicked = function(label, main)
@@ -50,15 +56,23 @@ function Tabs(parent, tabLabels, tabsClicked)
 			UI.Destroy(tabData.tabContents);
 		end
 
-		tabData.tabContents = Vert(parent);
+		tabData.tabContents = Vert(container);
 
 		main(tabData);
 	end
 
+	local map = {};
+	tabData.clickTab = function(label)
+		tabData.tabClicked(label, tabsClicked[map[label]]);
+	end
+
 	for i, label in ipairs(tabLabels) do
+		map[label] = i;
+
 		local tabBtn = Btn(tabData.tabsContainer).SetText(label);
+		tabBtn.SetFlexibleWidth(1);
 		tabBtn.SetOnClick(function() 
-			tabData.tabClicked(label, tabsClicked[i]);
+			tabData.clickTab(label);
 		end);
 
 		tabData.tabBtns[label] = tabBtn;

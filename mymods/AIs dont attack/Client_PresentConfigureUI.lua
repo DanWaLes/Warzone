@@ -1,6 +1,8 @@
 require '__settings'
 require '_ui'
 
+local expand = '˅';-- https://www.amp-what.com/unicode/search/down%20arrow &#709;
+
 GLOBALS = {};
 
 function Client_PresentConfigureUI(rootParent)
@@ -63,12 +65,47 @@ function cpcDoSetting(vert, setting)
 		createHelpBtn(horz, Vert(vert3), setting);
 
 		if setting.subsettings then
+			local expandCollapseBtn;
+			local expandCollapseBtnClicked;
+			local subsettingEnabledOrDisabled;
 			local vert4 = nil;
-			local subsettingEnabledOrDisabled = function()
+
+			expandCollapseBtnClicked = function()
+				-- save - destroying otherwise goes back to default setting values
+
+				if not Client_SaveConfigureUI(UI.Alert) then
+					-- if theres an error dont allow settings to collapse
+					return;
+				end
+
+				if expandCollapseBtn.GetText() == expand then
+					expandCollapseBtn.SetText('^');
+				else
+					expandCollapseBtn.SetText(expand);
+				end
+
+				if not UI.IsDestroyed(vert4) then
+					UI.Destroy(vert4);
+				end
+
+				if expandCollapseBtn.GetText() == '^' then
+					subsettingEnabledOrDisabled();
+				end
+			end
+
+			subsettingEnabledOrDisabled = function()
 				if GLOBALS[setting.name].GetIsChecked() then
+					if UI.IsDestroyed(expandCollapseBtn) then
+						expandCollapseBtn = Btn(horz);
+						expandCollapseBtn.SetColor('#23A0FF')
+						expandCollapseBtn.SetText('^');
+						expandCollapseBtn.SetOnClick(expandCollapseBtnClicked);
+					end
+
 					vert4 = Vert(vert3);
 					cpc(vert4, setting.subsettings);
 				elseif not UI.IsDestroyed(vert4) then
+					UI.Destroy(expandCollapseBtn);
 					UI.Destroy(vert4);
 				end
 			end
