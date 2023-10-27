@@ -11,12 +11,15 @@ function Client_SaveConfigureUI(alert)
 	csc(getSettings());
 
 	if errMsg then
-		return alert(errMsg);
+		alert(errMsg);
+		return;
 	end
 
 	for settingName, settingValue in pairs(settingValues) do
 		Mod.Settings[settingName] = settingValue;
 	end
+
+	return true;
 end
 
 function csc(settings)

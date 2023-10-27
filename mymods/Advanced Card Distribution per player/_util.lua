@@ -91,25 +91,12 @@ function tblprint(tbl)
 	print(p(tbl));
 end
 
-function printCards(game)
-	local toprint = '{';
-
-	for playerId, playerCards in pairs(game.ServerGame.LatestTurnStanding.Cards) do
-		toprint = toprint .. '\n  ' .. playerId .. ' = {';
-
-		toprint = toprint .. '\n    ID = ' .. playerCards.ID .. ',';
-		toprint = toprint .. '\n    Pieces = ' .. tprint(playerCards.Pieces, 4) .. ',';
-		toprint = toprint .. '\n    PlayerID = ' .. playerCards.PlayerID .. ',';
-		toprint = toprint .. '\n    WholeCards = ' .. tprint(playerCards.WholeCards, 4) .. ',';
-
-		toprint = toprint .. '\n  },';
+function round(n, dp)
+	if not n then
+		print('n is nil');
+		return;
 	end
 
-	toprint = toprint .. '\n}';
-	print(toprint);
-end
-
-function round(n, dp)
 	-- http://lua-users.org/wiki/SimpleRound
 	local multi = 10 ^ (dp or 0);
 
@@ -128,4 +115,47 @@ end
 
 function startsWith(str, sub)
 	return string.sub(str, 1, string.len(sub)) == sub;
+end
+
+function split(str, sepperator)
+	-- https://stackoverflow.com/questions/1426954/split-string-in-lua#answer-7615129
+	if not sepperator then
+		sepperator = '%s';
+	end
+
+	local t = {};
+	for str in string.gmatch(str, '([^'.. sepperator ..']+)') do
+		table.insert(t, str);
+	end
+	return t;
+end
+
+function placeOrderInCorrectPosition(clientGame, newOrder)
+	if not newOrder.OccursInPhase then
+		local orders = clientGame.Orders;
+		table.insert(orders, newOrder);
+		clientGame.Orders = orders;
+	else
+		local orders = {};
+		local addedNewOrder = false;
+
+		for _, order in pairs(clientGame.Orders) do
+			if order.OccursInPhase then
+				if not addedNewOrder and order.OccursInPhase > newOrder.OccursInPhase then
+					table.insert(orders, newOrder);
+					addedNewOrder = true;;
+				end
+
+				table.insert(orders, order);
+			else
+				table.insert(orders, order);
+			end
+		end
+
+		if not addedNewOrder then
+			table.insert(orders, newOrder);
+		end
+
+		clientGame.Orders = orders;
+	end
 end
