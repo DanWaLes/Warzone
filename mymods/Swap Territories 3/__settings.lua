@@ -3,7 +3,7 @@ require '_ui'
 
 function getSettings()
 	return {
-		addSetting('SwapFreq', 'Swap territories once every X turns:', 'int', 1, {
+		addSetting('SwapFreq', 'Swap territories once every X turns', 'int', 1, {
 			minValue = 1,
 			maxValue = 20
 		}),
