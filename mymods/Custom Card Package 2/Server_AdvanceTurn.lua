@@ -273,6 +273,10 @@ function playedTerritorySelectionCard(wz, player, cardName, param, modifyEvent)
 		modifiedEvent = modifyEvent();
 	end
 
+	print('playedTerritorySelectionCard cardName = ' .. cardName);
+	print('modifiedEvent =');
+	tprint(modifiedEvent);
+
 	local event = WL.GameOrderEvent.Create(player.ID, msg, visTo, modifiedEvent.terrModsOpt, modifiedEvent.setResourcesOpt, modifiedEvent.incomeModsOpt);
 	event.JumpToActionSpotOpt = WL.RectangleVM.Create(terr.MiddlePointX, terr.MiddlePointY, terr.MiddlePointX, terr.MiddlePointY);
 
