@@ -92,6 +92,11 @@ function tblprint(tbl)
 end
 
 function round(n, dp)
+	if not n then
+		print('n is nil');
+		return;
+	end
+
 	-- http://lua-users.org/wiki/SimpleRound
 	local multi = 10 ^ (dp or 0);
 
@@ -110,4 +115,47 @@ end
 
 function startsWith(str, sub)
 	return string.sub(str, 1, string.len(sub)) == sub;
+end
+
+function split(str, sepperator)
+	-- https://stackoverflow.com/questions/1426954/split-string-in-lua#answer-7615129
+	if not sepperator then
+		sepperator = '%s';
+	end
+
+	local t = {};
+	for str in string.gmatch(str, '([^'.. sepperator ..']+)') do
+		table.insert(t, str);
+	end
+	return t;
+end
+
+function placeOrderInCorrectPosition(clientGame, newOrder)
+	if not newOrder.OccursInPhase then
+		local orders = clientGame.Orders;
+		table.insert(orders, newOrder);
+		clientGame.Orders = orders;
+	else
+		local orders = {};
+		local addedNewOrder = false;
+
+		for _, order in pairs(clientGame.Orders) do
+			if order.OccursInPhase then
+				if not addedNewOrder and order.OccursInPhase > newOrder.OccursInPhase then
+					table.insert(orders, newOrder);
+					addedNewOrder = true;;
+				end
+
+				table.insert(orders, order);
+			else
+				table.insert(orders, order);
+			end
+		end
+
+		if not addedNewOrder then
+			table.insert(orders, newOrder);
+		end
+
+		clientGame.Orders = orders;
+	end
 end
