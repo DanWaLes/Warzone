@@ -7,6 +7,14 @@ function getSettings()
 			minValue = 1,
 			maxValue = 20
 		}),
+		addSetting('ChanceOfSwapping', 'Chance of territories swapping (%)', 'int', 50, {
+			minValue = 1,
+			maxValue = 100,
+			bkwrds = 100,
+			help = function(parent)
+				Label(parent).SetText('If a territory should swap is decided per territory, rather than on a turn by turn basis');
+			end
+		}),
 		addSetting('SpecialUnitSwappingEnabled', 'Let territories with special units be swapped', 'bool', false, {
 			help = function(parent)
 				Label(parent).SetText('Example of special units include Commanders, Bosses (from single player levels) and other custom special units like Tanks');

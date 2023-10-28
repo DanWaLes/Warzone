@@ -1,5 +1,5 @@
 require 'version';
-require '_settings';-- cant use until in a hook
+require '_settings';
 require '_util';
 
 local swapSpecialUnits = nil;
@@ -27,6 +27,7 @@ function Server_AdvanceTurn_End(game, addNewOrder)
 	swapSpecialUnits = getSetting('SpecialUnitSwappingEnabled');
 
 	local terrIdsForSpecialUnitDetails = {};
+	local chanceOfSwapping = (getSetting('ChanceOfSwapping') or 100) / 100;
 
 	for tId, terr in pairs(game.ServerGame.LatestTurnStanding.Territories) do
 		if not terr.IsNeutral then
@@ -35,8 +36,9 @@ function Server_AdvanceTurn_End(game, addNewOrder)
 			end
 
 			local numSpecialUnits = #terr.NumArmies.SpecialUnits;
+			local canSwap = math.random() < chanceOfSwapping;
 
-			if numSpecialUnits == 0 and isSwappable(terr) then
+			if canSwap and numSpecialUnits == 0 and isSwappable(terr) then
 				table.insert(playerOwnedTerritories[terr.OwnerPlayerID], tId);
 			elseif swapSpecialUnits and numSpecialUnits > 0 then
 				table.insert(playerOwnedTerritories[terr.OwnerPlayerID], tId);
@@ -52,7 +54,7 @@ function Server_AdvanceTurn_End(game, addNewOrder)
 						local obj = {
 							unit = unit,
 							terrId = tId,
-							canBeSwapped = getSetting('Swap' .. unit.proxyType) and isSwappable(terr)
+							canBeSwapped = canSwap and getSetting('Swap' .. unit.proxyType) and isSwappable(terr)
 						};
 
 						table.insert(specialUnitDetails[tId], obj);
