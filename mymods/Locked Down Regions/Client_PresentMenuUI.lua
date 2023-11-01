@@ -115,7 +115,7 @@ function makeHostMenu(storage, vert)
 	Label(vert).SetText('Locked down regions:');
 
 	for bonusId, lockedDownUntilTurn in pairs(storage.lockedDownRegions) do
-		if game.Game.TurnNumber > lockedDownUntilTurn then
+		if lockedDownUntilTurn + 1 > game.Game.TurnNumber then
 			local bonus = game.Map.Bonuses[bonusId];
 			local horz = Horz(vert);
 
@@ -138,7 +138,7 @@ function makeNormalMenu(storage, vert)
 	local hasLockedDownRegions = false;
 
 	for bonusId, lockedDownUntilTurn in pairs(storage.lockedDownRegions) do
-		if game.Game.TurnNumber > lockedDownUntilTurn then
+		if lockedDownUntilTurn + 1 > game.Game.TurnNumber then
 			hasLockedDownRegions = true;
 			local bonus = game.Map.Bonuses[bonusId];
 			local horz = Horz(vert);
