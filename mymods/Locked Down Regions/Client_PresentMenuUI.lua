@@ -115,19 +115,21 @@ function makeHostMenu(storage, vert)
 	Label(vert).SetText('Locked down regions:');
 
 	for bonusId, lockedDownUntilTurn in pairs(storage.lockedDownRegions) do
-		local bonus = game.Map.Bonuses[bonusId];
-		local horz = Horz(vert);
+		if game.Game.TurnNumber > lockedDownUntilTurn then
+			local bonus = game.Map.Bonuses[bonusId];
+			local horz = Horz(vert);
 
-		Btn(horz).SetText(bonus.Name).SetOnClick(function()
-			game.HighlightTerritories(bonus.Territories);
-		end);
+			Btn(horz).SetText(bonus.Name).SetOnClick(function()
+				game.HighlightTerritories(bonus.Territories);
+			end);
 
-		Label(horz).SetText('until end of turn ' .. lockedDownUntilTurn);
-		Btn(horz).SetText('Remove').SetOnClick(function()
-			newStorage.lockedDownRegions[bonusId] = -1;
-			newStorage.newLockedDownRegions[bonusId] = nil;
-			updateStorage();
-		end);
+			Label(horz).SetText('until end of turn ' .. lockedDownUntilTurn);
+			Btn(horz).SetText('Remove').SetOnClick(function()
+				newStorage.lockedDownRegions[bonusId] = -1;
+				newStorage.newLockedDownRegions[bonusId] = nil;
+				updateStorage();
+			end);
+		end
 	end
 end
 
@@ -136,15 +138,17 @@ function makeNormalMenu(storage, vert)
 	local hasLockedDownRegions = false;
 
 	for bonusId, lockedDownUntilTurn in pairs(storage.lockedDownRegions) do
-		hasLockedDownRegions = true;
-		local bonus = game.Map.Bonuses[bonusId];
-		local horz = Horz(vert);
+		if game.Game.TurnNumber > lockedDownUntilTurn then
+			hasLockedDownRegions = true;
+			local bonus = game.Map.Bonuses[bonusId];
+			local horz = Horz(vert);
 
-		Btn(horz).SetText(bonus.Name).SetOnClick(function()
-			game.HighlightTerritories(bonus.Territories);
-		end);
+			Btn(horz).SetText(bonus.Name).SetOnClick(function()
+				game.HighlightTerritories(bonus.Territories);
+			end);
 
-		Label(horz).SetText('until end of turn ' .. lockedDownUntilTurn);
+			Label(horz).SetText('until end of turn ' .. lockedDownUntilTurn);
+		end
 	end
 
 	if not hasLockedDownRegions then
