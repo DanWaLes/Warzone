@@ -1,0 +1,1 @@
+This mod gives game hosts the ability to prevent army movements getting out of or into certain bonuses. Army movements within territories of the locked down bonus continue as normal, as long as they do not go outside of the bonus. Bonuses which are locked down must not overlap.
