@@ -71,7 +71,7 @@ function Server_AdvanceTurn_Order(Game, order, result, skipThisOrder, addNewOrde
 
 	local bonusValue = game.Settings.OverriddenBonuses[affectedBonus.ID] or affectedBonus.Amount;
 	local msg = 'Skipped ' .. movementType .. ' to ' .. toTerr.Name .. ' from ' .. fromTerr.Name;
-	msg = msg .. ' because the ' .. movementType .. ' goes into or out of ' .. affectedBonus.Name .. '[' .. bonusValue .. '] which is locked down until end of turn ' .. turnNo;
+	msg = msg .. ' because the ' .. movementType .. ' goes into or out of ' .. affectedBonus.Name .. ' [' .. bonusValue .. '] which is locked down until end of turn ' .. turnNo;
 
 	local affectedTerr = fromInLockedDownRegion and fromTerr or toTerr;
 	local event = WL.GameOrderEvent.Create(WL.PlayerID.Neutral, msg, {}, {WL.TerritoryModification.Create(affectedTerr.ID)});

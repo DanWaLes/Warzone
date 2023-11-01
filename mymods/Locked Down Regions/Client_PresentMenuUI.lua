@@ -1,11 +1,12 @@
 require '_util';
 require '_ui';
+require 'version';
 
 function Client_PresentMenuUI(RootParent, setMaxSize, setScrollable, Game, close)
 	rootParent = RootParent;
 	game = Game;
 
-	if game.Game.State == WL.GameState.Finished then
+	if (game.Game.State == WL.GameState.Finished) or not canRunMod() then
 		return close();
 	end
 
