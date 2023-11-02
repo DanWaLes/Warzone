@@ -182,7 +182,7 @@ function isValidSelectedBonus(storage, selectedId)
 	local selectedBonus = game.Map.Bonuses[selectedId];
 
 	for bonusId, lockedDownUntilTurn in pairs(storage.lockedDownRegions) do
-		if (lockedDownUntilTurn + 1 > game.Game.TurnNumber)
+		if lockedDownUntilTurn + 1 > game.Game.TurnNumber then
 			local existingBonus = game.Map.Bonuses[bonusId];
 
 			if bonusContainsBonus(selectedBonus, existingBonus) then
