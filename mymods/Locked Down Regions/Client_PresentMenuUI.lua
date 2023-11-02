@@ -89,10 +89,16 @@ function makeHostMenu(storage, vert)
 
 		Label(untilTurnHorz).SetText('Locks down until end of turn:');
 
+		local initalValue = newStorage.lastUsedLockdownTurnNo or 0;
+
+		if initalValue < turnNo then
+			initalValue = turnNo;
+		end
+
 		local turn = NumInput(untilTurnHorz)
 			.SetSliderMinValue(turnNo)
 			.SetSliderMaxValue(turnNo + 100)
-			.SetValue(turnNo + 20);
+			.SetValue(initalValue);
 
 		Btn(vert2)
 			.SetText('Done')
@@ -104,6 +110,8 @@ function makeHostMenu(storage, vert)
 				elseif selectedBonus then
 					newStorage.lockedDownRegions[selectedBonus] = turnValue;
 					newStorage.newLockedDownRegions[selectedBonus] = turnValue;
+					newStorage.lastUsedLockdownTurnNo = turnValue;
+
 					updateStorage();
 				else
 					UI.Destroy(vert2);

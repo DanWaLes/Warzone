@@ -56,24 +56,55 @@ function Server_AdvanceTurn_Order(Game, order, result, skipThisOrder, addNewOrde
 	local toTerr = game.Map.Territories[to];
 	local toInLockedDownRegion = territoryInLockedDownRegion(toTerr.ID);
 
-	if (fromInLockedDownRegion and toInLockedDownRegion) or (not fromInLockedDownRegion and not toInLockedDownRegion) then
+	if fromInLockedDownRegion == toInLockedDownRegion then
 		return;
 	end
 
-	local affectedBonus = game.Map.Bonuses[(fromInLockedDownRegion and fromInLockedDownRegion or toInLockedDownRegion)];
-	local turnNo = Mod.PublicGameData.lockedDownRegions[affectedBonus.ID];
+	local fromIsActiveLockdown = fromInLockedDownRegion and (Mod.PublicGameData.lockedDownRegions[fromInLockedDownRegion] <= game.ServerGame.Game.TurnNumber);
+	local toIsActiveLockdown = toInLockedDownRegion and (Mod.PublicGameData.lockedDownRegions[toInLockedDownRegion] <= game.ServerGame.Game.TurnNumber);
+	local bothInActiveLockdown = fromIsActiveLockdown and toIsActiveLockdown;
 
-	if game.ServerGame.Game.TurnNumber > turnNo then
+	if not (fromIsActiveLockdown or toIsActiveLockdown) then
 		return;
 	end
 
 	skipThisOrder(WL.ModOrderControl.SkipAndSupressSkippedMessage);
 
-	local bonusValue = game.Settings.OverriddenBonuses[affectedBonus.ID] or affectedBonus.Amount;
-	local msg = 'Skipped ' .. movementType .. ' to ' .. toTerr.Name .. ' from ' .. fromTerr.Name;
-	msg = msg .. ' because the ' .. movementType .. ' goes into or out of ' .. affectedBonus.Name .. ' [' .. bonusValue .. '] which is locked down until end of turn ' .. turnNo;
+	local msg = 'Skipped ' .. movementType .. ' to ' .. toTerr.Name .. ' from ' .. fromTerr.Name .. ' because it goes into or out of ';
 
-	local affectedTerr = fromInLockedDownRegion and fromTerr or toTerr;
+	if fromIsActiveLockdown then
+		local affectedBonus = game.Map.Bonuses[fromInLockedDownRegion];
+		local bonusValue = game.Settings.OverriddenBonuses[affectedBonus.ID] or affectedBonus.Amount;
+
+		msg = msg .. affectedBonus.Name .. ' [' .. bonusValue .. '] ';
+	end
+
+	if bothInActiveLockdown then
+		msg = msg .. 'and ';
+	end
+
+	if toIsActiveLockdown then
+		local affectedBonus = game.Map.Bonuses[toInLockedDownRegion];
+		local bonusValue = game.Settings.OverriddenBonuses[affectedBonus.ID] or affectedBonus.Amount;
+
+		msg = msg .. affectedBonus.Name .. ' [' .. bonusValue .. '] ';
+	end
+
+	msg = msg .. 'which ' .. (bothInActiveLockdown and 'are' or 'is') .. ' locked down until end of turn' .. (bothInActiveLockdown and 's' or '');
+
+	if fromIsActiveLockdown then
+		msg = msg .. ' ' .. Mod.PublicGameData.lockedDownRegions[fromInLockedDownRegion];
+	end
+
+	if bothInActiveLockdown then
+		msg = msg .. ' and';
+	end
+
+	if toIsActiveLockdown then
+		msg = msg .. ' ' .. Mod.PublicGameData.lockedDownRegions[toInLockedDownRegion];
+	end
+
+	local affectedTerr = fromIsActiveLockdown and fromTerr or toTerr;-- should only be from or to. if both use from
 	local event = WL.GameOrderEvent.Create(WL.PlayerID.Neutral, msg, {}, {WL.TerritoryModification.Create(affectedTerr.ID)});
 	event.JumpToActionSpotOpt = WL.RectangleVM.Create(affectedTerr.MiddlePointX , affectedTerr.MiddlePointY, affectedTerr.MiddlePointX, affectedTerr.MiddlePointY);
 
