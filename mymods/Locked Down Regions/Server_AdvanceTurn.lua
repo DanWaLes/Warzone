@@ -22,6 +22,7 @@ function Server_AdvanceTurn_Start(game, addNewOrder)
 		local msg = 'Lockdown in ' .. bonus.Name .. ' [' .. bonusValue .. '] started, ends at end of turn ' .. turnNo;
 
 		addNewOrder(WL.GameOrderEvent.Create(host, msg, nil));
+		publicGD.lockedDownRegions[bonusId] = turnNo;
 	end
 
 	publicGD.newLockedDownRegions = {};
@@ -104,8 +105,9 @@ function Server_AdvanceTurn_Order(Game, order, result, skipThisOrder, addNewOrde
 		msg = msg .. ' ' .. Mod.PublicGameData.lockedDownRegions[toInLockedDownRegion];
 	end
 
+	local playerId = WL.PlayerID.Neutral;-- neutral so that skipped orders cant be used as delays
 	local affectedTerr = fromIsActiveLockdown and fromTerr or toTerr;-- should only be from or to. if both use from
-	local event = WL.GameOrderEvent.Create(WL.PlayerID.Neutral, msg, {}, {WL.TerritoryModification.Create(affectedTerr.ID)});
+	local event = WL.GameOrderEvent.Create(playerId, msg, {}, {WL.TerritoryModification.Create(affectedTerr.ID)});
 	event.JumpToActionSpotOpt = WL.RectangleVM.Create(affectedTerr.MiddlePointX , affectedTerr.MiddlePointY, affectedTerr.MiddlePointX, affectedTerr.MiddlePointY);
 
 	addNewOrder(event);

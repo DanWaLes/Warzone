@@ -108,7 +108,6 @@ function makeHostMenu(storage, vert)
 				if turnValue < turnNo then
 					errorLabel.SetText('Locks down until end of turn must be at least ' .. turnNo);
 				elseif selectedBonus then
-					newStorage.lockedDownRegions[selectedBonus] = turnValue;
 					newStorage.newLockedDownRegions[selectedBonus] = turnValue;
 					newStorage.lastUsedLockdownTurnNo = turnValue;
 
@@ -122,23 +121,32 @@ function makeHostMenu(storage, vert)
 
 	Label(vert).SetText('Locked down regions:');
 
-	for bonusId, lockedDownUntilTurn in pairs(storage.lockedDownRegions) do
-		if lockedDownUntilTurn + 1 > game.Game.TurnNumber then
-			local bonus = game.Map.Bonuses[bonusId];
-			local horz = Horz(vert);
+	function displayLockedDownRegions(listName)
+		for bonusId, lockedDownUntilTurn in pairs(storage[listName]) do
+			if lockedDownUntilTurn + 1 > game.Game.TurnNumber then
+				local bonus = game.Map.Bonuses[bonusId];
+				local horz = Horz(vert);
 
-			Btn(horz).SetText(bonus.Name).SetOnClick(function()
-				game.HighlightTerritories(bonus.Territories);
-			end);
+				Btn(horz).SetText(bonus.Name).SetOnClick(function()
+					game.HighlightTerritories(bonus.Territories);
+				end);
 
-			Label(horz).SetText('until end of turn ' .. lockedDownUntilTurn);
-			Btn(horz).SetText('Remove').SetOnClick(function()
-				newStorage.lockedDownRegions[bonusId] = -1;
-				newStorage.newLockedDownRegions[bonusId] = nil;
-				updateStorage();
-			end);
+				Label(horz).SetText('until end of turn ' .. lockedDownUntilTurn);
+
+				Btn(horz).SetText('Remove').SetOnClick(function()
+					if newStorage.lockedDownRegions[bonusId] then
+						newStorage.lockedDownRegions[bonusId] = -1;
+					end
+
+					newStorage.newLockedDownRegions[bonusId] = nil;
+					updateStorage();
+				end);
+			end
 		end
 	end
+
+	displayLockedDownRegions('newLockedDownRegions');
+	displayLockedDownRegions('lockedDownRegions');
 end
 
 function makeNormalMenu(storage, vert)
