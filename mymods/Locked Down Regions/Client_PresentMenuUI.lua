@@ -6,7 +6,7 @@ function Client_PresentMenuUI(RootParent, setMaxSize, setScrollable, Game, close
 	rootParent = RootParent;
 	game = Game;
 
-	if (game.Game.State == WL.GameState.Finished) or not canRunMod() then
+	if not canRunMod() then
 		return close();
 	end
 
@@ -20,7 +20,7 @@ function refresh(storage, vert)
 
 	vert = Vert(rootParent);
 
-	if game.Us and game.Settings.StartedBy == game.Us.ID then
+	if game.Game.State ~= WL.GameState.Finished and game.Us and game.Settings.StartedBy == game.Us.ID then
 		makeHostMenu(storage, vert);
 	else
 		-- other players and spectators can see which regions are locked down
