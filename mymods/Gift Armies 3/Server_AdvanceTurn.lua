@@ -166,7 +166,7 @@ function processGiftArmies3Order(game, order, result, skipThisOrder, addNewOrder
 	print('checking fromTerr');
 
 	if fromTerr.OwnerPlayerID ~= order.PlayerID then
-		local usName = game.Players[order.PlayerID].DisplayName(nil, false);
+		local usName = game.ServerGame.Game.Players[order.PlayerID].DisplayName(nil, false);
 		local msg = 'Could not ' .. order.Message .. ' because ' .. fromDetails.Name .. ' is no longer owned by ' .. usName;
 		local order = WL.GameOrderEvent.Create(order.PlayerID, msg, {order.PlayerID, toOwnerExpected});
 		order.JumpToActionSpotOpt = actionSpot;
@@ -178,7 +178,7 @@ function processGiftArmies3Order(game, order, result, skipThisOrder, addNewOrder
 	print('checking toTerr');
 
 	if toTerr.OwnerPlayerID ~= toOwnerExpected then
-		local toName = game.Players[toOwnerExpected].DisplayName(nil, false);
+		local toName = game.ServerGane.Game.Players[toOwnerExpected].DisplayName(nil, false);
 		local msg = 'Could not ' .. order.Message .. ' because ' .. toDetails.Name .. ' is no longer owned by ' .. toName;
 		local order = WL.GameOrderEvent.Create(order.PlayerID, msg, {order.PlayerID, toOwnerExpected});
 		order.JumpToActionSpotOpt = actionSpot;
