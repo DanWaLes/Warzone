@@ -88,7 +88,9 @@ local function p(obj, p2)
 end
 
 function tblprint(tbl)
-	print(p(tbl));
+	local toprint = p(tbl);
+	print(toprint);
+	return toprint;
 end
 
 function round(n, dp)

@@ -47,11 +47,16 @@ function Server_AdvanceTurn_Order(game, order, result, skipThisOrder, addNewOrde
 	-- print('order.proxyType = ' .. order.proxyType);
 
 	-- keeps track of the amount of armies that are actually usable
-
-	if order.proxyType == 'GameOrderAttackTransfer' then
+	if order.proxyType == 'GameOrderDeploy' then
+		if checkedTerrs[order.DeployOn] then
+			checkTerrs[order.DeployOn] = checkedTerrs[order.DeployOn].Add(WL.Armies.Create(order.NumArmies));
+		end
+	elseif order.proxyType == 'GameOrderAttackTransfer' then
 		if checkedTerrs[order.From] then
 			checkedTerrs[order.From] = checkedTerrs[order.From].Subtract(result.ActualArmies);
 		elseif checkedTerrs[order.To] and result.IsAttack then
+			print('result = ');
+			tblprint(result);
 			checkedTerrs[order.To] = checkedTerrs[order.To].Subtract(result.DefendingArmiesKilled);
 		end
 	elseif order.proxyType == 'GameOrderPlayCardAirlift' then
