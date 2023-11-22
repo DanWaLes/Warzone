@@ -1,7 +1,6 @@
 require '_util';
 require '_ui';
 require 'version';
-require 'getBonuses';
 
 function Client_PresentMenuUI(RootParent, setMaxSize, setScrollable, Game, close)
 	rootParent = RootParent;
@@ -104,13 +103,12 @@ function makeHostMenu(storage, vert)
 			Label(selectBonusFromOption).SetText('or');
 			local choseFromListBtn = Btn(selectBonusFromOption).SetText('chose from a list');
 			choseFromListBtn.SetOnClick(function()
+				choseFromListBtn.SetInteractable(false);
 				makeChoseFromListMenu();
 			end);
 		end
 
 		function makeChoseFromListMenu()
-			choseFromListBtn.SetInteractable(false);
-
 			UI.Destroy(selectBonusBtn);
 			selectBonusBtn = Btn(selectBonusBtnContainer).SetText('select');
 			selectBonusBtn.SetOnClick(function()
