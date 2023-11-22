@@ -1,6 +1,7 @@
 require '_util';
 require '_ui';
 require 'version';
+require 'getBonuses';
 
 function Client_PresentMenuUI(RootParent, setMaxSize, setScrollable, Game, close)
 	rootParent = RootParent;
@@ -37,6 +38,21 @@ function makeHostMenu(storage, vert)
 		end);
 	end
 
+	if not storage.bonuses then
+		newStorage.bonuses = {};
+
+		for bonusId, bonus in pairs(game.Map.Bonuses) do
+			table.insert(newStorage.bonuses, bonusId);
+		end
+
+		-- sort bonus names A to Z
+		table.sort(newStorage.bonuses, function(a, b)
+			return game.Map.Bonuses[a].Name < game.Map.Bonuses[b].Name;
+		end);
+
+		return updateStorage();
+	end
+	
 	local vert1 = Vert(vert);
 	local vert2;
 
@@ -49,6 +65,13 @@ function makeHostMenu(storage, vert)
 		end
 
 		local bonusHorz = Horz(vert2);
+		Label(bonusHorz).SetText('Bonus:');
+		local selectBonusBtnContainer = Horz(bonusHorz);
+		local selectBonusBtn = Btn(selectBonusBtnContainer).SetText('(none)');
+		local selectBonusFromOptionContainer = Horz(bonusHorz);
+		local selectBonusFromOption = nil;
+		local selectBonusFromListVertContainer = Vert(vert2);
+		local selectBonusFromListVert = nil
 		local untilTurnHorz = Horz(vert2);
 		local errorLabel = Label(vert2).SetColor('#FF0000').SetText('');
 		local selectedBonus = nil;
@@ -58,33 +81,90 @@ function makeHostMenu(storage, vert)
 			turnNo = 1;
 		end
 
-		Label(bonusHorz).SetText('Bonus:');
-
-		local selectBonusBtn = Btn(bonusHorz).SetText('(none)');
-
-		selectBonusBtn.SetOnClick(function()
+		function selectBonusBtnClicked()
 			selectBonusBtn.SetInteractable(false);
 			selectedBonus = nil;
 			selectBonusBtn.SetText('(selecting)');
+
 			errorLabel.SetText('');
 
 			UI.InterceptNextBonusLinkClick(function(selected)
-				if selected then
-					selectBonusBtn.SetText(selected.Name);
+				bonusSelected(selected);
+			end)
 
-					if isValidSelectedBonus(storage, selected.ID) then
-						selectedBonus = selected.ID;
-					else
-						errorLabel.SetText('There is already a region that has some of the same territories of the one you just selected');
-						selectedBonus = nil;
-					end
-				else
-					selectedBonus = nil;
-					selectBonusBtn.SetText('(none)');
-				end
+			if not UI.IsDestroyed(selectBonusFromOption) then
+				UI.Destroy(selectBonusFromOption);
+			end
 
-				selectBonusBtn.SetInteractable(true);
+			if not UI.IsDestroyed(selectBonusFromListVert) then
+				UI.Destroy(selectBonusFromListVert);
+			end
+
+			selectBonusFromOption = Horz(selectBonusFromOptionContainer);
+			Label(selectBonusFromOption).SetText('or');
+			local choseFromListBtn = Btn(selectBonusFromOption).SetText('chose from a list');
+			choseFromListBtn.SetOnClick(function()
+				makeChoseFromListMenu();
 			end);
+		end
+
+		function makeChoseFromListMenu()
+			choseFromListBtn.SetInteractable(false);
+
+			UI.Destroy(selectBonusBtn);
+			selectBonusBtn = Btn(selectBonusBtnContainer).SetText('select');
+			selectBonusBtn.SetOnClick(function()
+				selectBonusBtnClicked();
+				-- for some reason these have to explicitly be done here
+				-- even though it should happen fine in the function
+				selectBonusBtn.SetInteractable(false);
+				selectBonusBtn.SetText('(selecting)');
+			end);
+
+			selectBonusFromListVert = Vert(selectBonusFromListVertContainer);
+
+			for _, bonusId in pairs(storage.bonuses) do
+				local horz = Horz(selectBonusFromListVert);
+				local bonusBtn = Btn(horz).SetText(game.Map.Bonuses[bonusId].Name);
+				local viewBonusBtn = Btn(horz).SetText('View').SetOnClick(function()
+					game.HighlightTerritories(game.Map.Bonuses[bonusId].Territories);
+				end);
+
+				bonusBtn.SetOnClick(function()
+					bonusBtn.SetInteractable(false);
+					bonusSelected(game.Map.Bonuses[bonusId]);
+				end);
+			end
+		end
+
+		function bonusSelected(selected)
+			if selected then
+				selectBonusBtn.SetText(selected.Name);
+
+				if isValidSelectedBonus(storage, selected.ID) then
+					selectedBonus = selected.ID;
+				else
+					errorLabel.SetText('There is already a region that has some of the same territories of the one you just selected');
+					selectedBonus = nil;
+				end
+			else
+				selectedBonus = nil;
+				selectBonusBtn.SetText('(none)');
+			end
+
+			selectBonusBtn.SetInteractable(true);
+
+			if not UI.IsDestroyed(selectBonusFromOption) then
+				UI.Destroy(selectBonusFromOption);
+			end
+
+			if not UI.IsDestroyed(selectBonusFromListVert) then
+				UI.Destroy(selectBonusFromListVert);
+			end
+		end
+
+		selectBonusBtn.SetOnClick(function()
+			selectBonusBtnClicked();
 		end);
 
 		Label(untilTurnHorz).SetText('Locks down until end of turn:');
