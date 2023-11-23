@@ -10,6 +10,7 @@ function Client_PresentMenuUI(RootParent, setMaxSize, setScrollable, Game, close
 		return close();
 	end
 
+	setMaxSize(500, 300);
 	refresh(Mod.PublicGameData);
 end
 
@@ -120,12 +121,25 @@ function makeHostMenu(storage, vert)
 			end);
 
 			selectBonusFromListVert = Vert(selectBonusFromListVertContainer);
+			local searchBar = Horz(selectBonusFromListVert);
+			Label(searchBar).SetText('Search:');
+			local searchFor = TextInput(searchBar).SetFlexibleWidth(1).SetFlexibleHeight(1).SetPreferredWidth(300);
+			Label(selectBonusFromListVert).SetText('Search is case-sensitive. Clear the search to view all.');
+			local searchBtn = Btn(searchBar).SetText('Go');
+			local results = Vert(selectBonusFromListVert);
 
-			for _, bonusId in pairs(storage.bonuses) do
-				local horz = Horz(selectBonusFromListVert);
-				local bonusBtn = Btn(horz).SetText(game.Map.Bonuses[bonusId].Name);
+			function addAllBonuses()
+				for _, bonusId in pairs(storage.bonuses) do
+					addBonus(bonusId);
+				end
+			end
+
+			function addBonus(bonusId)
+				local bonus = game.Map.Bonuses[bonusId];
+				local horz = Horz(results);
+				local bonusBtn = Btn(horz).SetText(bonus.Name);
 				local viewBonusBtn = Btn(horz).SetText('View').SetOnClick(function()
-					game.HighlightTerritories(game.Map.Bonuses[bonusId].Territories);
+					game.HighlightTerritories(bonus.Territories);
 				end);
 
 				bonusBtn.SetOnClick(function()
@@ -133,6 +147,31 @@ function makeHostMenu(storage, vert)
 					bonusSelected(game.Map.Bonuses[bonusId]);
 				end);
 			end
+
+			searchBtn.SetOnClick(function()
+				searchBtn.SetInteractable(false);
+				UI.Destroy(results);
+				results = Vert(selectBonusFromListVert);
+
+				local searchingFor = toCaseInsensativePattern(escapePattern(searchFor.GetText()));
+				-- print('searchingFor = ' .. searchingFor);
+
+				if searchingFor == '' then
+					searchingFor = '.';
+				end
+
+				for _, bonusId in pairs(storage.bonuses) do
+					local bonus = game.Map.Bonuses[bonusId];
+
+					if string.find(bonus.Name, searchingFor) then
+						addBonus(bonus.ID);
+					end
+				end
+
+				searchBtn.SetInteractable(true);
+			end);
+
+			addAllBonuses();
 		end
 
 		function bonusSelected(selected)
