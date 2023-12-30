@@ -26,7 +26,7 @@ function Client_PresentMenuUI(RootParent, setMaxSize, setScrollable, Game, close
 end
 
 function playerIsNotTeamed(player)
-	if player.Team == -1
+	if player.Team == -1 then
 		return true;
 	end
 
