@@ -7,7 +7,7 @@ function Client_PresentMenuUI(RootParent, setMaxSize, setScrollable, Game, close
 	rootParent = RootParent;
 	game = Game;
 
-	if game.Game.Settings.SinglePlayer then
+	if game.Settings.SinglePlayer then
 		Label(rootParent).SetText('This mod is designed to only be used in multiplayer games.');
 		return;
 	end
