@@ -49,7 +49,6 @@ function makeMenu(stored, vert)
 	vert = Vert(rootParent);
 
 	local weAreHost = game.Us.ID == game.Settings.StartedBy;
-	local weAreNotTeamed = 
 
 	if weAreHost and playerIsNotTeamed(game.Us) then
 		makeHostMenu(stored, vert);
