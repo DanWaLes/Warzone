@@ -59,7 +59,7 @@ function makeMenu(stored, vert)
 			local host = game.Game.Players[game.Settings.StartedBy];
 
 			if playerIsNotTeamed(host) then
-				Label(vert).SetText('The host can eliminate any player they like whenever they want. The host also spies on everyone (and neutral depending on Spy Card settings. This to do discourage making alliances in games that are meant to be actual FFAs for example.');
+				Label(vert).SetText('The host can eliminate any player they like whenever they want. The host also spies on everyone (and neutral depending on Spy Card settings. This is to discourage making alliances in games that are meant to be actual FFAs for example.');
 				Label(vert).SetText('If the host abuses this mod, you should avoid joining their games in future.');
 			else
 				Label(vert).SetText('This mod would allow the host to eliminate players whenever they want and spy on everyone if the host was not in a team themselves.');
@@ -73,6 +73,8 @@ end
 function makeHostMenu(stored, vert)
 	-- print('init makeHostMenu');
 
+	Label(vert).SetText('On Turn 1 you will be eliminated (since you can not play; if you did play you would have the unfair advantage of seeing everything). You will still remain in control of the game.');
+	Label(vert).SetText('Use Game > History to view real-time history of the game (and check for possible disallowed teaming).');
 	Label(vert).SetText('Eliminate:');
 
 	for playerId in pairs(game.Game.PlayingPlayers) do
