@@ -14,4 +14,20 @@ function setup(game)
 	};
 
 	Mod.PlayerGameData = playerGD;
+
+	local publicGD = {
+		teams = {}
+	};
+
+	for _, player in pairs(game.ServerGame.Game.Players) do
+		if player.Team ~= -1 then
+			if not publicGD.teams[player.Team] then
+				publicGD.teams[player.Team] = 0;
+			end
+
+			publicGD.teams[player.Team] = publicGD.teams[player.Team] + 1;
+		end
+	end
+
+	Mod.PublicGameData = publicGD;
 end
