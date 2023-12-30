@@ -30,7 +30,7 @@ function playerIsNotTeamed(player)
 		return true;
 	end
 
-	return Mod.PubicGameData.teams[player.Team] == 1;
+	return Mod.PublicGameData.teams[player.Team] == 1;
 end
 
 function makeMenu(stored, vert)
