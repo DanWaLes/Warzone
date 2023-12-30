@@ -26,6 +26,11 @@ function setup(game)
 			end
 
 			publicGD.teams[player.Team] = publicGD.teams[player.Team] + 1;
+
+			if host.Team == player.Team and publicGD.teams[player.Team] > 1 then
+				-- only need to know if there's more than 1 player on host's team
+				break;
+			end
 		end
 	end
 
