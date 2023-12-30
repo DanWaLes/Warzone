@@ -1,15 +1,16 @@
 function setup(game)
 	-- can't be in server created
 
-	local host = game.ServerGame.Settings.StartedBy;
+	local hostPlayerId = game.ServerGame.Settings.StartedBy;
 
-	if not host then
+	if not hostPlayerId then
 		return;
 	end
 
+	local host = game.ServerGame.Game.Players[hostPlayerId];
 	local playerGD = {
-		[host] = {
-			eliminating = {[host] = true}
+		[hostPlayerId] = {
+			eliminating = {[hostPlayerId] = true}
 		};
 	};
 
