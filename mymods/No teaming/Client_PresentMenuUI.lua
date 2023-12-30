@@ -34,13 +34,13 @@ function playerIsNotTeamed(player)
 end
 
 function makeMenu(stored, vert)
-	-- print('init makeMenu');
+	print('init makeMenu');
 
 	if not stored then
 		stored = Mod.PlayerGameData;
 	end
 
-	-- tblprint(stored);
+	tblprint(stored);
 
 	if not UI.IsDestroyed(vert) then
 		UI.Destroy(vert);
@@ -71,7 +71,7 @@ function makeMenu(stored, vert)
 end
 
 function makeHostMenu(stored, vert)
-	-- print('init makeHostMenu');
+	print('init makeHostMenu');
 
 	Label(vert).SetText('Eliminate:');
 
@@ -83,6 +83,9 @@ function makeHostMenu(stored, vert)
 end
 
 function displayPlayer(stored, vert, playerId)
+	print('init displayPlayer');
+	print('playerId = ' .. playerId);
+
 	local player = game.Game.PlayingPlayers[playerId];
 	local horz = Horz(vert);
 
