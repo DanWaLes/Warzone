@@ -14,7 +14,7 @@ function Server_Created(game, settings)
 
 	if not cards[WL.CardID.Spy] then
 		-- automatically include spy card that can't be earned
-		local cardGame = WL.CardGameSpy.Create(1, 0, 1, 0, 1, true);
+		local cardGame = WL.CardGameSpy.Create(1, 0, 1, 0, 100, true);
 		-- print('created spy card')
 		-- tblprint(cardGame);
 

@@ -10,7 +10,7 @@ function setup(game)
 	local host = game.ServerGame.Game.Players[hostPlayerId];
 	local playerGD = {
 		[hostPlayerId] = {
-			eliminating = {[hostPlayerId] = true}
+			eliminating = {}
 		};
 	};
 

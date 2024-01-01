@@ -7,6 +7,8 @@ function Client_PresentMenuUI(RootParent, setMaxSize, setScrollable, Game, close
 	rootParent = RootParent;
 	game = Game;
 
+	setMaxSize(480, 270);-- 16:9 on 30
+
 	if game.Settings.SinglePlayer then
 		Label(rootParent).SetText('This mod is designed to only be used in multiplayer games.');
 		return;
@@ -73,8 +75,28 @@ end
 function makeHostMenu(stored, vert)
 	-- print('init makeHostMenu');
 
-	Label(vert).SetText('On Turn 1 you will be eliminated (since you can not play; if you did play you would have the unfair advantage of seeing everything). You will still remain in control of the game.');
-	Label(vert).SetText('Use Game > History to view real-time history of the game (and check for possible disallowed teaming).');
+	local infoBtn = Btn(vert).SetText('Info');
+	local vert2 = Vert(vert);
+	local vert3 = nil;
+
+	infoBtn.SetOnClick(function()
+		infoBtn.SetInteractable(false);
+
+		if not UI.IsDestroyed(vert3) then
+			UI.Destroy(vert3);
+			infoBtn.SetInteractable(true);
+			return;
+		end
+
+		vert3 = Vert(vert2);
+
+		Label(vert3).SetText('As you are the host, you can eliminate anyone and spy on all players (and neutral depending on Spy Card settings).');
+		Label(vert3).SetText('So that this game remains in your Dashboard, you are immune from elimination (but not from being booted). Any orders that affect your territories will be skipped.')
+		Label(vert3).SetText('When it becomes only you and another player left, you should surrender.');
+
+		infoBtn.SetInteractable(true);
+	end);
+
 	Label(vert).SetText('Eliminate:');
 
 	for playerId in pairs(game.Game.PlayingPlayers) do
@@ -108,15 +130,16 @@ function displayPlayer(stored, vert, playerId)
 		.SetText(player.DisplayName(nil, false))
 		.SetColor(player.Color.HtmlColor);
 
-	local terrsBtn = Btn(horz).SetText('Territories');
-	terrsBtn.SetOnClick(function()
-		terrsBtn.SetInteractable(false);
-		selectTerritoriesOwnedBy(playerId);
-		terrsBtn.SetInteractable(true);
+	local viewTerrsBtn = Btn(horz).SetText('Territories');
+
+	viewTerrsBtn.SetOnClick(function()
+		viewTerrsBtn.SetInteractable(false);
+		viewTerritories(playerId);
+		viewTerrsBtn.SetInteractable(true);
 	end);
 end
 
-function selectTerritoriesOwnedBy(playerId)
+function viewTerritories(playerId)
 	local terrs = {};
 
 	for terrId, terr in pairs(game.LatestStanding.Territories) do
