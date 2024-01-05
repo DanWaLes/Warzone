@@ -13,8 +13,6 @@ function Server_GameCustomMessage(game, playerId, payload, setReturn)
 
 	if payload.toEliminate and game.Game.PlayingPlayers[payload.toEliminate] and (playerId and playerId == host) then
 		playerGD[host].eliminating[payload.toEliminate] = payload.shouldEliminate or nil;
-	elseif payload.markWarningAsRead then
-		playerGD[playerId].seenWarning = true;
 	end
 
 	Mod.PlayerGameData = playerGD;

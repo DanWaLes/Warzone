@@ -10,8 +10,7 @@ function setup(game)
 	local host = game.ServerGame.Game.Players[hostPlayerId];
 	local playerGD = {
 		[hostPlayerId] = {
-			eliminating = {},
-			seenWarning = true
+			eliminating = {}
 		};
 	};
 
@@ -22,10 +21,6 @@ function setup(game)
 	for _, player in pairs(game.ServerGame.Game.Players) do
 		if not playerGD[player.ID] then
 			playerGD[player.ID] = {};
-		end
-
-		if not playerGD[player.ID].seenWarning then
-			playerGD[player.ID].seenWarning = false;
 		end
 
 		if player.Team ~= -1 then
