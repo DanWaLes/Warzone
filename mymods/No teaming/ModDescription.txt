@@ -1,3 +1,3 @@
-This mod gives host the ability to view the whole game and eliminate players at their own will.
-The host themselves can't play the game and must not be on anyone's team (because otherwise they have unfair advantage of seeing everything).
-If the host abuses this mod, you should avoid joining their games in future.
+This mod gives host the ability to view the whole game and eliminate players at their own will, to discourage collusion (making alliances etc.).
+The host themselves can't play the game and must not be on anyone's team (because otherwise they have unfair advantage of seeing everything). The host should remain unbiased when deciding if collusions are being made.
+If you do not trust the game creator with the abilities this mod grants them, you should not join the game.

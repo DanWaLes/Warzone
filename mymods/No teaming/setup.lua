@@ -10,17 +10,24 @@ function setup(game)
 	local host = game.ServerGame.Game.Players[hostPlayerId];
 	local playerGD = {
 		[hostPlayerId] = {
-			eliminating = {}
+			eliminating = {},
+			seenWarning = true
 		};
 	};
-
-	Mod.PlayerGameData = playerGD;
 
 	local publicGD = {
 		teams = {}
 	};
 
 	for _, player in pairs(game.ServerGame.Game.Players) do
+		if not playerGD[player.ID] then
+			playerGD[player.ID] = {};
+		end
+
+		if not playerGD[player.ID].seenWarning then
+			playerGD[player.ID].seenWarning = false;
+		end
+
 		if player.Team ~= -1 then
 			if not publicGD.teams[player.Team] then
 				publicGD.teams[player.Team] = 0;
@@ -35,5 +42,6 @@ function setup(game)
 		end
 	end
 
+	Mod.PlayerGameData = playerGD;
 	Mod.PublicGameData = publicGD;
 end
