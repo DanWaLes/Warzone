@@ -23,7 +23,4 @@ function Server_Created(game, settings)
 		-- print('added spy card; cards = ');
 		-- tblprint(settings.Cards);
 	end
-
-	-- disable private messaging
-	settings.PrivateMessaging = false;
 end
