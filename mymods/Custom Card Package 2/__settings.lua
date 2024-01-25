@@ -1,5 +1,5 @@
-require '_settings'
-require '_ui'
+require '_settings';
+require '_ui';
 
 local function Card(cardName, p1, p2, p3)
 	local isNewCard = p1 and type(p1) == 'boolean';
@@ -25,7 +25,27 @@ local function Card(cardName, p1, p2, p3)
 				maxValue = 10,
 				absoluteMax = 100
 			}),
-			addSetting(cardName .. 'PiecesPerTurn', 'Pieces awarded per turn', 'int', 1, {
+			addSetting(cardName .. 'WonByChance', 'Award pieces based on random chance', 'bool', false, {
+				bkwrds = false,
+				help = function(parent)
+					Label(parent).SetText('If enabled, all pieces from "Minimum pieces awarded per turn" are given first then chance applies to the upper limit of number of card pieces to award on piece by piece basis');
+				end,
+				subsettings = {
+					addSetting(cardName .. 'PiecesPerTurnMaxLimit', 'Maximum pieces awarded per turn', 'int', 1, {
+						minValue = 1,
+						maxValue = 10,
+						absoluteMax = 100,
+						help = function(parent)
+							Label(parent).SetText('If "Minimum pieces awarded per turn" is higher than this setting, then the value for that setting is used for this setting');
+						end
+					}),
+					addSetting(cardName .. 'WonByChancePercent', 'Chance of a piece being awarded (%)', 'int', 10, {
+						minValue = 0,
+						maxValue = 100
+					}),
+				}
+			}),
+			addSetting(cardName .. 'PiecesPerTurn', 'Minimum pieces awarded per turn', 'int', 1, {
 				minValue = 0,
 				maxValue = 10,
 				absoluteMax = 100
@@ -133,5 +153,13 @@ function getSettings()
 				maxValue = 8
 			}),
 		})
+-[[,
+		addSetting('HostOnlyOptionsEnabled', 'Enable host-only options', 'bool', false, {
+			bkwrds = false,
+			help = function(parent)
+				Label(parent).SetText('Allows the game host to add and remove card pieces from players');
+			end
+		})
+]]
 	};
 end

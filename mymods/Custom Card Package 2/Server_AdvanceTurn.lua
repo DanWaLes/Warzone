@@ -77,31 +77,49 @@ end
 function Server_AdvanceTurn_End(game, addNewOrder)
 	local earnedPieces = {};
 
+	function addEarnedPieces(playerId, cardName, minNumPieces, maxNumPieces, chance)
+		if not earnedPieces[playerId] then
+			earnedPieces[playerId] = {};
+		end
+
+		local numPieces = minNumPieces;
+		local i = maxNumPieces - minNumPieces;
+
+		while i > 0 do
+			if math.random(1, 100) < chance then
+				numPieces = numPieces + 1
+			end
+
+			i = i - 1;
+		end
+
+		earnedPieces[playerId][cardName] = numPieces;
+	end
+
 	for _, cardName in pairs(Mod.PublicGameData.cardNames) do
 		local enabled = getSetting('Enable' .. cardName);
-		local numPieces = getSetting(cardName .. 'PiecesPerTurn');
-		local needsAttack = getSetting(cardName .. 'NeedsSuccessfulAttackToEarnPiece');
+		local minNumPieces = enabled and getSetting(cardName .. 'PiecesPerTurn') or 0;
+		local wonByChance = enabled and getSetting(cardName .. 'WonByChance') or false;
+		local maxNumPieces = enabled and getSetting(cardName .. 'PiecesPerTurnMaxLimit') or minNumPieces;
+		local chance = enabled and getSetting(cardName .. 'WonByChancePercent') or 100;
+		local needsAttack = enabled and getSetting(cardName .. 'NeedsSuccessfulAttackToEarnPiece');
 
-		if enabled and numPieces and numPieces ~= 0 then
+		if maxNumPieces < minNumPieces then
+			maxNumPieces = minNumPieces;
+		end
+
+		if enabled and (minNumPieces or wonByChance) then
 			if needsAttack then
 				for playerId, hadSuccessfulAttack in pairs(playersWithSuccessfulAttacks) do
 					local player = game.ServerGame.Game.Players[playerId];
 
 					if player.State == WL.GamePlayerState.Playing and hadSuccessfulAttack then
-						if not earnedPieces[playerId] then
-							earnedPieces[playerId] = {};
-						end
-
-						earnedPieces[playerId][cardName] = numPieces;
+						addEarnedPieces(playerId, cardName, minNumPieces, maxNumPieces, chance);
 					end
 				end
 			else
 				for playerId in pairs(game.ServerGame.Game.PlayingPlayers) do
-					if not earnedPieces[playerId] then
-						earnedPieces[playerId] = {};
-					end
-
-					earnedPieces[playerId][cardName] = numPieces;
+					addEarnedPieces(playerId, cardName, minNumPieces, maxNumPieces, chance);
 				end
 			end
 		end
