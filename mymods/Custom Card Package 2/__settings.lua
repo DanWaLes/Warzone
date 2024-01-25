@@ -153,7 +153,7 @@ function getSettings()
 				maxValue = 8
 			}),
 		})
--[[,
+--[[,
 		addSetting('HostOnlyOptionsEnabled', 'Enable host-only options', 'bool', false, {
 			bkwrds = false,
 			help = function(parent)
