@@ -126,13 +126,15 @@ function Server_AdvanceTurn_End(game, addNewOrder)
 	end
 
 	for playerId in pairs(earnedPieces) do
-		local msgPrefix = game.ServerGame.Game.PlayingPlayers[playerId].DisplayName(nil, false) .. ' received ';
+		local msg = game.ServerGame.Game.PlayingPlayers[playerId].DisplayName(nil, false) .. ' earned card pieces:';
+		addNewOrder(WL.GameOrderEvent.Create(playerId, msg, visibleToTeammates(playerId, game.ServerGame.Game.Players)));
+
 		local payloadPrefix = 'CCP2_addCardPieces_' .. playerId .. '_<';
 
 		for cardName, numPieces in pairs(earnedPieces[playerId]) do
-			local msg = msgPrefix .. numPieces .. ' piece' .. (numPieces > 1 and 's' or '') .. ' of a ' .. cardName .. ' Card';
 			local payload = payloadPrefix .. cardName .. '=[' .. numPieces .. ']>';
-			local order = WL.GameOrderCustom.Create(playerId, msg, payload);
+			-- message here doesnt matter because payload gets processed and order is skipped
+			local order = WL.GameOrderCustom.Create(playerId, '', payload);
 
 			addNewOrder(order);
 		end
