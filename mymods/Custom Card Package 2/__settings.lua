@@ -84,8 +84,9 @@ local function Card(cardName, p1, p2, p3)
 	return card;
 end
 
-local function addDurationSetting(cardName)
-	return addSetting(cardName .. 'Duration', 'Duration (turns)', 'int', 2, {
+local function addDurationSetting(cardName, defaultValue)
+	return addSetting(cardName .. 'Duration', 'Duration (turns)', 'int', defaultValue, {
+		bkwrds = 1,
 		minValue = 1,
 		maxValue = 10
 	});
@@ -97,6 +98,7 @@ function getSettings()
 			Label(parent).SetText('Like normal Reconnaissance Cards but with a range and lasts for 1 turn');--no param instance is 1 turn
 			Label(parent).SetText('Reconnaissance Cards must be included for the card to work');
 		end, {
+			addDurationSetting('Reconnaissance+', 1),
 			addSetting('Reconnaissance+Range', 'Range', 'int', 2, {
 				minValue = 1,
 				maxValue = 5
@@ -117,7 +119,7 @@ function getSettings()
 		Card('Immobilize', function(parent)
 			Label(parent).SetText('Prevents all army movement (including airlifts) to and from a territory that is next to or is one of yours');
 		end, {
-			addDurationSetting('Immobilize')
+			addDurationSetting('Immobilize', 2)
 		}),
 		Card('Trap', function(parent)
 			Label(parent).SetText('Similar to Blockade Cards except they are triggered by the enemy capturing where the card was played');
@@ -153,13 +155,28 @@ function getSettings()
 				maxValue = 8
 			}),
 		})
---[[,
-		addSetting('HostOnlyOptionsEnabled', 'Enable host-only options', 'bool', false, {
-			bkwrds = false,
-			help = function(parent)
-				Label(parent).SetText('Allows the game host to add and remove card pieces from players');
-			end
-		})
-]]
 	};
 end
+
+	-- addSetting('LimitMaxCards', 'Limit maximum cards each player or team can hold', 'bool', true, {
+		-- bkwrds = false,
+		-- subsettings = {
+			-- addSetting('MaxCardsLimit', 'Limit', 'int', 3, {
+				-- minValue = 0,
+				-- maxValue = 15,
+				-- absoluteMax = 6 * 100
+			-- })
+		-- }
+	-- }),
+	-- addSetting('AIsPlayCards', 'Let AIs play cards', 'bool', false, {
+		-- bkwrds = false,
+		-- help = function(parent)
+			-- Label(parent).SetText('If enabled, AIs will play cards if there are not any human players on their team');
+		-- end
+	-- }),
+	-- addSetting('HostOnlyOptionsEnabled', 'Enable host-only options', 'bool', false, {
+		-- bkwrds = false,
+		-- help = function(parent)
+			-- Label(parent).SetText('Allows the game host to add and remove card pieces from players or teams');
+		-- end
+	-- })

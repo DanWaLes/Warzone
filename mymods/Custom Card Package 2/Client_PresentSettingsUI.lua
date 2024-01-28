@@ -4,7 +4,7 @@ require '_ui'
 local expand = '˅';-- https://www.amp-what.com/unicode/search/down%20arrow &#709;
 
 function Client_PresentSettingsUI(rootParent)
-	cps(rootParent, getSettings(), 0);
+	cps(rootParent, getSettings());
 end
 
 function cps(rootParent, settings)

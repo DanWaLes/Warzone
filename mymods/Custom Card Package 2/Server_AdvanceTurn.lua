@@ -281,7 +281,7 @@ function playedTerritorySelectionCard(wz, player, cardName, param, modifyEvent)
 		local duration = getSetting(cardName .. 'Duration');
 
 		if duration then
-			msg = msg .. ' for ' .. duration .. ' turns';
+			msg = msg .. ' for ' .. duration .. ' turn' .. (duration == 1 and '' or 's');
 			visTo = nil;
 		end
 	end
@@ -373,7 +373,7 @@ function removeAllActiveCardInstancesOf(cardName)
 end
 
 function removeExpiredCardInstances(game, addNewOrder, cardName)
-	local duration = getSetting(cardName .. 'Duration');
+	local duration = getSetting(cardName .. 'Duration') or 1;
 	local i = 1;
 
 	while true do

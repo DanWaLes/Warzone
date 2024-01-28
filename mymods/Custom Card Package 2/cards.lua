@@ -19,6 +19,7 @@ end
 
 function getCardsThatCanBeActive()
 	return {
+		['Reconnaissance+'] = true,-- will this be an issue for not being and active card before?
 		Immobilize = true,
 		Trap = true,
 		['Double Tap'] = true
