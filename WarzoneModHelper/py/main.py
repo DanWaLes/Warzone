@@ -9,6 +9,7 @@ import urllib.parse
 def main():
 	settings = getSettings()
 	doPost(settings, readFiles(settings))
+	input('Press any key to close...');
 
 def getSettings():
 	settingsFileName = '../settings.json';
@@ -42,7 +43,7 @@ def readFiles(settings):
 
 		for (dirpath, dirnames, filenames) in walk(dir):
 			for (file) in filenames:
-				f = open(path.join(dir, file))
+				f = open(path.join(dir, file), 'r', encoding = 'utf-8')
 				content = f.read()
 				f.close()
 
