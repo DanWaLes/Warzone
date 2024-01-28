@@ -54,6 +54,8 @@ function main(_stored, i)
 end
 
 function cardsClicked(tabData)
+	-- todo mention card limit if there is a limit
+
 	local tabs = {};
 	for _, cardName in pairs(Mod.PublicGameData.cardNames) do
 		if getSetting('Enable' .. cardName) then
@@ -84,19 +86,36 @@ function cardNameClicked(tabData, cardName)
 	Label(tabData.tabContents).SetText('Whole cards: ' .. wholeCards);
 	Label(tabData.tabContents).SetText('Pieces: ' .. (myPieces % piecesInCard) .. '/' .. piecesInCard);
 
-	local btn = Btn(tabData.tabContents).SetText('Use card');
+	-- use
+	local playCardBtn = Btn(tabData.tabContents).SetText('Use card');
 	local vert = Vert(tabData.tabContents);
 
 	if game.Game.State == WL.GameState.Playing then
-		btn.SetInteractable(wholeCards > 0);
+		playCardBtn.SetInteractable(wholeCards > 0);
 	else
-		btn.SetInteractable(false);
+		playCardBtn.SetInteractable(false);
 	end
 
-	btn.SetOnClick(function()
-		_G['playCard' .. string.gsub(cardName, '[^%w_]', '')](game, tabData, cardName, btn, vert, nil, {});
+	playCardBtn.SetOnClick(function()
+		_G['playCard' .. string.gsub(cardName, '[^%w_]', '')](game, tabData, cardName, playCardBtn, vert, nil, {});
 	end);
 
+	-- discard
+	local discardCardBtn = Btn(tabData.tabContents).SetText('Discard card');
+
+	if game.Game.State ~= WL.GameState.Playing or wholeCards < 1 then
+		discardCardBtn.SetInteractable(false)
+	end
+
+	discardCardBtn.SetOnClick(function()
+		local msg = 'Discard a ' .. cardName .. ' Card';
+		local payload = 'CCP2_discardCard_' .. game.Us.ID .. '_<' .. cardName .. '=[]>';
+		local order = WL.GameOrderCustom.Create(game.Us.ID, msg, payload, nil, WL.TurnPhase.Discards);
+
+		placeOrderInCorrectPosition(game, order);
+	end);
+
+	-- buy
 	local isBuyable = getSetting(cardName .. 'IsBuyable') and game.Settings.CommerceGame;
 
 	if isBuyable then

@@ -191,22 +191,43 @@ function parseGameOrderCustom(wz)
 	end
 end
 
-function addCardPieces(wz, player, cardName, param)
-	local numPieces = round(tonumber(param));
+local function simulateAddCardPieces(wz, player, cardName, numPieces)
+	numPieces = tonumber(numPieces);
 
 	if numPieces == 0 then
-		return;
+		return 0;
 	end
 
+	local teamType = player.Team == -1 and 'noTeam' or 'teammed';
+	local teamId = player.Team == -1 and player.ID or player.Team;
+	local amountToAdd = numPieces;
+	local currentPieces = Mod.PublicGameData.cardPieces[teamType][teamId].currentPieces[cardName];
+
+	if (currentPieces + amountToAdd) < 0 then
+		amountToAdd = -currentPieces;
+	end
+
+	return amountToAdd;
+end
+
+local function applyAddCardPieces(wz, player, cardName, numPieces)
+	local amountAdded = simulateAddCardPieces(wz, player, cardName, numPieces);
+
+	if amountAdded == 0 then
+		return amountAdded;
+	end
+
+	-- remove the pieces
 	local publicGD = Mod.PublicGameData;
 	local teamType = player.Team == -1 and 'noTeam' or 'teammed';
 	local teamId = player.Team == -1 and player.ID or player.Team;
-	local result = publicGD.cardPieces[teamType][teamId].currentPieces[cardName] + numPieces;
-	local resulting = result > -1 and result or 0;
+	local currentPieces = publicGD.cardPieces[teamType][teamId].currentPieces[cardName];
+	local resulting = currentPieces + amountAdded;
 
 	publicGD.cardPieces[teamType][teamId].currentPieces[cardName] = resulting;
 	Mod.PublicGameData = publicGD;
 
+	-- check if there's any full cards
 	local playerGD = Mod.PlayerGameData;
 	local members = player.Team == -1 and {teamId} or publicGD.teams[teamId].members;
 	local shownReceivedCardsMsg = resulting < getSetting(cardName .. 'PiecesInCard');
@@ -217,11 +238,34 @@ function addCardPieces(wz, player, cardName, param)
 
 	Mod.PlayerGameData = playerGD;
 
-	local msgPrefix = player.DisplayName(nil, false) .. ' received ';
-	local msg = msgPrefix .. numPieces .. ' piece' .. (numPieces ~= 1 and 's' or '') .. ' of a ' .. cardName .. ' Card';
+	return amountAdded;
+end
+
+function addCardPieces(wz, player, cardName, param)
+	local amountAdded = applyAddCardPieces(wz, player, cardName, param);
+
+	if amountAdded == 0 then
+		return;
+	end
+
+	local numPieces = math.abs(amountAdded);
+	local msg = player.DisplayName(nil, false) .. ' ' .. (amountAdded > 0 and 'received' or 'lost') .. ' ' .. numPieces .. ' piece' .. (1 == numPieces and '' or 's') .. ' of a ' .. cardName .. ' Card';
 	local visTo = visibleToTeammates(player.ID, wz.game.ServerGame.Game.Players);
 
 	wz.addNewOrder(WL.GameOrderEvent.Create(player.ID, msg, visTo));
+end
+
+function discardCard(wz, player, cardName)
+	local piecesRemoved = applyAddCardPieces(wz, player, cardName, getSetting(cardName .. 'PiecesInCard'));
+
+	if piecesRemoved == 0 then
+		return;
+	end
+
+	local msg = player.DisplayName(nil, false) .. ' discarded a ' .. cardName .. ' Card';
+	local visTo = visibleToTeammates(player.ID, wz.game.ServerGame.Game.Players);
+
+	wz.addNewOrder(WL.GameOrderEvent.Create(player.ID, msg, visTo))
 end
 
 function playedCard(wz, player, cardName, param)

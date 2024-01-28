@@ -63,7 +63,7 @@ local function Card(cardName, p1, p2, p3)
 					addSetting(cardName .. 'Cost', 'Cost (gold)', 'int', 5, {
 						minValue = 1,
 						maxValue = 20,
-						absoluteMax = 100
+						absoluteMax = 10000
 					})
 				}
 			}),
@@ -88,7 +88,8 @@ local function addDurationSetting(cardName, defaultValue)
 	return addSetting(cardName .. 'Duration', 'Duration (turns)', 'int', defaultValue, {
 		bkwrds = 1,
 		minValue = 1,
-		maxValue = 10
+		maxValue = 10,
+		absoluteMax = 100000
 	});
 end
 
@@ -154,20 +155,19 @@ function getSettings()
 				minValue = 0,
 				maxValue = 8
 			}),
-		})
+		})--,
+		-- addSetting('LimitMaxCards', 'Limit maximum cards each player or team can hold', 'bool', true, {
+			-- bkwrds = false,
+			-- subsettings = {
+				-- addSetting('MaxCardsLimit', 'Limit', 'int', 3, {
+					-- minValue = 0,
+					-- maxValue = 15,
+					-- absoluteMax = 600
+				-- })
+			-- }
+		-- })
 	};
 end
-
-	-- addSetting('LimitMaxCards', 'Limit maximum cards each player or team can hold', 'bool', true, {
-		-- bkwrds = false,
-		-- subsettings = {
-			-- addSetting('MaxCardsLimit', 'Limit', 'int', 3, {
-				-- minValue = 0,
-				-- maxValue = 15,
-				-- absoluteMax = 6 * 100
-			-- })
-		-- }
-	-- }),
 	-- addSetting('AIsPlayCards', 'Let AIs play cards', 'bool', false, {
 		-- bkwrds = false,
 		-- help = function(parent)
