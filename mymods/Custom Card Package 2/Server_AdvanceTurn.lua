@@ -258,16 +258,16 @@ function addCardPieces(wz, player, cardName, param)
 end
 
 function discardCard(wz, player, cardName)
-	local piecesRemoved = applyAddCardPieces(wz, player, cardName, getSetting(cardName .. 'PiecesInCard'));
+	local amountAdded = applyAddCardPieces(wz, player, cardName, -getSetting(cardName .. 'PiecesInCard'));
 
-	if piecesRemoved == 0 then
+	if amountAdded == 0 then
 		return;
 	end
 
 	local msg = player.DisplayName(nil, false) .. ' discarded a ' .. cardName .. ' Card';
 	local visTo = visibleToTeammates(player.ID, wz.game.ServerGame.Game.Players);
 
-	wz.addNewOrder(WL.GameOrderEvent.Create(player.ID, msg, visTo))
+	wz.addNewOrder(WL.GameOrderEvent.Create(player.ID, msg, visTo));
 end
 
 function playedCard(wz, player, cardName, param)
