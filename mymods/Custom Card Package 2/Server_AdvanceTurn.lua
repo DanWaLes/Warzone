@@ -75,6 +75,48 @@ function Server_AdvanceTurn_Order(game, order, result, skipThisOrder, addNewOrde
 end
 
 function Server_AdvanceTurn_End(game, addNewOrder)
+	-- automatically discard cards if cards held is above the limit
+	if getSetting('LimitMaxCards') then
+		local msg = 'Automatically removing card pieces due to holding too many full cards';
+		local limit = getSetting('MaxCardsLimit');
+
+		for teamType in pairs(Mod.PublicGameData.cardPieces) do
+			for teamId in pairs(Mod.PublicGameData.cardPieces[teamType]) do
+				local unusedFullCards = 0;
+				local sentAutoDiscardMsg = false;
+				local teamLeader = teamType == 'teammed' and Mod.PublicGameData.teams[teamId].members[1] or teamId;
+
+				for cardName, pieces in pairs(Mod.PublicGameData.cardPieces[teamType][teamId].currentPieces) do
+					local piecesInCard = getSetting(cardName .. 'PiecesInCard');
+					local wholeCards = math.floor(pieces / piecesInCard);
+
+					if (unusedFullCards + wholeCards) > limit then
+						if not sentAutoDiscardMsg then
+							addNewOrder(WL.GameOrderEvent.Create(WL.PlayerID.Neutral, msg, visibleToTeammates(teamLeader, game.ServerGame.Game.Players)));
+							sentAutoDiscardMsg = true;
+						end
+
+						local piecesToAdd;
+						local remaining = limit - unusedFullCards;
+
+						if remaining > 0 then
+							unusedFullCards = limit;
+							piecesToAdd = wholeCards - remaining;
+						else
+							piecesToAdd = wholeCards;
+						end
+
+						piecesToAdd = -piecesToAdd * piecesInCard;
+						addNewOrder(WL.GameOrderCustom.Create(teamLeader, msg, 'CCP2_addCardPieces_' .. teamLeader .. '_<' .. cardName .. '=[' .. piecesToAdd .. ']>'));
+					else
+						unusedFullCards = unusedFullCards + wholeCards;
+					end
+				end
+			end
+		end
+	end
+
+	-- add earned pieces
 	local earnedPieces = {};
 
 	function addEarnedPieces(playerId, cardName, minNumPieces, maxNumPieces, chance)
@@ -126,7 +168,7 @@ function Server_AdvanceTurn_End(game, addNewOrder)
 	end
 
 	for playerId in pairs(earnedPieces) do
-		local msg = game.ServerGame.Game.PlayingPlayers[playerId].DisplayName(nil, false) .. ' earned card pieces:';
+		local msg = game.ServerGame.Game.PlayingPlayers[playerId].DisplayName(nil, false) .. ' earned card pieces';
 		addNewOrder(WL.GameOrderEvent.Create(playerId, msg, visibleToTeammates(playerId, game.ServerGame.Game.Players)));
 
 		local payloadPrefix = 'CCP2_addCardPieces_' .. playerId .. '_<';
@@ -251,10 +293,28 @@ function addCardPieces(wz, player, cardName, param)
 	end
 
 	local numPieces = math.abs(amountAdded);
-	local msg = player.DisplayName(nil, false) .. ' ' .. (amountAdded > 0 and 'received' or 'lost') .. ' ' .. numPieces .. ' piece' .. (1 == numPieces and '' or 's') .. ' of a ' .. cardName .. ' Card';
-	local visTo = visibleToTeammates(player.ID, wz.game.ServerGame.Game.Players);
+	local piecesInCard = getSetting(cardName .. 'PiecesInCard');
+	local fullCards = math.floor(numPieces / piecesInCard);
+	local pieces = numPieces % piecesInCard;
+	local msg = player.DisplayName(nil, false) .. ' ' .. (amountAdded > 0 and 'received' or 'lost');
 
-	wz.addNewOrder(WL.GameOrderEvent.Create(player.ID, msg, visTo));
+	if fullCards > 0 then
+		msg = msg .. ' ' .. fullCards .. ' full ' .. cardName .. ' Card' .. (fullCards == 1 and '' or 's');
+	end
+
+	if fullCards > 0 and pieces > 0 then
+		msg = msg .. ' and';
+	end
+
+	if pieces > 0 then
+		msg = msg .. ' ' .. pieces .. ' piece' .. (pieces == 1 and '' or 's');
+
+		if fullCards == 0 then
+			msg = msg .. ' of a ' .. cardName .. ' Card';
+		end
+	end
+
+	wz.addNewOrder(WL.GameOrderEvent.Create(player.ID, msg, visibleToTeammates(player.ID, wz.game.ServerGame.Game.Players)));
 end
 
 function discardCard(wz, player, cardName)

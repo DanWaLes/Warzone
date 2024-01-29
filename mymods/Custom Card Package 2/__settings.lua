@@ -155,17 +155,17 @@ function getSettings()
 				minValue = 0,
 				maxValue = 8
 			}),
-		})--,
-		-- addSetting('LimitMaxCards', 'Limit maximum cards each player or team can hold', 'bool', true, {
-			-- bkwrds = false,
-			-- subsettings = {
-				-- addSetting('MaxCardsLimit', 'Limit', 'int', 3, {
-					-- minValue = 0,
-					-- maxValue = 15,
-					-- absoluteMax = 600
-				-- })
-			-- }
-		-- })
+		}),
+		addSetting('LimitMaxCards', 'Limit maximum cards each player or team can hold', 'bool', true, {
+			bkwrds = false,
+			subsettings = {
+				addSetting('MaxCardsLimit', 'Limit', 'int', 3, {
+					minValue = 0,
+					maxValue = 15,
+					absoluteMax = 600
+				})
+			}
+		})
 	};
 end
 	-- addSetting('AIsPlayCards', 'Let AIs play cards', 'bool', false, {

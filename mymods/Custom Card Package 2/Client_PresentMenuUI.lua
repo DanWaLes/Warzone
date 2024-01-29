@@ -54,7 +54,12 @@ function main(_stored, i)
 end
 
 function cardsClicked(tabData)
-	-- todo mention card limit if there is a limit
+	if getSetting('LimitMaxCards') then
+		local limit = getSetting('MaxCardsLimit');
+
+		Label(tabData.tabContents).SetText('Each player or team may hold up to ' .. limit .. ' full cards');
+		Label(tabData.tabContents).SetText('Full cards will be automatically removed if you' .. (game.Us.Team == -1 and ' hold' or 'r team holds') .. ' more than the limit').SetColor('#FFAE42');
+	end
 
 	local tabs = {};
 	for _, cardName in pairs(Mod.PublicGameData.cardNames) do
