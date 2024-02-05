@@ -40,6 +40,29 @@ function Server_AdvanceTurn_Start(game, addNewOrder)
 		playersWithSuccessfulAttacks[playerId] = false;
 	end
 
+	local reconPlus = 'Reconnaissance+';
+	if getSetting('Enable' .. reconPlus) and getSetting(reconPlus .. 'RandomAutoplay') then
+
+		for teamType in pairs(Mod.PublicGameData.cardPieces) do
+			for teamId in pairs(Mod.PublicGameData.cardPieces[teamType]) do
+				local teamLeader = tonumber(teamType == 'teammed' and Mod.PublicGameData.teams[teamId].members[1] or teamId);
+				local numPieces = Mod.PublicGameData.cardPieces[teamType][teamId].currentPieces[reconPlus] or 0;
+				local wholeCards = math.floor(numPieces / getSetting(reconPlus .. 'PiecesInCard'));
+
+				while wholeCards > 0 do
+					local randomTerrId = Mod.PublicGameData.terrsArray[math.random(1, #Mod.PublicGameData.terrsArray)];
+					local randomTerr = game.Map.Territories[randomTerrId];
+					local msg = 'Play ' .. reconPlus .. ' Card on ' .. randomTerr.Name;
+					local payload = 'CCP2_playedCard_' .. teamLeader .. '_<' .. reconPlus .. '=[' .. randomTerr.ID .. ']>';
+					local order = WL.GameOrderCustom.Create(teamLeader, msg, payload);
+
+					addNewOrder(order);
+					wholeCards = wholeCards - 1;
+				end
+			end
+		end
+	end
+
 	if not Mod.PublicGameData.activeCards then
 		return;
 	end
@@ -77,14 +100,18 @@ end
 function Server_AdvanceTurn_End(game, addNewOrder)
 	-- automatically discard cards if cards held is above the limit
 	if getSetting('LimitMaxCards') then
-		local msg = 'Automatically removing card pieces due to holding too many full cards';
+		local msgPrefix = 'Automatically removing card pieces from ';
+		local msgSuffix = ' due to holding too many full cards';
 		local limit = getSetting('MaxCardsLimit');
 
 		for teamType in pairs(Mod.PublicGameData.cardPieces) do
 			for teamId in pairs(Mod.PublicGameData.cardPieces[teamType]) do
 				local unusedFullCards = 0;
 				local sentAutoDiscardMsg = false;
-				local teamLeader = teamType == 'teammed' and Mod.PublicGameData.teams[teamId].members[1] or teamId;
+				local teamLeader = tonumber(teamType == 'teammed' and Mod.PublicGameData.teams[teamId].members[1] or teamId);
+				local player = game.ServerGame.Game.Players[teamLeader];
+				local playerOrTeamName = player.Team == -1 and player.DisplayName(nil, false) or teamIdToTeamName(player.Team);
+				local msg = msgPrefix .. playerOrTeamName .. msgSuffix;
 
 				for cardName, pieces in pairs(Mod.PublicGameData.cardPieces[teamType][teamId].currentPieces) do
 					local piecesInCard = getSetting(cardName .. 'PiecesInCard');
@@ -397,9 +424,9 @@ function playedTerritorySelectionCard(wz, player, cardName, param, modifyEvent)
 		modifiedEvent = modifyEvent();
 	end
 
-	print('playedTerritorySelectionCard cardName = ' .. cardName);
-	print('modifiedEvent =');
-	tblprint(modifiedEvent);
+	-- print('playedTerritorySelectionCard cardName = ' .. cardName);
+	-- print('modifiedEvent =');
+	-- tblprint(modifiedEvent);
 
 	local event = WL.GameOrderEvent.Create(player.ID, msg, visTo, modifiedEvent.terrModsOpt, modifiedEvent.setResourcesOpt, modifiedEvent.incomeModsOpt);
 	event.JumpToActionSpotOpt = WL.RectangleVM.Create(terr.MiddlePointX, terr.MiddlePointY, terr.MiddlePointX, terr.MiddlePointY);

@@ -48,7 +48,13 @@ function main(_stored, i)
 	stored = _stored;
 
 	local tabs = {'Cards', 'Preferences'};
-	local clicks = {cardsClicked, preferencesClicked}
+	local clicks = {cardsClicked, preferencesClicked};
+
+	if getSetting('HostOnlyOptionsEnabled') then
+		table.insert(tabs, 'Host-only options');
+		table.insert(clicks, hostOnlyOptionsClicked);
+	end
+
 	local tabData = Tabs(mainVert, Horz, tabs, clicks);
 	tabData.tabClicked(tabs[i], clicks[i]);
 end
@@ -91,39 +97,44 @@ function cardNameClicked(tabData, cardName)
 	Label(tabData.tabContents).SetText('Whole cards: ' .. wholeCards);
 	Label(tabData.tabContents).SetText('Pieces: ' .. (myPieces % piecesInCard) .. '/' .. piecesInCard);
 
-	-- use
-	local playCardBtn = Btn(tabData.tabContents).SetText('Use card');
-	local vert = Vert(tabData.tabContents);
+	function createUseCardMenu()
+		local playCardBtn = Btn(tabData.tabContents).SetText('Use card');
+		local vert = Vert(tabData.tabContents);
 
-	if game.Game.State == WL.GameState.Playing then
-		playCardBtn.SetInteractable(wholeCards > 0);
-	else
-		playCardBtn.SetInteractable(false);
+		if game.Game.State == WL.GameState.Playing then
+			playCardBtn.SetInteractable(wholeCards > 0);
+		else
+			playCardBtn.SetInteractable(false);
+		end
+
+		playCardBtn.SetOnClick(function()
+			_G['playCard' .. string.gsub(cardName, '[^%w_]', '')](game, tabData, cardName, playCardBtn, vert, nil, {});
+		end);
 	end
 
-	playCardBtn.SetOnClick(function()
-		_G['playCard' .. string.gsub(cardName, '[^%w_]', '')](game, tabData, cardName, playCardBtn, vert, nil, {});
-	end);
+	function createDiscardCardMenu()
+		local discardCardBtn = Btn(tabData.tabContents).SetText('Discard card');
 
-	-- discard
-	local discardCardBtn = Btn(tabData.tabContents).SetText('Discard card');
+		if game.Game.State ~= WL.GameState.Playing or wholeCards < 1 then
+			discardCardBtn.SetInteractable(false)
+		end
 
-	if game.Game.State ~= WL.GameState.Playing or wholeCards < 1 then
-		discardCardBtn.SetInteractable(false)
+		discardCardBtn.SetOnClick(function()
+			local msg = 'Discard a ' .. cardName .. ' Card';
+			local payload = 'CCP2_discardCard_' .. game.Us.ID .. '_<' .. cardName .. '=[]>';
+			local order = WL.GameOrderCustom.Create(game.Us.ID, msg, payload, nil, WL.TurnPhase.Discards);
+
+			placeOrderInCorrectPosition(game, order);
+		end);
 	end
 
-	discardCardBtn.SetOnClick(function()
-		local msg = 'Discard a ' .. cardName .. ' Card';
-		local payload = 'CCP2_discardCard_' .. game.Us.ID .. '_<' .. cardName .. '=[]>';
-		local order = WL.GameOrderCustom.Create(game.Us.ID, msg, payload, nil, WL.TurnPhase.Discards);
+	function createBuyCardMenu()
+		local isBuyable = getSetting(cardName .. 'IsBuyable') and game.Settings.CommerceGame;
 
-		placeOrderInCorrectPosition(game, order);
-	end);
+		if not isBuyable then
+			return;
+		end
 
-	-- buy
-	local isBuyable = getSetting(cardName .. 'IsBuyable') and game.Settings.CommerceGame;
-
-	if isBuyable then
 		local cost = getSetting(cardName .. 'Cost');
 		local btn = Btn(tabData.tabContents);
 
@@ -141,6 +152,15 @@ function cardNameClicked(tabData, cardName)
 			btn.SetInteractable(false);
 		end
 	end
+
+	if getSetting(cardName .. 'RandomAutoplay') then
+		Label(tabData.tabContents).SetText('Cards of this type will be automatically randomly played anywhere');
+	else
+		createUseCardMenu();
+		createDiscardCardMenu();
+	end
+
+	createBuyCardMenu();
 end
 
 function createDoneAndCancelForCardUse(game, tabData, cardName, parent, playerId, calcOrderDetails);
@@ -350,4 +370,33 @@ function preferencesClicked(tabData)
 			end);
 		end);
 	end
+end
+
+function hostOnlyOptionsClicked(tabData)
+	local vert = Vert(tabDat.tabContents);
+
+	Label(vert).SetText('The game host can remove all cards from a player or team and add card pieces');
+	Label(vert).SetText('If the host has performed host only options, a brief message in the orders list will appear to everyone');
+
+	local host = game.Settings.StartedBy;
+
+	if game.Us.ID ~= host then
+		return;
+	end
+
+	-- Label(vert).SetText('Select a ' .. (isTeamGame and 'team' or 'player') .. ' to edit the cards pieces of');
+
+	-- if isTeamGame then
+		-- for teamId in pairs(Mod.PublicGameData.teams) do
+			-- local btn = Btn(vert);
+			-- local i = 0;
+		-- end
+	-- else
+	-- end
+
+	-- for teamId in pairs(Mod.PublicGameData.teams) do
+		-- for teamId in pairs(Mod.PublicGameData.cardPieces[teamType]) do
+			-- local teamLeader = tonumber(teamType == 'teammed' and Mod.PublicGameData.teams[teamId] or teamId);
+		-- end
+	-- end
 end

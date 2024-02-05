@@ -103,6 +103,13 @@ function getSettings()
 			addSetting('Reconnaissance+Range', 'Range', 'int', 2, {
 				minValue = 1,
 				maxValue = 5
+			}),
+			addSetting('Reconnaissance+RandomAutoplay', 'Automatically randomly play this card', 'bool', false, {
+				bkwrds = false,
+				help = function(parent)
+					Label(parent).SetText('If enabled, players will not be able to play this card through the menu')
+					Label(parent).SetText('Instead the card will automatically be played anywhere');
+				end
 			})
 		}),
 		Card('Recycle', function(parent)
@@ -165,18 +172,21 @@ function getSettings()
 					absoluteMax = 600
 				})
 			}
-		})
+		})--,
+		-- addSetting('HumanPlayCardOnTeamAITerritories', 'Let humans play cards on their AI teammates behalf', 'bool', true, {
+			-- bkwrds = false
+		-- }),
+		-- addSetting('AIsPlayCards', 'Let AIs play cards', 'bool', false, {
+			-- bkwrds = false,
+			-- help = function(parent)
+				-- Label(parent).SetText('If enabled, AIs will play cards as long as there are no humans on their team');
+			-- end
+		-- }),
+		-- addSetting('HostOnlyOptionsEnabled', 'Enable host-only options', 'bool', false, {
+			-- bkwrds = false,
+			-- help = function(parent)
+				-- Label(parent).SetText('Allows the game host to add card pieces to players or teams and remove all their cards');
+			-- end
+		-- })
 	};
 end
-	-- addSetting('AIsPlayCards', 'Let AIs play cards', 'bool', false, {
-		-- bkwrds = false,
-		-- help = function(parent)
-			-- Label(parent).SetText('If enabled, AIs will play cards if there are not any human players on their team');
-		-- end
-	-- }),
-	-- addSetting('HostOnlyOptionsEnabled', 'Enable host-only options', 'bool', false, {
-		-- bkwrds = false,
-		-- help = function(parent)
-			-- Label(parent).SetText('Allows the game host to add and remove card pieces from players or teams');
-		-- end
-	-- })

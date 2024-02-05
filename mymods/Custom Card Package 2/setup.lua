@@ -80,12 +80,22 @@ function setup(game)
 		cardsThatCanBeActive[cardName] = getSetting('Enable' .. cardName);
 	end
 
+	local terrsArray = nil;
+	if getSetting('EnableReconnaissance+') and getSetting('Reconnaissance+RandomAutoplay') or getSetting('AIsPlayCards') then
+		terrsArray = {};
+
+		for terrId in pairs(game.Map.Territories) do
+			table.insert(terrsArray, terrId);
+		end
+	end
+
 	Mod.PublicGameData = {
 		teams = teams,
 		cardPieces = cardPieces,
 		cardNames = cardNames,
 		cardsThatCanBeActive = cardsThatCanBeActive,
-		activeCards = nil
+		activeCards = nil,
+		terrsArray = terrsArray
 	};
 
 	Mod.PlayerGameData = playerGD;
