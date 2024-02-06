@@ -154,7 +154,7 @@ function getSettings()
 			Label(parent).SetText('If using multi-attack and the double tap attack is successful, the multi-attack chain will only continue if it was played before the next attack of the chain');
 		end),
 		Card('Rushed Blockade', true, function(parent)
-			Label(parent).SetText('Like normal Blockade Cards but happen during the attacks phase');
+			Label(parent).SetText('Like normal Blockade Cards but happen during the attacks phase - attack one territory then blockade it during the same turn');
 			Label(parent).SetText('You must own the territory at the time of the card being played');
 		end, {
 			addSetting('Rushed BlockadeMultiplier', 'Multiplier', 'float', 3, {
