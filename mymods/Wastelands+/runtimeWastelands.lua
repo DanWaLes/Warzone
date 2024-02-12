@@ -53,9 +53,23 @@ function makeRuntimeWastelands(game, addNewOrder)
 end
 
 function placeWasteland(terrId, size, game)
-	if size ~= game.ServerGame.LatestTurnStanding.Territories[terrId].NumArmies.NumArmies then
+	-- standing doesnt get updated correctly on server end if multiple mods change it
+	-- territory might not even be neutral if another mod sets ownership of territories
+	-- try to give approximate armies needed
+
+	local actualArmies = game.ServerGame.LatestTurnStanding.Territories[terrId].NumArmies.NumArmies;
+	local armiesToAdd = 0;
+
+	if size ~= actualArmies then
+		if size < actualArmies then
+			armiesToAdd = actualArmies - size;
+		else
+			armiesToAdd = size - actualArmies;
+		end
+
 		local terrMod = WL.TerritoryModification.Create(terrId);
-		terrMod.SetArmiesTo = size;
+		terrMod.AddArmies = armiesToAdd;
+		-- terrMod.SetArmiesTo = size;
 		tMods.add(terrId, terrMod);
 	end
 end
