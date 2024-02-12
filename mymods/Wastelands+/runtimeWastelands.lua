@@ -61,11 +61,16 @@ function placeWasteland(terrId, size, game)
 	local armiesToAdd = 0;
 
 	if size ~= actualArmies then
-		if size < actualArmies then
-			armiesToAdd = actualArmies - size;
-		else
-			armiesToAdd = size - actualArmies;
-		end
+		local armiesToAdd = -(actualArmies - size);
+
+		-- actualArmies = 5, size = 2
+		-- armiesToAdd = -(5 - 2)
+		-- armiesToAdd = -(3)
+
+		-- actualArmies = 2, size = 5
+		-- armiesToAdd = -(2 - 5)
+		-- armiesToAdd = -(-3)
+		-- armiesToAdd = 3
 
 		local terrMod = WL.TerritoryModification.Create(terrId);
 		terrMod.AddArmies = armiesToAdd;
