@@ -1,0 +1,12 @@
+AIs don't attack | skips orders Server_AdvanceTurn_Order
+Advanced Card Distribution (per player) | AddCardPiecesOpt Server_AdvanceTurn_End
+Custom Card Package 2 | changes settings, skips orders SetOwnerOpt AddArmies RemoveSpecialUnitsOpt IncomeMod Server_AdvanceTurn_Order
+Draw Resolver | RemoveSpecialUnitsOpt SetOwnerOpt Server_AdvanceTurn_Start
+Host spies on and can eliminate players | changes settings, OwnerPlayerID NumArmies Structures Server_StartGame, RemoveSpecialUnitsOpt SetOwnerOpt AddCardPiecesOpt Server_AdvanceTurn_Start, skips orders Server_AdvanceTurn_Order
+Locked Down Regions | skips orders Server_AdvanceTurn_Order
+Map testing - territory connections | SetArmiesTo Server_AdvanceTurn_End is fine because actual games arent meant to be played on it
+Random settings generator | changes settings
+Stationary Commanders | changes settings, skips orders Server_AdvanceTurn_Order
+Surveillance Card+ | skips orders Server_AdvanceTurn_Order
+Swap Territories 2 | SetOwnerOpt RemoveSpecialUnitsOpt AddSpecialUnits Server_AdvanceTurn_End
+Wastelands+ | AddArmies Server_AdvanceTurn_End
