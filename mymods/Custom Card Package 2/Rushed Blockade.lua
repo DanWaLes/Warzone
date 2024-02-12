@@ -43,8 +43,9 @@ function playedCardRushedBlockade(wz, player, cardName, param)
 		end
 
 		local terrMod = WL.TerritoryModification.Create(terrId);
-		terrMod.SetOwnerOpt = WL.PlayerID.Neutral;
-		terrMod.SetArmiesTo = round(terr.NumArmies.NumArmies * getSetting(cardName .. 'Multiplier'));
+		terrMod.SetOwnerOpt = WL.PlayerID.Neutral;	
+		terrMod.AddArmies = round(terr.NumArmies.NumArmies * getSetting(cardName .. 'Multiplier')) - terr.NumArmies.NumArmies;
+		-- terrMod.SetArmiesTo = round(terr.NumArmies.NumArmies * getSetting(cardName .. 'Multiplier'));
 
 		local eliminatingBecauseCommander = false;
 		local removeSpecialUnitsOpt = {};

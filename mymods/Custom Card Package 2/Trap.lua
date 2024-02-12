@@ -55,7 +55,8 @@ local function doTrapCardEffect(wz, cardName, i, activeCardInstance)
 
 	local mod = WL.TerritoryModification.Create(targetTerr);
 	mod.SetOwnerOpt = WL.PlayerID.Neutral;
-	mod.SetArmiesTo = round(armiesTakingOver.NumArmies * getSetting(cardName .. 'Multiplier'));
+	mod.AddArmies = round(armiesTakingOver.NumArmies * getSetting(cardName .. 'Multiplier')) - armiesTakingOver.NumArmies;
+	-- mod.SetArmiesTo = round(armiesTakingOver.NumArmies * getSetting(cardName .. 'Multiplier'));
 	mod.RemoveSpecialUnitsOpt = specialUnitsToRemove;
 
 	if eliminatingBecauseCommander then

@@ -29,9 +29,20 @@ function playedCardRecycle(wz, player, cardName, param)
 		local eliminateIfCommander = getSetting(cardName .. 'EliminateIfCommander');
 		local eliminatingBecauseCommander = false;
 
+		local armiesToAdd = -(currArmiesOnTerr - firstArmiesOnTerr);
+		-- currArmiesOnTerr = 5, firstArmiesOnTerr = 2
+		-- armiesToAdd = -(5 - 2)
+		-- armiesToAdd = -(3)
+
+		-- currArmiesOnTerr = 2, firstArmiesOnTerr = 5
+		-- armiesToAdd = -(2 - 5)
+		-- armiesToAdd = -(-3)
+		-- armiesToAdd = 3
+
 		local terrMod = WL.TerritoryModification.Create(terrId);
 		terrMod.SetOwnerOpt = WL.PlayerID.Neutral;
-		terrMod.SetArmiesTo = firstArmiesOnTerr;
+		terrMod.AddArmies = armiesToAdd;
+		-- terrMod.SetArmiesTo = firstArmiesOnTerr;
 
 		local removeSpecialUnitsOpt = {};
 		local totalSpecialUnitValue = 0;
