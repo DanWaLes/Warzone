@@ -20,7 +20,7 @@ end
 
 function getFirstPlayer(game)
 	-- neutral isn't allowed for game order custom
-	for playerId in pairs(game.ServerGame.Players) do
+	for playerId in pairs(game.ServerGame.Game.Players) do
 		return playerId;
 	end
 end
