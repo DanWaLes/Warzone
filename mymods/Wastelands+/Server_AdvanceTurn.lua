@@ -5,7 +5,7 @@ local executed = false;
 
 function Server_AdvanceTurn_Order(game, order, result, skipThisOrder, addNewOrder)
 	if order.proxyType == 'GameOrderCustom' and order.Payload == payload then
-		skipThisOrder(WL.ModOrderControl.SkipAndSurpessSkippedMessage);
+		skipThisOrder(WL.ModOrderControl.SkipAndSupressSkippedMessage);
 
 		if not executed then
 			makeRuntimeWastelands(game, addNewOrder);
