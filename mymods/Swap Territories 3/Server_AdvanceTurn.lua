@@ -2,6 +2,9 @@ require 'version';
 require '_settings';
 require '_util';
 
+local executed = false;
+local payload = 'SwapTerritories2_ServerAdvanceTurnEnd';
+
 local swapSpecialUnits = nil;
 local playerOwnedTerritories = {};
 local specialUnitDetails = {};
@@ -13,7 +16,22 @@ local specialUnitDetails = {};
 	}
 ]]
 
+function Server_AdvanceTurn_Order(game, order, result, skipThisOrder, addNewOrder)
+	if order.proxyType == 'GameOrderCustom' and order.Payload == payload then
+		skipThisOrder(WL.ModOrderControl.SkipAndSupressSkippedMessage);
+
+		if not executed then
+			main(game, addNewOrder);
+			executed = true;
+		end
+	end
+end
+
 function Server_AdvanceTurn_End(game, addNewOrder)
+	addNewOrder(WL.GameOrderCustom.Create(WL.PlayerID.Neutral, '', payload));
+end
+
+function main(game, addNewOrder)
 	if game.Settings.SinglePlayer and not canRunMod() then
 		return;
 	end
