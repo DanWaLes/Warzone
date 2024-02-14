@@ -28,7 +28,14 @@ function Server_AdvanceTurn_Order(game, order, result, skipThisOrder, addNewOrde
 end
 
 function Server_AdvanceTurn_End(game, addNewOrder)
-	addNewOrder(WL.GameOrderCustom.Create(WL.PlayerID.Neutral, '', payload));
+	addNewOrder(WL.GameOrderCustom.Create(getFirstPlayer(game), '', payload));
+end
+
+function getFirstPlayer(game)
+	-- neutral isn't allowed for game order custom
+	for playerId in pairs(game.ServerGame.Players) do
+		return playerId;
+	end
 end
 
 function main(game, addNewOrder)
