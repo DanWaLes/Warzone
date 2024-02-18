@@ -1,5 +1,6 @@
 -- https://www.warzone.com/wiki/Mod_API_Reference:GameOrderCustom OccursInPhaseOpt 5.22.0
 -- https://www.warzone.com/wiki/Mod_API_Reference:UI UI.InterceptNextTerritoryClick 5.17.0
+-- https://www.warzone.com/wiki/Mod_Hooks Server_AdvanceTurn_Order addNewOrder arg2 5.17.0
 
 function canRunMod()
 	local version = '5.22';

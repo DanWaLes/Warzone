@@ -63,9 +63,9 @@ local function doTrapCardEffect(wz, cardName, i, activeCardInstance)
 		local mods = eliminate({attackedBy}, wz.game.ServerGame.LatestTurnStanding.Territories);
 		table.insert(mods, mod);
 
-		wz.addNewOrder(WL.GameOrderEvent.Create(playedById, 'Trap activated', {}, mods));
+		wz.addNewOrder(WL.GameOrderEvent.Create(playedById, 'Trap activated', {}, mods), true);
 	else
-		wz.addNewOrder(WL.GameOrderEvent.Create(playedById, 'Trap activated', {}, {mod}));
+		wz.addNewOrder(WL.GameOrderEvent.Create(playedById, 'Trap activated', {}, {mod}), true);
 	end
 
 	removeActiveCardInstance(cardName, i);
