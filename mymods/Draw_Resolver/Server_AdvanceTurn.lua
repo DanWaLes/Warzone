@@ -1,23 +1,25 @@
 require 'eliminate'
 require 'version'
 
+local satsPayload = 'DrawResolver_ServerAdvanceTurnStart';
+
 function Server_AdvanceTurn_Start(game, addNewOrder)
 	if game.Settings.SinglePlayer and not canRunMod() then
 		return;
 	end
 
-	local votes = checkVotes(game)
+	votes = checkVotes(game)
 
 	if votes.numPlaying ~= votes.numVotes then
 		return;
 	end
 
 	local winner = math.random(1, votes.numPlaying);
-	local winnerId = votes.players[winner];
+	winnerId = votes.players[winner];
 
 	votes.players[winner] = nil;
 
-	addNewOrder(WL.GameOrderEvent.Create(winnerId, 'Decided random winner', {}, eliminate(votes.players, game.ServerGame.LatestTurnStanding.Territories)));
+	addNewOrder(WL.GameOrderCustom.Create(winnerId, '', satsPayload));
 end
 
 function checkVotes(game)
@@ -44,4 +46,11 @@ function checkVotes(game)
 	Mod.PublicGameData = publicGameData;
 
 	return {players = players, numPlaying = numPlaying, numVotes = numVotes};
+end
+
+function Server_AdvanceTurn_Order(game, order, result, skipThisOrder, addNewOrder)
+	if order.proxyType == 'GameOrderCustom' and order.Payload == satsPayload then
+		skipThisOrder(WL.ModOrderControl.SkipAndSupressSkippedMessage);
+		addNewOrder(WL.GameOrderEvent.Create(winnerId, 'Decided random winner', {}, eliminate(votes.players, game.ServerGame.LatestTurnStanding.Territories)));
+	end
 end
