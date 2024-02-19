@@ -1,6 +1,8 @@
 require '_util';
 require '_ui';
 
+local doingSinglePlayerTesting = false;
+
 function Client_PresentMenuUI(RootParent, setMaxSize, setScrollable, Game, close)
 	-- print('init Client_PresentMenuUI');
 
@@ -9,7 +11,7 @@ function Client_PresentMenuUI(RootParent, setMaxSize, setScrollable, Game, close
 
 	setMaxSize(480, 270);-- 16:9 on 30
 
-	if game.Settings.SinglePlayer then
+	if game.Settings.SinglePlayer and not doingSinglePlayerTesting then
 		Label(rootParent).SetText('This mod is designed to only be used in multiplayer games.');
 		return;
 	end

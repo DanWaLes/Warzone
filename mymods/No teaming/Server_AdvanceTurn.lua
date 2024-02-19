@@ -2,8 +2,10 @@ require '_util';
 require 'version';
 require 'eliminate';
 
+local satsPayload = 'NoTeaming_ServerAdvanceTurnStart';
+
 function Server_AdvanceTurn_Start(game, addNewOrder)
-	if not canRunMod() then
+	if game.Settings.SinglePlayer and not canRunMod() then
 		return;
 	end
 
@@ -13,6 +15,10 @@ function Server_AdvanceTurn_Start(game, addNewOrder)
 		return;
 	end
 
+	addNewOrder(WL.GameOrderCustom.Create(host, '', satsPayload));
+end
+
+function sats(game, addNewOrder)
 	eliminatePlayers(game, addNewOrder);
 	giveSpyCardPieces(game, addNewOrder);
 
@@ -81,11 +87,8 @@ function giveSpyCardPieces(game, addNewOrder)
 	-- tblprint(playersNeedToSpyOn);
 
 	local cards = game.ServerGame.LatestTurnStanding.Cards[host];
-	local numSpyCardPiecesToRemove = 0;
 
 	if cards then
-		numSpyCardPiecesToRemove = cards.Pieces[WL.CardID.Spy] or 0;
-
 		for instanceId, instance in pairs(cards.WholeCards) do
 			if instance.CardID == WL.CardID.Spy then
 				existingSpyCards[instanceId] = true;
@@ -95,8 +98,8 @@ function giveSpyCardPieces(game, addNewOrder)
 
 	local numWholeCardsNeeded = numPlayersNeedToSpyOn;
 	local piecesInCard = spyCardSettings.NumPieces;
-	local numSpyCardPiecesToAdd =  numWholeCardsNeeded * piecesInCard;
-	local totalPiecesToAdd = numSpyCardPiecesToAdd - numSpyCardPiecesToRemove;
+	local numSpyCardPiecesToAdd = numWholeCardsNeeded * piecesInCard;
+	local totalPiecesToAdd = numSpyCardPiecesToAdd;
 
 	if totalPiecesToAdd ~= 0 then
 		local order = WL.GameOrderEvent.Create(host, 'Enable host to spy on everyone', {});
@@ -135,7 +138,10 @@ function Server_AdvanceTurn_Order(game, order, result, skipThisOrder, addNewOrde
 	end
 
 	if order.proxyType == 'GameOrderCustom' then
-		if order.Payload == 'NoTeaming_spyoneveryone' then
+		if order.Payload == satsPayload then
+			skipThisOrder(WL.ModOrderControl.SkipAndSupressSkippedMessage);
+			sats(game, addNewOrder);
+		elseif order.Payload == 'NoTeaming_spyoneveryone' then
 			skipThisOrder(WL.ModOrderControl.SkipAndSupressSkippedMessage);
 			expectingSpyCardsToBePlayed = true;
 			spyOnEveryone(game, order, result, skipThisOrder, addNewOrder);
