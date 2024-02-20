@@ -1,0 +1,59 @@
+{
+  "termsOfUse" : "Please use this API responsibly, as it can consume significant amounts of server resources if called excessively.",
+  "PerfData" : [ {
+    "Date" : 1.707718731108E12,
+    "MessageType" : "SendOrders",
+    "GameID" : 36624984,
+    "Messages" : {"Server_AdvanceTurn_Order": {"spent": 0, "times": 285}, "Server_AdvanceTurn_Start": {"spent": 0, "times": 1}}
+  }, {
+    "Date" : 1.707260268129E12,
+    "MessageType" : "SendOrders",
+    "GameID" : 36624984,
+    "Messages" : {"Server_AdvanceTurn_Order": {"spent": 0, "times": 193}, "Server_AdvanceTurn_Start": {"spent": 0, "times": 1}}
+  }, {
+    "Date" : 1.70818898724E12,
+    "MessageType" : "Queue_ProcessAI",
+    "GameID" : 36624984,
+    "Messages" : {"Server_AdvanceTurn_Order": {"spent": 338, "times": 289}, "Server_AdvanceTurn_Start": {"spent": 4, "times": 1}}
+  }, {
+    "Date" : 1.707114157844E12,
+    "MessageType" : "SendOrders",
+    "GameID" : 36624984,
+    "Messages" : {"Server_AdvanceTurn_Order": {"spent": 2, "times": 207}, "Server_AdvanceTurn_Start": {"spent": 0, "times": 1}}
+  }, {
+    "Date" : 1.707861232246E12,
+    "MessageType" : "SendOrders",
+    "GameID" : 36624984,
+    "Messages" : {"Server_AdvanceTurn_Order": {"spent": 0, "times": 254}, "Server_AdvanceTurn_Start": {"spent": 0, "times": 1}}
+  }, {
+    "Date" : 1.707405484604E12,
+    "MessageType" : "SendOrders",
+    "GameID" : 36624984,
+    "Messages" : {"Server_AdvanceTurn_Order": {"spent": 0, "times": 293}, "Server_AdvanceTurn_Start": {"spent": 0, "times": 1}}
+  }, {
+    "Date" : 1.707480785241E12,
+    "MessageType" : "SendOrders",
+    "GameID" : 36624984,
+    "Messages" : {"Server_AdvanceTurn_Order": {"spent": 0, "times": 262}, "Server_AdvanceTurn_Start": {"spent": 0, "times": 1}}
+  }, {
+    "Date" : 1.707866620746E12,
+    "MessageType" : "GameCustomMessage",
+    "GameID" : 36624984,
+    "Messages" : {"Server_GameCustomMessage": {"spent": 16, "times": 1}}
+  }, {
+    "Date" : 1.707653587958E12,
+    "MessageType" : "Queue_ProcessAI",
+    "GameID" : 36624984,
+    "Messages" : {"Server_AdvanceTurn_Order": {"spent": 0, "times": 270}, "Server_AdvanceTurn_Start": {"spent": 0, "times": 1}}
+  }, {
+    "Date" : 1.706980807738E12,
+    "MessageType" : "SendOrders",
+    "GameID" : 36624984,
+    "Messages" : {"Server_AdvanceTurn_Order": {"spent": 0, "times": 195}, "Server_AdvanceTurn_Start": {"spent": 0, "times": 1}}
+  }, {
+    "Date" : 1.708016183968E12,
+    "MessageType" : "SendOrders",
+    "GameID" : 36624984,
+    "Messages" : {"Server_AdvanceTurn_Order": {"spent": 309, "times": 278}, "Server_AdvanceTurn_Start": {"spent": 10, "times": 1}}
+  } ]
+}

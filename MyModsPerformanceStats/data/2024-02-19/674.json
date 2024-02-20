@@ -1,0 +1,114 @@
+{
+  "termsOfUse" : "Please use this API responsibly, as it can consume significant amounts of server resources if called excessively.",
+  "PerfData" : [ {
+    "Date" : 1.70717452737E12,
+    "MessageType" : "SendOrders",
+    "GameID" : 35494313,
+    "Messages" : {"Server_AdvanceTurn_Order": {"spent": 0, "times": 331}}
+  }, {
+    "Date" : 1.707170763302E12,
+    "MessageType" : "SendOrders",
+    "GameID" : 36852400,
+    "Messages" : {"Server_AdvanceTurn_Order": {"spent": 1, "times": 188}}
+  }, {
+    "Date" : 1.707210419666E12,
+    "MessageType" : "SendOrders",
+    "GameID" : 36177552,
+    "Messages" : {"Server_AdvanceTurn_Order": {"spent": 0, "times": 1716}}
+  }, {
+    "Date" : 1.705936670942E12,
+    "MessageType" : "SendOrders",
+    "GameID" : 35494313,
+    "Messages" : {"Server_AdvanceTurn_Order": {"spent": 0, "times": 360}}
+  }, {
+    "Date" : 1.707086124941E12,
+    "MessageType" : "SendOrders",
+    "GameID" : 36852400,
+    "Messages" : {"Server_AdvanceTurn_Order": {"spent": 0, "times": 186}}
+  }, {
+    "Date" : 1.708182286819E12,
+    "MessageType" : "SendOrders",
+    "GameID" : 36852400,
+    "Messages" : {"Server_AdvanceTurn_Order": {"spent": 4, "times": 73}}
+  }, {
+    "Date" : 1.707772810121E12,
+    "MessageType" : "SendOrders",
+    "GameID" : 36852400,
+    "Messages" : {"Server_AdvanceTurn_Order": {"spent": 1, "times": 119}}
+  }, {
+    "Date" : 1.708244478708E12,
+    "MessageType" : "SendOrders",
+    "GameID" : 36177552,
+    "Messages" : {"Server_AdvanceTurn_Order": {"spent": 0, "times": 1477}}
+  }, {
+    "Date" : 1.708276992838E12,
+    "MessageType" : "SendOrders",
+    "GameID" : 36852400,
+    "Messages" : {"Server_AdvanceTurn_Order": {"spent": 0, "times": 128}}
+  }, {
+    "Date" : 1.708317661528E12,
+    "MessageType" : "SendOrders",
+    "GameID" : 35494313,
+    "Messages" : {"Server_AdvanceTurn_Order": {"spent": 3, "times": 291}}
+  }, {
+    "Date" : 1.706108214396E12,
+    "MessageType" : "Queue_ProcessAI",
+    "GameID" : 36177552,
+    "Messages" : {"Server_AdvanceTurn_Order": {"spent": 0, "times": 1595}}
+  }, {
+    "Date" : 1.706193590992E12,
+    "MessageType" : "SendOrders",
+    "GameID" : 35494313,
+    "Messages" : {"Server_AdvanceTurn_Order": {"spent": 9, "times": 371}}
+  }, {
+    "Date" : 1.706701135233E12,
+    "MessageType" : "Queue_ProcessAI",
+    "GameID" : 36177552,
+    "Messages" : {"Server_AdvanceTurn_Order": {"spent": 0, "times": 1617}}
+  }, {
+    "Date" : 1.706750497638E12,
+    "MessageType" : "SendOrders",
+    "GameID" : 36852400,
+    "Messages" : {"Server_AdvanceTurn_Order": {"spent": 0, "times": 237}}
+  }, {
+    "Date" : 1.707348082231E12,
+    "MessageType" : "SendOrders",
+    "GameID" : 36852400,
+    "Messages" : {"Server_AdvanceTurn_Order": {"spent": 2, "times": 158}}
+  }, {
+    "Date" : 1.707488259561E12,
+    "MessageType" : "SendOrders",
+    "GameID" : 36852400,
+    "Messages" : {"Server_AdvanceTurn_Order": {"spent": 6, "times": 158}}
+  }, {
+    "Date" : 1.706900508054E12,
+    "MessageType" : "SendOrders",
+    "GameID" : 36852400,
+    "Messages" : {"Server_AdvanceTurn_Order": {"spent": 0, "times": 142}}
+  }, {
+    "Date" : 1.707576801831E12,
+    "MessageType" : "SendOrders",
+    "GameID" : 36177552,
+    "Messages" : {"Server_AdvanceTurn_Order": {"spent": 1, "times": 1697}}
+  }, {
+    "Date" : 1.707922121787E12,
+    "MessageType" : "SendOrders",
+    "GameID" : 36852400,
+    "Messages" : {"Server_AdvanceTurn_Order": {"spent": 12, "times": 107}}
+  }, {
+    "Date" : 1.707631406222E12,
+    "MessageType" : "SendOrders",
+    "GameID" : 35494313,
+    "Messages" : {"Server_AdvanceTurn_Order": {"spent": 0, "times": 311}}
+  }, {
+    "Date" : 1.707678541667E12,
+    "MessageType" : "SendOrders",
+    "GameID" : 36852400,
+    "Messages" : {"Server_AdvanceTurn_Order": {"spent": 1, "times": 153}}
+  }, {
+    "Date" : 1.70801718693E12,
+    "MessageType" : "SendOrders",
+    "GameID" : 36852400,
+    "Messages" : {"Server_AdvanceTurn_Order": {"spent": 7, "times": 126}}
+  } ]
+}
