@@ -130,6 +130,11 @@ function processTerrsAffectedOrder(game, order, addNewOrder)
 	msg = msg .. ' had no armies and became neutral';
 
 	local order = WL.GameOrderEvent.Create(WL.PlayerID.Neutral, msg, {}, terrMods);
-	order.JumpToActionSpotOpt = WL.RectangleVM.Create(terrDetails.MiddlePointX, terrDetails.MiddlePointY, terrDetails.MiddlePointX, terrDetails.MiddlePointY);
+
+	if #terrMods == 1 then
+		-- if there's more than 1 territory involved, then action spot could hint at where it is if player cant see it
+		order.JumpToActionSpotOpt = WL.RectangleVM.Create(terrDetails.MiddlePointX, terrDetails.MiddlePointY, terrDetails.MiddlePointX, terrDetails.MiddlePointY);
+	end
+
 	addNewOrder(order);
 end
