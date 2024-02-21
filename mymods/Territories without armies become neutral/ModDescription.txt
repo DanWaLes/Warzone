@@ -1,0 +1,1 @@
+When territories have no actual armies or special units (like commanders), they will become neutral.
