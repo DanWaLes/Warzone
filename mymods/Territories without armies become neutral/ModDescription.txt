@@ -1,1 +1,1 @@
-When territories have no actual armies or special units (like commanders), they will become neutral.
+As soon as territories have no actual armies or special units (like Commanders), they will become neutral. Takes effect after every order.

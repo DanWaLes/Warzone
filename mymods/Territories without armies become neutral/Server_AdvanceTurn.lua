@@ -1,8 +1,6 @@
 require 'util';
 require 'version';
 
-require 'terrHasNoArmies';
-
 local payloadPrefix = 'TWABN_TerrsChanged=';
 
 function Server_AdvanceTurn_Order(game, order, result, skipThisOrder, addNewOrder)
@@ -10,24 +8,11 @@ function Server_AdvanceTurn_Order(game, order, result, skipThisOrder, addNewOrde
 		return;
 	end
 
-	local isSPAndCantRunMod = game.Settings.SinglePlayer and not canRunMod();
-
-	if isSPAndCantRunMod then
+	if game.Settings.SinglePlayer and not canRunMod() then
 		return;
 	end
 
-	if not Mod.PublicGameData.checkedAllTerritoriesForHavingNoArmies then
-		if (not Mod.PublicGameData.initialIsSPAndCantRunMod) or (Mod.PublicGameData.initialIsSPAndCantRunMod ~= isSPAndCantRunMod) then
-			-- another mod may have have executed after this one in Server_StartGame giving player territories with no armies
-			-- or used to have old app then updated
-
-			checkAllTerritoriesForHavingNoArmies(game, addNewOrder);
-
-			local publicGD = Mod.PublicGameData;
-			publicGD.checkedAllTerritoriesForHavingNoArmies = true;
-			Mod.PublicGameData = publicGD;
-		end
-	end
+	-- player owned territories with 0 armies are allowed only if they were already there
 
 	if order.proxyType == 'GameOrderCustom' then
 		if not string.find(order.Payload, '^' .. payloadPrefix) then
@@ -49,23 +34,7 @@ function Server_AdvanceTurn_Order(game, order, result, skipThisOrder, addNewOrde
 	end
 end
 
-function checkAllTerritoriesForHavingNoArmies(game, addNewOrder)
-	-- print('in checkAllTerritoriesForHavingNoArmies');
-
-	local terrsAffectedStr = '';
-
-	for _, terr in pairs(game.ServerGame.LatestTurnStanding.Territories) do
-		if terrHasNoArmies(terr) then
-			terrsAffectedStr = terrsAffectedStr .. terr.ID .. ',';
-		end
-	end
-
-	if #terrsAffectedStr > 0 then
-		makeTerrsAffectedOrder(addNewOrder, terrsAffectedStr, nil, true);
-	end
-end
-
-function makeTerrsAffectedOrder(addNewOrder, terrsAffectedStr, terrMods, allowTheOrderToBeAddedIfThisOrderSkipped)
+function makeTerrsAffectedOrder(addNewOrder, terrsAffectedStr, terrMods)
 	if terrMods then
 		terrsAffectedStr = '';
 
@@ -74,13 +43,7 @@ function makeTerrsAffectedOrder(addNewOrder, terrsAffectedStr, terrMods, allowTh
 		end
 	end
 
-	local param2 = true;
-
-	if allowTheOrderToBeAddedIfThisOrderSkipped then
-		param2 = nil;
-	end
-
-	addNewOrder(WL.GameOrderCustom.Create(Mod.PublicGameData.playerForGameOrderCustoms, '', payloadPrefix .. terrsAffectedStr), param2);
+	addNewOrder(WL.GameOrderCustom.Create(Mod.PublicGameData.playerForGameOrderCustoms, '', payloadPrefix .. terrsAffectedStr), true);
 end
 
 function processTerrsAffectedOrder(game, order, addNewOrder)
@@ -137,4 +100,23 @@ function processTerrsAffectedOrder(game, order, addNewOrder)
 	end
 
 	addNewOrder(order);
+end
+
+function terrHasNoArmies(terr)
+	-- checks if non-neutral territories have armies
+
+	if terr.IsNeutral then
+		return false;
+	end
+
+	local hasSpecialUnits = false;
+
+	for _, unit in pairs(terr.NumArmies.SpecialUnits) do
+		if unit.OwnerID == terr.OwnerPlayerID then
+			hasSpecialUnits = true;
+			break;
+		end
+	end
+
+	return terr.NumArmies.NumArmies == 0 and not hasSpecialUnits;
 end
