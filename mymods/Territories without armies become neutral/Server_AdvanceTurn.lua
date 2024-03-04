@@ -20,7 +20,7 @@ function Server_AdvanceTurn_Order(game, order, result, skipThisOrder, addNewOrde
 		end
 
 		skipThisOrder(WL.ModOrderControl.SkipAndSupressSkippedMessage);
-		processTerrsAffectedOrder(game, order, addNewOrder);
+		processTerrsAffectedOrder(game, order.Payload, addNewOrder);
 	elseif order.proxyType == 'GameOrderAttackTransfer' then
 		makeTerrsAffectedOrder(addNewOrder, order.From .. ',' .. order.To .. ',');
 	elseif order.proxyType == 'GameOrderPlayCardAirlift' then
@@ -46,15 +46,15 @@ function makeTerrsAffectedOrder(addNewOrder, terrsAffectedStr, terrMods)
 	addNewOrder(WL.GameOrderCustom.Create(Mod.PublicGameData.playerForGameOrderCustoms, '', payloadPrefix .. terrsAffectedStr), true);
 end
 
-function processTerrsAffectedOrder(game, order, addNewOrder)
-	-- print('order.Payload = ' .. order.Payload);
+function processTerrsAffectedOrder(game, payload, addNewOrder)
+	-- print('payload = ' .. payload);
 
 	local i = #payloadPrefix + 1;
 	local terrId = '';
 	local terrMods = {};
 
-	while i < #order.Payload + 1 do
-		local c = string.sub(order.Payload, i, i);
+	while i < #payload + 1 do
+		local c = string.sub(payload, i, i);
 		-- print('c = ' .. c);
 
 		if c == ',' then
