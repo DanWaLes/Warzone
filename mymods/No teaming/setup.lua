@@ -1,4 +1,8 @@
 function setup(game)
+	if not (game.State == WL.GameState.DistributingTerritories or game.State == WL.GameState.Playing) then
+		return;
+	end
+
 	-- can't be in server created
 
 	local hostPlayerId = game.ServerGame.Settings.StartedBy;
@@ -18,7 +22,7 @@ function setup(game)
 		teams = {}
 	};
 
-	for _, player in pairs(game.ServerGame.Game.Players) do
+	for _, player in pairs(game.ServerGame.Game.PlayingPlayers) do
 		if not playerGD[player.ID] then
 			playerGD[player.ID] = {};
 		end
