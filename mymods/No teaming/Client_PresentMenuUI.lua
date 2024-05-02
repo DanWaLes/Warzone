@@ -54,7 +54,6 @@ function makeMenu(stored, vert)
 	vert = Vert(rootParent);
 
 	local startedBy = game.Settings.StartedBy;
-	print('startedBy = ', startedBy);
 	local weAreHost = game.Us.ID == startedBy;
 
 	if weAreHost and playerIsNotTeamed(game.Us) then
@@ -65,15 +64,11 @@ function makeMenu(stored, vert)
 		if startedBy then
 			local host = game.Game.Players[startedBy];
 
-			if not host then
-				print('host is nil')
-			end
-
-			if playerIsNotTeamed(host) then
+			if host and playerIsNotTeamed(host) then
 				Label(vert).SetText('The host can eliminate any player they like whenever they want. The host also spies on everyone (and neutral depending on Spy Card settings. This is to discourage collusion (making alliances etc.) in games that are meant to be actual FFAs for example.');
 				Label(vert).SetText('If the host abuses this mod, you should avoid joining their games in future.');
 			else
-				Label(vert).SetText('This mod would allow the host to eliminate players whenever they want and spy on everyone if the host was not in a team themselves.');
+				Label(vert).SetText('This mod would allow the host to eliminate players whenever they want and spy on everyone if the host joined the game and was not in a team themselves.');
 			end
 		else
 			Label(vert).SetText('Nobody can use this mod because the game was created by the Warzone servers.');
