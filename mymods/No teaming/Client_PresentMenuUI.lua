@@ -1,7 +1,7 @@
 require '_util';
 require '_ui';
 
-local doingSinglePlayerTesting = false;
+-- local doingSinglePlayerTesting = false;
 
 function Client_PresentMenuUI(RootParent, setMaxSize, setScrollable, Game, close)
 	-- print('init Client_PresentMenuUI');
@@ -11,10 +11,11 @@ function Client_PresentMenuUI(RootParent, setMaxSize, setScrollable, Game, close
 
 	setMaxSize(480, 270);-- 16:9 on 30
 
-	if game.Settings.SinglePlayer and not doingSinglePlayerTesting then
-		Label(rootParent).SetText('This mod is designed to only be used in multiplayer games.');
-		return;
-	end
+	-- let players experiment in single player
+	-- if game.Settings.SinglePlayer and not doingSinglePlayerTesting then
+		-- Label(rootParent).SetText('This mod is designed to only be used in multiplayer games.');
+		-- return;
+	-- end
 
 	if not game.Us then
 		Label(rootParent).SetText('You must have joined the game to access the menu of this mod.');
@@ -93,7 +94,7 @@ function makeHostMenu(stored, vert)
 		vert3 = Vert(vert2);
 
 		Label(vert3).SetText('As you are the host, you can eliminate anyone and spy on all players (and neutral depending on Spy Card settings).');
-		Label(vert3).SetText('So that this game remains in your Dashboard, you are immune from elimination (but not from being booted). Any orders that affect your territories will be skipped.')
+		Label(vert3).SetText('So that this game remains in your Dashboard, you are immune from elimination (but not from being booted). Any orders that affect your territories will be skipped.');
 		Label(vert3).SetText('When it becomes only you and another player left, you should surrender.');
 
 		infoBtn.SetInteractable(true);
