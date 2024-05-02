@@ -2,6 +2,15 @@ require '_util';
 
 function Server_AdvanceTurn_Start(game, addNewOrder)
 	local host = game.Settings.StartedBy;
+
+	if not host then
+		return;
+	end
+
+	if not game.Game.Players[host] then
+		return;
+	end
+
 	local gameTurnNo = game.ServerGame.Game.TurnNumber;
 	local publicGD = Mod.PublicGameData;
 
@@ -31,6 +40,16 @@ end
 
 function Server_AdvanceTurn_Order(Game, order, result, skipThisOrder, addNewOrder)
 	game = Game;
+
+	local host = game.Settings.StartedBy;
+
+	if not host then
+		return;
+	end
+
+	if not game.Game.Players[host] then
+		return;
+	end
 
 	local isAttackTransfer = order.proxyType == 'GameOrderAttackTransfer';
 	local isAirlift = order.proxyType == 'GameOrderPlayCardAirlift';

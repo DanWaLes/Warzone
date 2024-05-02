@@ -1,5 +1,13 @@
 function Server_GameCustomMessage(game, playerId, payload, setReturn)
-	if playerId ~= game.Settings.StartedBy then
+	local host = game.Settings.StartedBy;
+
+	if not host then
+		return;
+	end
+
+	local hostPlayer = game.Game.Players[host];
+
+	if not (hostPlayer and hostPlayer.ID == playerId) then
 		return;
 	end
 
