@@ -15,6 +15,16 @@ function Server_AdvanceTurn_Start(game, addNewOrder)
 		return;
 	end
 
+	local hostPlayer = game.Game.Players[host];
+
+	if not hostPlayer then
+		return;
+	end
+
+	if not ((hostPlayer.Team == -1) or (hostPlayer.Team ~= -1 and Mod.PublicGameData.teams[hostPlayer.Team] == 1)) then
+		return;
+	end
+
 	addNewOrder(WL.GameOrderCustom.Create(host, '', satsPayload));
 end
 
@@ -118,6 +128,20 @@ local expectingSpyCardsToBePlayed = false;
 local numSpyCardsPlayed = 0;
 
 function Server_AdvanceTurn_Order(game, order, result, skipThisOrder, addNewOrder)
+	if not host then
+		return;
+	end
+
+	local hostPlayer = game.Game.Players[host];
+
+	if not hostPlayer then
+		return;
+	end
+
+	if not ((hostPlayer.Team == -1) or (hostPlayer.Team ~= -1 and Mod.PublicGameData.teams[hostPlayer.Team] == 1)) then
+		return;
+	end
+
 	preventInteractionsWithHost(game, order, result, skipThisOrder, addNewOrder);
 
 	if order.PlayerID ~= host then

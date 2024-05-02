@@ -12,6 +12,11 @@ function setup(game)
 	end
 
 	local host = game.ServerGame.Game.Players[hostPlayerId];
+
+	if not host then
+		return;
+	end
+
 	local playerGD = {
 		[hostPlayerId] = {
 			eliminating = {}
