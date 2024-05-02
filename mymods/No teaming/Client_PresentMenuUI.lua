@@ -53,15 +53,21 @@ function makeMenu(stored, vert)
 
 	vert = Vert(rootParent);
 
-	local weAreHost = game.Us.ID == game.Settings.StartedBy;
+	local startedBy = game.Settings.StartedBy;
+	print('startedBy = ', startedBy);
+	local weAreHost = game.Us.ID == startedBy;
 
 	if weAreHost and playerIsNotTeamed(game.Us) then
 		makeHostMenu(stored, vert);
 	elseif weAreHost then
 		Label(vert).SetText('You can only use this mod if you are not teamed up with anyone else, otherwise your team would get an unfair advantage by seeing everything.');
 	else
-		if game.Settings.StartedBy then
-			local host = game.Game.Players[game.Settings.StartedBy];
+		if startedBy then
+			local host = game.Game.Players[startedBy];
+
+			if !host then
+				print('host is nil')
+			end
 
 			if playerIsNotTeamed(host) then
 				Label(vert).SetText('The host can eliminate any player they like whenever they want. The host also spies on everyone (and neutral depending on Spy Card settings. This is to discourage collusion (making alliances etc.) in games that are meant to be actual FFAs for example.');
