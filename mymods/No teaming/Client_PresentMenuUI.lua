@@ -65,7 +65,7 @@ function makeMenu(stored, vert)
 		if startedBy then
 			local host = game.Game.Players[startedBy];
 
-			if !host then
+			if not host then
 				print('host is nil')
 			end
 
