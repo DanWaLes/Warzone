@@ -2,15 +2,16 @@
 -- require '_ui';
 -- require 'placeOrderInCorrectPosition';
 
-local WIDTH = 800;
-local HEIGHT = 190;
+-- local WIDTH = 800;
+-- local HEIGHT = 190;
 
 --[[text gets shrunk when inputting, so limit note size so that it doesnt shrink 2024-04-29]]
-local CHARLIMIT = 50;
+-- local CHARLIMIT = 50;
 
 function Client_PresentMenuUI(rootParent, setMaxSize, setScrollable, game, close)
-	setMaxSize(WIDTH, HEIGHT);
-	setScrollable(false, true);
+	UI.Alert('Hello world')
+	-- setMaxSize(WIDTH, HEIGHT);
+	-- setScrollable(false, true);
 
 	-- main(rootParent, nil, game);
 end
