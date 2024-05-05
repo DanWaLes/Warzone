@@ -1,6 +1,6 @@
-require 'util';
-require '_ui';
-require 'placeOrderInCorrectPosition';
+require('util');
+require('_ui');
+require('placeOrderInCorrectPosition');
 
 local WIDTH = 800;
 local HEIGHT = 190;
