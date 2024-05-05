@@ -9,28 +9,30 @@ local HEIGHT = 190;
 local CHARLIMIT = 50;
 
 function Client_PresentMenuUI(rootParent, setMaxSize, setScrollable, game, close)
+	print('in Client_PresentMenuUI')
 	setMaxSize(WIDTH, HEIGHT);
 	setScrollable(false, true);
 
 	main(rootParent, nil, game);
 end
 
-function main(rootParent, mainVert, game)
-	if not UI.IsDestroyed(mainVert) then
-		UI.Destroy(mainVert);
+function main(rootParent, vert, game)
+	print('in main')
+	if not UI.IsDestroyed(vert) then
+		UI.Destroy(vert);
 	end
 
-	mainVert = Vert(rootParent);
+	vert = Vert(rootParent);
 
 	if game.Game.State ~= WL.GameState.Playing then
-		Label(mainVert).SetText('You can not use this mod because the game is not in-progress');
+		Label(vert).SetText('You can not use this mod because the game is not in-progress');
 		return;
 	if not game.Us or (game.Us and game.Us.State ~= WL.GamePlayerState.Playing) then
-		Label(mainVert).SetText('You can not use this mod because you are not in this game');
+		Label(vert).SetText('You can not use this mod because you are not in this game');
 		return;
 	end
 
-	local horz = Horz(mainVert)
+	local horz = Horz(vert)
 		.SetPreferredWidth(WIDTH)
 		.SetFlexibleWidth(1);
 
@@ -38,7 +40,7 @@ function main(rootParent, mainVert, game)
 	Label(horz).SetText(' | ');
 
 	local orderNotesSubmitBtn = Btn(horz);
-	local orderNotesTextInput = TextInput(mainVert);
+	local orderNotesTextInput = TextInput(vert);
 
 	orderNotesSubmitBtn
 		.SetText('Add note')
