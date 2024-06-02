@@ -22,11 +22,11 @@ function Server_AdvanceTurn_Order(game, order, result, skipThisOrder, addNewOrde
 		skipThisOrder(WL.ModOrderControl.SkipAndSupressSkippedMessage);
 		processTerrsAffectedOrder(game, order.Payload, addNewOrder);
 	elseif order.proxyType == 'GameOrderAttackTransfer' then
-		makeTerrsAffectedOrder(addNewOrder, order.From .. ',' .. order.To .. ',');
+		makeTerrsAffectedOrder(addNewOrder, tostring(order.From) .. ',' .. tostring(order.To) .. ',');
 	elseif order.proxyType == 'GameOrderPlayCardAirlift' then
-		makeTerrsAffectedOrder(addNewOrder, order.FromTerritoryID .. ',' .. ToTerritoryID .. ',');
+		makeTerrsAffectedOrder(addNewOrder, tostring(order.FromTerritoryID) .. ',' .. tostring(ToTerritoryID) .. ',');
 	elseif order.proxyType == 'GameOrderPlayCardBomb' then
-		makeTerrsAffectedOrder(addNewOrder, order.TargetTerritoryID .. ',');
+		makeTerrsAffectedOrder(addNewOrder, tostring(order.TargetTerritoryID) .. ',');
 	elseif order.proxyType == 'GameOrderBossEvent' then
 		makeTerrsAffectedOrder(addNewOrder, '', order.ModifyTerritories);
 	elseif order.proxyType == 'GameOrderEvent' then
@@ -39,7 +39,7 @@ function makeTerrsAffectedOrder(addNewOrder, terrsAffectedStr, terrMods)
 		terrsAffectedStr = '';
 
 		for _, terrMod in pairs(terrMods) do
-			terrsAffectedStr = terrsAffectedStr .. terrMod.TerritoryID .. ',';
+			terrsAffectedStr = terrsAffectedStr .. tostring(terrMod.TerritoryID) .. ',';
 		end
 	end
 
