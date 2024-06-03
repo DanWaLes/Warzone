@@ -24,10 +24,7 @@ function Server_AdvanceTurn_Start(game, addNewOrder)
 	local teams = Mod.PublicGameData.teams;
 
 	if not teams then
-		print('teams is falsey, this should not happen');
-		-- access a value to cause a crash message
-		local hpt = teams[hostPlayer.Team];
-		print(hpt);
+		return;
 	end
 
 	if not ((hostPlayer.Team == -1) or (hostPlayer.Team ~= -1 and teams[hostPlayer.Team] == 1)) then
