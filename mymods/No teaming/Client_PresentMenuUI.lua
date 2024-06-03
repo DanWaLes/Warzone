@@ -37,11 +37,6 @@ function playerIsNotTeamed(player)
 
 	local teams = Mod.PublicGameData.teams;
 
-	if not teams then
-		print('teams is falsey, this should not happen');
-		print(teams['foo']);-- cause a crash message to appear
-	end
-
 	return teams and teams[player.Team] and teams[player.Team] == 1;
 end
 
