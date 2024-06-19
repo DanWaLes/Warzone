@@ -48,4 +48,9 @@ function setup(game)
 
 	Mod.PlayerGameData = playerGD;
 	Mod.PublicGameData = publicGD;
+
+	print('Mod.PlayerGameData');
+	tblprint(Mod.PlayerGameData);
+	print('Mod.PublicGameData');
+	tblprint(Mod.PublicGameData);
 end
