@@ -21,7 +21,7 @@ function setup(game)
 
 	local wasSetUp = Mod.PlayerGameData and Mod.PlayerGameData[hostPlayerId];
 
-	if wasSetUp and (not (game.State == WL.GameState.DistributingTerritories or game.State == WL.GameState.Playing)) then
+	if wasSetUp then
 		print('exit 3');
 		-- print('game.ServerGame.State', game.State);
 		-- print('WL.GameState.DistributingTerritories', WL.GameState.DistributingTerritories);
