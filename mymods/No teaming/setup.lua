@@ -1,6 +1,9 @@
 function setup(game)
 	if not (game.State == WL.GameState.DistributingTerritories or game.State == WL.GameState.Playing) then
 		print('exit 1');
+		print('game.State', game.State);
+		print('WL.GameState.DistributingTerritories', WL.GameState.DistributingTerritories);
+		print('WL.GameState.Playing', WL.GameState.Playing);
 		return;
 	end
 
