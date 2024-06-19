@@ -4,10 +4,6 @@ function Server_GameCustomMessage(game, playerId, payload, setReturn)
 	if payload and payload.fixSetupStorage then
 		require('setup');
 		setup();
-
-		local publicGD = Mod.PublicGameData;
-		publicGD.FixedSetupStorage = true;
-		Mod.PublicGameData = publicGD;
 	end
 
 	if not host or not Mod.PlayerGameData[playerId] then
