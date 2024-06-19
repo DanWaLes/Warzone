@@ -11,7 +11,7 @@ function Server_AdvanceTurn_Start(game, addNewOrder)
 
 	if not Mod.PublicGameData.FixedSetupStorage then
 		require('setup');
-		setup();
+		setup(game);
 	end
 
 	host = game.Settings.StartedBy;
