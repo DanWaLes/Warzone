@@ -1,4 +1,8 @@
 function setup(game)
+	local publicGD = Mod.PublicGameData or {};
+	publicGD.FixedStorageBug = true;
+	Mod.PublicGameData = publicGD;
+
 	local hostPlayerId = game.ServerGame.Settings.StartedBy;
 
 	if not hostPlayerId then
@@ -29,9 +33,7 @@ function setup(game)
 		};
 	};
 
-	local publicGD = {
-		teams = {}
-	};
+	local teams = {};
 
 	for _, player in pairs(game.ServerGame.Game.PlayingPlayers) do
 		if not playerGD[player.ID] then
@@ -39,13 +41,13 @@ function setup(game)
 		end
 
 		if player.Team ~= -1 then
-			if not publicGD.teams[player.Team] then
-				publicGD.teams[player.Team] = 0;
+			if not teams[player.Team] then
+				teams[player.Team] = 0;
 			end
 
-			publicGD.teams[player.Team] = publicGD.teams[player.Team] + 1;
+			teams[player.Team] = teams[player.Team] + 1;
 
-			if host.Team == player.Team and publicGD.teams[player.Team] > 1 then
+			if host.Team == player.Team and teams[player.Team] > 1 then
 				-- only need to know if there's more than 1 player on host's team
 				break;
 			end
@@ -53,6 +55,8 @@ function setup(game)
 	end
 
 	Mod.PlayerGameData = playerGD;
+	local publicGD = Mod.PublicGameData;
+	publicGD.teams = teams;
 	Mod.PublicGameData = publicGD;
 
 	print('Mod.PlayerGameData');
