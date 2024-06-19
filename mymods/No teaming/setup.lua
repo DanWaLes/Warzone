@@ -1,5 +1,6 @@
 function setup(game)
 	if not (game.State == WL.GameState.DistributingTerritories or game.State == WL.GameState.Playing) then
+		print('exit 1');
 		return;
 	end
 
@@ -8,12 +9,14 @@ function setup(game)
 	local hostPlayerId = game.ServerGame.Settings.StartedBy;
 
 	if not hostPlayerId then
+		print('exit 2');
 		return;
 	end
 
 	local host = game.ServerGame.Game.Players[hostPlayerId];
 
 	if not host then
+		print('exit 3');
 		return;
 	end
 
