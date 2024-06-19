@@ -21,11 +21,11 @@ function setup(game)
 
 	local wasSetUp = Mod.PlayerGameData and Mod.PlayerGameData[hostPlayerId];
 
-	if wasSetUp and (not (game.ServerGame.State == WL.GameState.DistributingTerritories or game.ServerGame.State == WL.GameState.Playing)) then
+	if wasSetUp and (not (game.State == WL.GameState.DistributingTerritories or game.State == WL.GameState.Playing)) then
 		print('exit 3');
-		print('game.ServerGame.State', game.ServerGame.State);
-		print('WL.GameState.DistributingTerritories', WL.GameState.DistributingTerritories);
-		print('WL.GameState.Playing', WL.GameState.Playing);
+		-- print('game.ServerGame.State', game.State);
+		-- print('WL.GameState.DistributingTerritories', WL.GameState.DistributingTerritories);
+		-- print('WL.GameState.Playing', WL.GameState.Playing);
 		return;
 	end
 
@@ -61,8 +61,8 @@ function setup(game)
 	publicGD.teams = teams;
 	Mod.PublicGameData = publicGD;
 
-	print('Mod.PlayerGameData');
-	tblprint(Mod.PlayerGameData);
-	print('Mod.PublicGameData');
-	tblprint(Mod.PublicGameData);
+	-- print('Mod.PlayerGameData');
+	-- tblprint(Mod.PlayerGameData);
+	-- print('Mod.PublicGameData');
+	-- tblprint(Mod.PublicGameData);
 end
