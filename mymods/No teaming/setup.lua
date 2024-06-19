@@ -13,7 +13,7 @@ function setup(game)
 		return;
 	end
 
-	local wasSetUp = Mod.PublicGameData and Mod.PublicGameData[hostPlayerId];
+	local wasSetUp = Mod.PlayerGameData and Mod.PlayerGameData[hostPlayerId];
 
 	if wasSetUp and (not (game.ServerGame.State == WL.GameState.DistributingTerritories or game.ServerGame.State == WL.GameState.Playing)) then
 		print('exit 3');
