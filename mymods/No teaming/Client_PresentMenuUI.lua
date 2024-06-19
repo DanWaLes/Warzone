@@ -130,8 +130,8 @@ function displayPlayer(stored, vert, playerId)
 	local player = game.Game.PlayingPlayers[playerId];
 	local horz = Horz(vert);
 
-	print(playerId);
-	tblprint(stored);
+	-- print(playerId);
+	-- tblprint(stored);
 
 	local checkbox = Checkbox(horz)
 		.SetText('')
