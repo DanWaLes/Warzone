@@ -119,9 +119,13 @@ function displayPlayer(stored, vert, playerId)
 	local player = game.Game.PlayingPlayers[playerId];
 	local horz = Horz(vert);
 
+	print(playerId);
+	tblprint(stored);
+
 	local checkbox = Checkbox(horz)
 		.SetText('')
 		.SetIsChecked(not not stored.eliminating[playerId]);
+
 	checkbox.SetOnValueChanged(function()
 		checkbox.SetInteractable(false);
 		game.SendGameCustomMessage('Updating...', {
