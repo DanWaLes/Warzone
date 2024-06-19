@@ -1,3 +1,5 @@
+require '_util';
+
 function setup(game)
 	local publicGD = Mod.PublicGameData or {};
 	publicGD.FixedSetupStorage = true;
