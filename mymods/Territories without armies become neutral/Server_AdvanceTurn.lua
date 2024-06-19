@@ -4,11 +4,11 @@ require 'version';
 local payloadPrefix = 'TWABN_TerrsChanged=';
 
 function Server_AdvanceTurn_Order(game, order, result, skipThisOrder, addNewOrder)
-	if not Mod.PublicGameData.modCanDoChanges then
+	if game.Settings.SinglePlayer and not canRunMod() then
 		return;
 	end
 
-	if game.Settings.SinglePlayer and not canRunMod() then
+	if not Mod.PublicGameData.modCanDoChanges then
 		return;
 	end
 
@@ -58,11 +58,10 @@ function processTerrsAffectedOrder(game, payload, addNewOrder)
 		-- print('c = ' .. c);
 
 		if c == ',' then
-			-- print('terrId = ' .. terrId);
+			local real = #terrId > 0 and string.find(terrId, '^%d+$');
+			local terr = real and game.ServerGame.LatestTurnStanding.Territories[tonumber(terrId)];
 
-			local terr = game.ServerGame.LatestTurnStanding.Territories[tonumber(terrId)];
-
-			if terrHasNoArmies(terr) then
+			if terr and terrHasNoArmies(terr) then
 				local terrMod = WL.TerritoryModification.Create(terr.ID);
 				terrMod.SetOwnerOpt = WL.PlayerID.Neutral;
 
