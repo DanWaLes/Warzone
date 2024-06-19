@@ -1,25 +1,25 @@
 function setup(game)
-	if not (game.State == WL.GameState.DistributingTerritories or game.State == WL.GameState.Playing) then
-		print('exit 1');
-		print('game.State', game.State);
-		print('WL.GameState.DistributingTerritories', WL.GameState.DistributingTerritories);
-		print('WL.GameState.Playing', WL.GameState.Playing);
-		return;
-	end
-
-	-- can't be in server created
-
 	local hostPlayerId = game.ServerGame.Settings.StartedBy;
 
 	if not hostPlayerId then
-		print('exit 2');
+		print('exit 1');
 		return;
 	end
 
 	local host = game.ServerGame.Game.Players[hostPlayerId];
 
 	if not host then
+		print('exit 2');
+		return;
+	end
+
+	local wasSetUp = Mod.PublicGameData and Mod.PublicGameData[hostPlayerId];
+
+	if wasSetUp and (not (game.ServerGame.State == WL.GameState.DistributingTerritories or game.ServerGame.State == WL.GameState.Playing)) then
 		print('exit 3');
+		print('game.ServerGame.State', game.ServerGame.State);
+		print('WL.GameState.DistributingTerritories', WL.GameState.DistributingTerritories);
+		print('WL.GameState.Playing', WL.GameState.Playing);
 		return;
 	end
 
