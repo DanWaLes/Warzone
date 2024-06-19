@@ -1,12 +1,27 @@
 function Server_GameCustomMessage(game, playerId, payload, setReturn)
 	local host = game.ServerGame.Settings.StartedBy;
 
+	if payload and payload.fixSetupStorage then
+		require('setup');
+		setup();
+
+		local publicGD = Mod.PublicGameData;
+		publicGD.FixedSetupStorage = true;
+		Mod.PublicGameData = publicGD;
+	end
+
 	if not host or not Mod.PlayerGameData[playerId] then
-		return setReturn({});
+		return setReturn({
+			PlayerGameData = {},
+			PublicGameData = Mod.PublicGameData
+		});
 	end
 
 	if not payload then
-		return setReturn(Mod.PlayerGameData[playerId]);
+		return setReturn({
+			PlayerGameData = Mod.PlayerGameData[playerId],
+			PublicGameData = Mod.PublicGameData
+		});
 	end
 
 	local playerGD = Mod.PlayerGameData;
@@ -17,5 +32,8 @@ function Server_GameCustomMessage(game, playerId, payload, setReturn)
 
 	Mod.PlayerGameData = playerGD;
 
-	setReturn(Mod.PlayerGameData[host]);
+	setReturn({
+		PlayerGameData = Mod.PlayerGameData[host],
+		PublicGameData = Mod.PublicGameData
+	});
 end
