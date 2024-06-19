@@ -1,6 +1,6 @@
 function setup(game)
 	local publicGD = Mod.PublicGameData or {};
-	publicGD.FixedStorageBug = true;
+	publicGD.FixedSetupStorage = true;
 	Mod.PublicGameData = publicGD;
 
 	local hostPlayerId = game.ServerGame.Settings.StartedBy;
