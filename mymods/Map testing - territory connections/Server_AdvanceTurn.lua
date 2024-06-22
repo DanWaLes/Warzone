@@ -1,10 +1,15 @@
 require '_util';
 require 'version';
 
+local canRun = nil;
 local doneSkippingTurn1 = false;
 
 function Server_AdvanceTurn_Order(game, order, result, skipThisOrder)
-	if not game.Settings.MapTestingGame or not canRun(game) then
+	if canRun == nil then
+		canRun = serverCanRunMod(game);
+	end
+
+	if not game.Settings.MapTestingGame or not canRun then
 		return;
 	end
 
@@ -15,7 +20,7 @@ function Server_AdvanceTurn_Order(game, order, result, skipThisOrder)
 end
 
 function Server_AdvanceTurn_End(game, addNewOrder)
-	if not game.Settings.MapTestingGame or not canRun(game) then
+	if not game.Settings.MapTestingGame or not canRun then
 		return;
 	end
 
@@ -29,14 +34,6 @@ function Server_AdvanceTurn_End(game, addNewOrder)
 
 	local playerOwnedTerrs = setupNextTurn(game, addNewOrder);
 	setIncomesToZero(game, addNewOrder, playerOwnedTerrs);
-end
-
-function canRun(game)
-	if game.Settings.SinglePlayer then
-		return canRunMod();
-	end
-
-	return true;
 end
 
 function getNumPlayers()
