@@ -1,11 +1,11 @@
--- https://www.warzone.com/wiki/Mod_API_Reference:UI UI.InterceptNextBonusLinkClick 5.17.0
+-- https://www.warzone.com/wiki/Mod_API_Reference#Newer_API_features
 
 function canRunMod()
-	local version = '5.17';
+	local version = '5.21';
 	local name = '"Locked Down Regions"';
 
 	if (not WL.IsVersionOrHigher or not WL.IsVersionOrHigher(version)) then
-		UI.Alert('You must be running app version ' + version + ' at the minimum to use mod ' + name + '. Check for updates');
+		UI.Alert('You must be running app version ' .. version .. ' at the minimum to use mod ' .. name .. '. Check for updates');
 		return;
 	end
 
