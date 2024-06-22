@@ -5,8 +5,11 @@ function canRunMod()
 	local name = '"Locked Down Regions"';
 
 	if (not WL.IsVersionOrHigher or not WL.IsVersionOrHigher(version)) then
-		UI.Alert('You must be running app version ' .. version .. ' at the minimum to use mod ' .. name .. '. Check for updates');
-		return;
+		if UI and UI.Alert then
+			UI.Alert('You must be running app version ' .. version .. ' at the minimum to use mod ' .. name .. '. Check for updates');
+		end
+
+		return false;
 	end
 
 	return true;
@@ -14,7 +17,7 @@ end
 
 function serverCanRunMod(game)
 	if game.Settings.SinglePlayer and not canRunMod() then
-		return;
+		return false;
 	end
 
 	return true;
