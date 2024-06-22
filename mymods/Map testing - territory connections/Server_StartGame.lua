@@ -1,7 +1,12 @@
 require '_util';
+require 'version';
 
 function Server_StartGame(game, standing)
 	if not game.Settings.MapTestingGame then
+		return;
+	end
+
+	if not serverCanRunMod(game) then
 		return;
 	end
 
