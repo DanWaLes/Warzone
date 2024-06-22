@@ -2,7 +2,7 @@
 
 function canRunMod()
 	local version = '5.17';
-	local name = '"Map testing - territory connection"';
+	local name = '"Map testing - territory connections"';
 
 	if (not WL.IsVersionOrHigher or not WL.IsVersionOrHigher(version)) then
 		if UI and UI.Alert then
