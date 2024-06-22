@@ -1,7 +1,12 @@
 require '_util';
+require 'version';
 
 function Server_Created(game, settings)
 	if not settings.MapTestingGame then
+		return;
+	end
+
+	if not serverCanRunMod(game) then
 		return;
 	end
 
