@@ -11,3 +11,11 @@ function canRunMod()
 
 	return true;
 end
+
+function serverCanRunMod(game)
+	if game.Settings.SinglePlayer and not canRunMod() then
+		return;
+	end
+
+	return true;
+end
