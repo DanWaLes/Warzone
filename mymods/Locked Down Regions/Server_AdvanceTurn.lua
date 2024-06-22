@@ -1,4 +1,5 @@
 require '_util';
+require 'version';
 
 function Server_AdvanceTurn_Start(game, addNewOrder)
 	local host = game.Settings.StartedBy;
@@ -8,6 +9,10 @@ function Server_AdvanceTurn_Start(game, addNewOrder)
 	end
 
 	if not game.Game.Players[host] then
+		return;
+	end
+
+	if not serverCanRunGame(game) then
 		return;
 	end
 
