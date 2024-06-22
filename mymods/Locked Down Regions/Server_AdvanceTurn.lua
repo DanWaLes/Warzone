@@ -14,7 +14,7 @@ function Server_AdvanceTurn_Start(game, addNewOrder)
 		return;
 	end
 
-	canRun = serverCanRunGame(game);
+	canRun = serverCanRunMod(game);
 
 	if not canRun then
 		return;
