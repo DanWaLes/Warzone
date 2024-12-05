@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html>
+	<head lang="en">
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+		<title>Auto Settings Files Documentation</title>
+		<style>
+			img {
+				max-width: 100%;
+			}
+
+			.slideshow .imgs img {
+				display: none;
+			}
+			.slideshow .imgs .current {
+				display: block;
+			}
+			.slideshow .header > * {
+				display: inline-block;
+			}
+		</style>
+		<script>
+function setupSlideshows() {
+	function setCurrent(sl, current) {
+		sl.imgs[sl.current].className = sl.imgs[sl.current].className.replace('current', '');
+		sl.current = current;
+		sl.imgs[sl.current].className = 'current';
+
+		const caption = sl.element.querySelector('.caption');
+		const split = sl.imgs[sl.current].src.split(/\//g);
+		caption.innerText = split[split.length - 1].replace(/[_-]+/g, ' ').replace(/(\d+)|(\..+$)/g, '').trim();
+
+		const count = sl.element.querySelector('.count');
+		count.innerText = (sl.current + 1) + '/' + sl.imgs.length;
+	}
+
+	function sl(element) {
+		this.element = element;
+		this.imgs = this.element.querySelectorAll('img');
+		this.current = 0;
+
+		const controls = this.element.querySelector('.controls');
+		const nextBtn = document.createElement('input');
+		nextBtn.title = 'Next';
+		nextBtn.type = 'button';
+		nextBtn.value = '>';
+		nextBtn.onclick = () => {
+			if (this.current + 1 >= this.imgs.length) {
+				setCurrent(this, 0)
+			}
+			else {
+				setCurrent(this, this.current + 1);
+			}
+		};
+		const prevBtn = document.createElement('input');
+		prevBtn.title = 'Previous';
+		prevBtn.type = 'button';
+		prevBtn.value = '<';
+		prevBtn.onclick = () => {
+			if (this.current - 1 < 0) {
+				setCurrent(this, this.imgs.length - 1);
+			}
+			else {
+				setCurrent(this, this.current - 1);
+			}
+		};
+
+		controls.appendChild(prevBtn);
+		controls.appendChild(nextBtn);
+		setCurrent(this, 0);
+	}
+
+	for (let slideshow of document.getElementsByClassName('slideshow')) {
+		new sl(slideshow);
+	}
+}
+		</script>
+	</head>
+	<body onload="setupSlideshows();">
+		The goal of this is to automatically generate the Client_PresentConfigureUI, Client_SaveConfigureUI and Client_PresentSettingsUI lua files. All files other than __settings.lua are not meant to be edited. __settings.lua is where to define settings.
+		<h1>__settings.lua</h1>
+		<p>The file must have a <code>getSettings</code> function. returns array of <code>setting</code></p>
+		<p><code>setting</code> is a table which is generated from the <code>addSetting</code>, <code>addSettingTemplate</code> and <code>addSettingGroup</code> functions</p>
+		<h2>addSetting</h2>
+		Arguments:
+		<ul>
+			<li><code>name</code> - string - name of the setting. all names must be unique to function correctly</li>
+			<li><code>label</code> - string - summery of what the setting does</li>
+			<li><code>inputType</code> - one of <code>'int'</code>, <code>'float'</code>, <code>'bool'</code> or <code>'text'</code></li>
+			<li><code>defaultValue</code> - same type as <code>inputType</code> - the default value for the setting's value in Client_PresentConfigureUI
+			<li>
+				<code>otherProps</code> - table or nil - if table then these keys are optional:
+				<ul>
+					<li>
+						<code>help</code> - <code>function(parent)</code> - gives a more detailed explanation of what the setting does when a help button (?) is clicked</p>
+					</li>
+					<li><code>labelColor</code> - string - color of the setting's label text</li>
+				</ul>
+			</li>
+		</ul>
+		<h3>inputType</h3>
+		Depending on the <code>inputType</code> certain keys on <code>otherProps</code> are forced and some become optional
+		<h4>int</h4>
+		Forced keys:
+		<ul>
+			<li><code>minValue</code> - number - the lowest the setting's value can be</li>
+			<li><code>maxValue</code> - number - the highest the setting's value can be while using the setting slider</li>
+		</ul>
+		Optional keys:
+		<ul>
+			<li><code>absoluteMax</code> - number - allows user to enter a higher number than <code>maxValue</code></li>
+			<li><code>absoluteMin</code> - number - allows user to enter a lower number than <code>minValue</code></li>
+		</ul>
+		<h4>float</h4>
+		Forced keys:
+		<ul>
+			<li><code>dp</code> - number - the number of decimal places to round the setting's value when saving the settings</li>
+			<li><code>minValue</code> - number - the lowest the setting's value can be</li>
+			<li><code>maxValue</code> - number - the highest the setting's value can be while using the setting slider</li>
+		</ul>
+		Optional keys:
+		<ul>
+			<li><code>absoluteMax</code> - number - allows user to enter a higher number than <code>maxValue</code></li>
+			<li><code>absoluteMin</code> - number - allows user to enter a lower number than <code>minValue</code></li>
+		</ul>
+		<h4>bool</h4>
+		Optional keys:
+		<ul>
+			<li><code>subsettings</code> - table or nil. if table then is an array of <code>setting</code></li>
+		</ul>
+		<h4>text</h4>
+		Optional keys:
+		<ul>
+			<li><code>placeholder</code> - string - the placeholder text</li>
+			<li><code>charLimit</code> - number - the maximum number of characters that can be entered</li>
+		</ul>
+
+		<h2>addSettingTemplate</h2>
+		<p>In the event of wanting to have infinite groups of settings, setting templates can be used.</p>
+		Arguments:
+		<ul>
+			<li><code>name</code> - string - name of the setting. all names must be unique to function correctly</li>
+			<li><code>btnText</code> - string - text that goes on a button that user presses to add a new group of settings</li>
+			<li>
+				<p><code>options</code> - nil or table with keys:</p>
+				<ul>
+					<li><code>btnColor</code> - nil or string - color of the button; nil = #00FF05</li>
+					<li><code>btnTextColor</code> - nil or string - color of <code>btnText</code>; nil = wz default</li>
+					<li><code>bkwrds</code> - nil or int - for if the mod is public and goes from limited to unlimited amounts of setting groups. <code>bkwrds</code> number of setting groups will be generated. to avoid nil in Client_PresentSettingsUI</li>
+				</ul>
+			</li>
+			<li>
+				<p><code>get(n)</code> - function - <code>n</code> starts at 1. <code>get</code> must return table with keys:</p>
+				<ul>
+					<li><code>label</code> - string - description of the setting group</li>
+					<li><code>labelColor</code> - nil or string - color of the label; nil = wz default</li>
+					<li><code>settings</code> - array of <code>setting</code></li>
+				</ul>
+			</li>
+		</ul>
+
+		<h2>addSettingGroup</h2>
+		<p>Makes a button that, when clicked, shows or hides <code>settings</code>. Similar to using <code>addSetting</code> with <code>inputType</code> <code>'bool'</code> which has <code>subsettings</code>, but is a button rather than a checkbox.</code></p>
+		<ul>
+			<li><code>btnTxt</code> - string - the text to show on the button</li>
+			<li>
+				<code>options</code> - nil or table - has optional fields which are not applied unless they are truthy:
+				<ul>
+					<li><code>btnColor</code> - string - sets the color of the button itself</li>
+					<li><code>btnTextColor</code> - string - sets the color of <code>btnTxt</code></li>
+					<li><code>onExpand</code> - nil or function(btn, parent) - called whenever the contents of the button is shown. <code>btn</code> is the button itself. <code>parent</code> is a new vertical layout group, which is shown just above rendered <code>settings</code>.
+				</ul>
+			</li>
+			<li><code>settings</code> - array of <code>setting</code></li>
+		</ul>
+
+		<h1>Accessing setting values</h1>
+		<p>Each setting is written to Mod.Settings[<code>name</code>]. <code>name</code> in <code>addSettingTemplate</code> is altered to only apply to the correct setting group. Use the <code>getSetting(name, template)</code> function defined in <code>_settings.lua</code>. Returns the value stored in Mod.Settings</p>
+		<p><code>name</code> string - name of the setting, same as what was used in <code>addSetting</code> or <code>addSettingTemplate</code></p>
+		<p><code>template</code> - nil or table - containing the following keys:</p>
+		<ul>
+			<li><code>n</code> - number - setting group number</li>
+			<li><code>name</code> - string - the name of the setting template</li>
+		</ul>
+
+		<h1>Examples</h1>
+		<ul>
+			<li><a href="https://github.com/DanWaLes/DanWaLes.github.io/blob/master/Auto_Settings_Files_Documentation/code/__settings.lua">code/__settings.lua</a></li>
+			<li><a href="https://github.com/DanWaLes/Warzone/tree/master/mymods/AIs%20dont%20attack/__settings.lua">AIs don't attack</a></li>
+			<li><a href="https://github.com/DanWaLes/Warzone/tree/master/mymods/Advanced%20Card%20Distribution%20per%20player/__settings.lua">Advanced Card Distribution (per player)</a></li>
+			<li><a href="https://github.com/DanWaLes/Warzone/tree/master/mymods/Custom%20Card%20Package%202/__settings.lua">Custom Card Package 2</a></li>
+			<li><a href="https://github.com/DanWaLes/Warzone/tree/master/mymods/Random%20settings%20generator/__settings.lua">Random settings generator</a></li>
+			<li><a href="https://github.com/DanWaLes/Warzone/tree/master/mymods/Surveillance%20Card%2B/__settings.lua">Surveillance Card+</a></li>
+			<li><a href="https://github.com/DanWaLes/Warzone/tree/master/mymods/Swap%20Territories%203/__settings.lua">Swap Territories 2</a></li>
+			<li><a href="https://github.com/DanWaLes/Warzone/tree/master/mymods/Wastelands%2B">Wastelands+</a></li>
+		</ul>
+
+		<h2>Screenshots</h2>
+		<h3>Client_PresentConfigureUI.lua</h3>
+		<div class="slideshow">
+			<div class="header">
+				<div class="controls"></div>
+				<div class="count"></div>
+				<div class="caption"></div>
+			</div>
+			<div class="imgs">
+				<img src="imgs/Client_PresentConfigureUI.lua/1_start.png">
+				<img src="imgs/Client_PresentConfigureUI.lua/2_setting_two_checked.png">
+				<img src="imgs/Client_PresentConfigureUI.lua/3_add_new_setting_template_group_clicked.png">
+				<img src="imgs/Client_PresentConfigureUI.lua/4_help_button_clicked.png">
+				<img src="imgs/Client_PresentConfigureUI.lua/5_same_help_button_clicked.png">
+			</div>
+		</div>
+		<h3>Client_PresentSettingsUI.lua</h3>
+		<div class="slideshow">
+			<div class="header">
+				<div class="controls"></div>
+				<div class="count"></div>
+				<div class="caption"></div>
+			</div>
+			<div class="imgs">
+				<img src="imgs/Client_PresentSettingsUI.lua/1_start.png">
+				<img src="imgs/Client_PresentSettingsUI.lua/2_help_button_clicked.png">
+				<img src="imgs/Client_PresentSettingsUI.lua/3_same_help_button_clicked.png">
+				<img src="imgs/Client_PresentSettingsUI.lua/4_expand_collapse_button_clicked.png">
+				<img src="imgs/Client_PresentSettingsUI.lua/5_same_expand_collapse_button_clicked.png">
+				<img src="imgs/Client_PresentSettingsUI.lua/6_expand_collapse_button_clicked.png">
+			</div>
+		</div>
+	</body>
+</html>
