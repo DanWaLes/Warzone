@@ -1,4 +1,4 @@
-require('libs/settings');
+require('settings');
 
 function getSettings()
 	return {
