@@ -9,4 +9,4 @@ This file is used to get details about the mod so that a consistent error messag
 # version.lua
 This file has two callable functions:
 * `canRunMod()` - returns boolean - use something like this at the start of every client hook: `if not canRunMod() then return end`
-* `serverCanRunMod(game)` - `game` is a ServerGame  - returns boolean - use something like this at the start of every server hook: `if not serverCanRunMod(game) then return end`
+* `serverCanRunMod(game)` - `game` is a [https://www.warzone.com/wiki/Mod_API_Reference:ServerGame](ServerGame)  - returns boolean - use something like this at the start of every server hook: `if not serverCanRunMod(game) then return end`
