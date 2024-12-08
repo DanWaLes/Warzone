@@ -1,7 +1,6 @@
 The goal of this is to automatically generate the Client_PresentConfigureUI, Client_SaveConfigureUI and Client_PresentSettingsUI Lua files. All files other than __settings.lua are not meant to be edited. __settings.lua is where to define settings.
 # __settings.lua
-The file must have a `getSetting` function. returns array of `setting`
-`setting` is a table which is generated from the `addSetting`, `addSettingTemplate` and `addSettingGroup` functions
+The file must have a `getSetting` function. returns array of `setting`. `setting` is a table which is generated from the `addSetting`, `addSettingTemplate` and `addSettingGroup` functions
 ## addSetting
 * `name` - string - name of the setting. all names must be unique to function correctly
 * `label` - string - summery of what the setting does
@@ -36,6 +35,7 @@ Optional keys:
 * `charLimit` - number - the maximum number of characters that can be entered
 ## addSettingTemplate
 In the event of wanting to have infinite groups of settings, setting templates can be used.
+
 Arguments:
 * `name` - string - name of the setting. all names must be unique to function correctly
 * `btnText` - string - text that goes on a button that user presses to add a new group of settings
@@ -56,11 +56,13 @@ Makes a button that, when clicked, shows or hides `settings`. Similar to using `
   * `onExpand` - nil or function(btn, parent) - called whenever the contents of the button is shown. `btn` is the button itself. `parent` is a new vertical layout group, which is shown just above rendered `settings`.
 * `settings` - array of `setting`
 # Accessing setting values
-Each setting is written to Mod.Settings\[`name`\]. `name` in `addSettingTemplate` is altered to only apply to the correct setting group. Use the `getSetting(name, template)` function defined in `settings.lua`. Returns the value stored in Mod.Settings
-`name` - string - name of the setting, same as what was used in `addSetting` or `addSettingTemplate`
-`template` - nil or table - containing the following keys:
-* `n` - number - setting group number
-* `name` - string - the name of the setting template
+Each setting is written to Mod.Settings\[`name`\]. `name` in `addSettingTemplate` is altered to only apply to the correct setting group. Use the `getSetting(name, template)` function defined in `settings.lua`, which returns the value stored in Mod.Settings.
+
+Arguments:
+* `name` - string - name of the setting, same as what was used in `addSetting` or `addSettingTemplate`
+* `template` - nil or table - containing the following keys:
+  * `n` - number - setting group number
+  * `name` - string - the name of the setting template
 # Examples
 * [code/__settings.lua](https://github.com/DanWaLes/Warzone/blob/master/mods/libs/AutoSettingsFiles/code/__settings.lua)
 * [AIs don't attack](https://github.com/DanWaLes/Warzone/tree/master/mymods/AIs%20dont%20attack/__settings.lua)
