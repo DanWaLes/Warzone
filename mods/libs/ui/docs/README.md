@@ -10,7 +10,9 @@ Defines global shorthand function names for [UI elements](https://www.warzone.co
 * `NumInput(parent)` - returns `UI.CreateNumberInputField(parent)`
 # Utility Functions
 * `Tabs(parent, dir, tabLabels, tabsClicked)`
+
 Note: this function requires the use of [version 5.21 or later](https://www.warzone.com/wiki/Mod_API_Reference#Newer_API_features) to function correctly
+
   * Arguments:
     * `parent` - UI element - the parent element
     * `dir` - UI element - should be a reference to `Vert` or `Horz`. Used to decide the direction of tab, like horizontal or vertical alignment
