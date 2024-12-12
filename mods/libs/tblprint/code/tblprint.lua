@@ -53,6 +53,8 @@ local function tblprint_PrintProxyInfo(obj, indent)
 end
 
 local function tblprint_tprint(tbl, indent)
+	-- modified from https://stackoverflow.com/questions/41942289/display-contents-of-tables-in-lua#answer-41943392
+
 	if type(tbl) ~= 'table' then
 		return tostring(tbl);
 	end
