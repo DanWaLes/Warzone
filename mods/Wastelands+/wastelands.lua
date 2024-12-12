@@ -146,3 +146,17 @@ function finish(wastelands, placeWasteland)
 	pgd.numOverlaps = 0;
 	Mod.PublicGameData = pgd;
 end
+
+function clone(tbl)
+	local c = {};
+
+	for k, v in pairs(tbl) do
+		if type(v) == 'table' then
+			c[k] = clone(v);
+		else
+			c[k] = v;
+		end
+	end
+
+	return c;
+end
