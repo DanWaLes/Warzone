@@ -70,20 +70,6 @@ function tbllen(tbl)
 	return i;
 end
 
-function clone(tbl)
-	local c = {};
-
-	for k, v in pairs(tbl) do
-		if type(v) == 'table' then
-			c[k] = clone(v);
-		else
-			c[k] = v;
-		end
-	end
-
-	return c;
-end
-
 function round(n, dp)
 	-- http://lua-users.org/wiki/SimpleRound
 	local multi = 10 ^ (dp or 0);
