@@ -1,4 +1,4 @@
--- copied from https://github.com/DanWaLes/Warzone/tree/master/mods/libs/ui
+-- copied from https://github.com/DanWaLes/Warzone/tree/master/mods/libs/version
 
 require('__mod');
 
