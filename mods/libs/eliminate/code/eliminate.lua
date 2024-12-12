@@ -1,3 +1,5 @@
+-- copied from https://github.com/DanWaLes/Warzone/tree/master/mods/libs/eliminate
+
 function eliminate(playerIds, territories, removeSpecialUnits, isSinglePlayer)
 	-- https://www.warzone.com/wiki/Mod_API_Reference:TerritoryModification RemoveSpecialUnitsOpt 5.22
 	-- there are times when special units are not on the same territory as who owns the territory
