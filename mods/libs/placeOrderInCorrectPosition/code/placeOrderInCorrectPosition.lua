@@ -1,3 +1,5 @@
+-- copied from https://github.com/DanWaLes/Warzone/tree/master/mods/libs/placeOrderInCorrectPosition
+
 function placeOrderInCorrectPosition(clientGame, newOrder)
 	if not newOrder.OccursInPhase then
 		local orders = clientGame.Orders;
