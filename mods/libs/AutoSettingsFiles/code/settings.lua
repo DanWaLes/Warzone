@@ -1,3 +1,5 @@
+-- copied from https://github.com/DanWaLes/Warzone/tree/master/mods/libs/AutoSettingsFiles
+
 function addSetting(name, label, inputType, defaultValue, otherProps)
 	local allowedInputTypes = {
 		int = 'number',

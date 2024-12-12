@@ -1,3 +1,5 @@
+-- copied from https://github.com/DanWaLes/Warzone/tree/master/mods/libs/AutoSettingsFiles
+
 require('__settings');
 
 function Client_PresentSettingsUI(rootParent)
