@@ -1,147 +1,304 @@
-require 'ui'
+-- copied from https://github.com/DanWaLes/Warzone/tree/master/mods/libs/AutoSettingsFiles
 
-function getSettings()
-	templates = {
-		extraWasteland = {
-			btnText = 'Add new wasteland group',
-			bkwrds = 5
-		}
+function addSetting(name, label, inputType, defaultValue, otherProps)
+	local allowedInputTypes = {
+		int = 'number',
+		float = 'number',
+		bool = 'boolean',
+		text = 'string'
 	};
 
-	for name in pairs(templates) do
-		templates[name].name = name;
-		templates[name].isTemplate = true;
+	if type(name) ~= 'string' then
+		print('addSetting error: name must be a string');
+		print('name = ' .. tostring(name));
+		return;
 	end
 
-	templates.extraWasteland.get = function(id)
-		return {
-			name = 'EnabledW' .. id,
-			inputType = 'bool',
-			defaultValue = true,
-			label = 'Enable extra wastelands ' .. id,
-			subsettings = {
-				{
-					name = 'W' .. id .. 'Num',
-					inputType = 'int',
-					defaultValue = 5,
-					minValue = 1,
-					maxValue = 15,
-					absoluteMax = 4000,-- 4000 is max territories a map can have
-					label = 'Number of wastelands'
-				},
-				{
-					name = 'W' .. id .. 'Size',
-					inputType = 'int',
-					defaultValue = 5,
-					minValue = 0,
-					maxValue = 100,
-					absoluteMax = 100000,-- highest allowed in custom scenario
-					label = 'Wasteland size'
-				},
-				{
-					name = 'W' .. id .. 'Rand',
-					inputType = 'int',
-					defaultValue = 0,
-					minValue = 0,
-					maxValue = 15,
-					absoluteMax = 100000,
-					label = 'Random +/- amount',
-					help = function(parent)
-						Label(parent).SetText('Wastelands will have their size increased or lowered by up to this much');
-					end
-				},
-				{
-					name = 'W' .. id .. 'Type',
-					inputType = 'int',
-					defaultValue = 1,
-					minValue = 1,
-					maxValue = 3,
-					label = 'Wasteland type',
-					help = function(parent)
-						Label(parent).SetText('1 = distribution wasteland');
-						Label(parent).SetText('2 = runtime wasteland');
-						Label(parent).SetText('3 = both');
-					end
-				}
-			}
-		};
-	end;
+	if type(label) ~= 'string' then
+		print('addSetting error: label in must be a string');
+		print('label = ' .. tostring(label));
+		return;
+	end
 
-	return {
-		{
-			name = 'CreateDistributionWastelandsAfterPicks',
-			inputType = 'bool',
-			defaultValue = false,
-			label = 'Create distribution wastelands after picks',
-			help = function(parent)
-				Label(parent).SetText('Takes affect on all distribution wastelands');
-				Label(parent).SetText('Only does a difference in manual distribution games');
+	if not allowedInputTypes[inputType] then
+		print('addSetting error: inputType must be one of "int", "float", "bool", "text"');
+		print('inputType = ' .. tostring(inputType));
+		return;
+	end
+
+	if type(defaultValue) ~= allowedInputTypes[inputType] then
+		print('addSetting error: defaultValue for inputType ' .. inputType .. ' must be a ' .. allowedInputTypes[inputType]);
+		print('defaultValue = ' .. tostring(defaultValue));
+		return;
+	end
+
+	local setting = {name = name, label = label, inputType = inputType, defaultValue = defaultValue};
+
+	if otherProps == nil then
+		return setting;
+	end
+
+	if type(otherProps) ~= 'table' then
+		print('addSetting error: otherProps must be a table')
+		print('otherProps = ' .. tostring(otherProps));
+		return;
+	end
+
+	local forcedProps = {};
+	local optionalProps = {
+		help = 'function',
+		labelColor = 'string'
+	};
+
+	if otherProps.bkwrds ~= nil then
+		if inputType == 'bool' then
+			optionalProps.bkwrds = 'boolean';
+		elseif inputType == 'text' then
+			optionalProps.bkwrds = 'string';
+		else
+			optionalProps.bkwrds = 'number';
+		end
+	end
+
+	if inputType == 'bool' then
+		optionalProps.subsettings = 'table';
+	elseif inputType == 'text' then
+		optionalProps.placeholder = 'string';
+		optionalProps.charLimit = 'number';
+	else
+		if inputType == 'float' then
+			forcedProps.dp = 'number';
+		end
+
+		forcedProps.minValue = 'number';
+		forcedProps.maxValue = 'number';
+		optionalProps.absoluteMax = 'number';
+		optionalProps.absoluteMin = 'number';
+	end
+
+	for prop, tpe in pairs(forcedProps) do
+		local val = otherProps[prop];
+
+		if type(val) ~= tpe then
+			print('addSetting error: otherProps[' .. prop .. '] must be a ' .. tpe .. ' for inputType ' .. inputType);
+			print('otherProps[' .. prop .. '] = ' .. tostring(val));
+			return;
+		end
+
+		setting[prop] = val;
+	end
+
+	for prop, tpe in pairs(optionalProps) do
+		local val = otherProps[prop];
+
+		if val ~= nil then
+			if type(val) ~= tpe then
+				print('addSetting error: otherProps[' .. prop .. '] must be a ' .. tpe .. ' for inputType ' .. inputType .. ' or non-existent');
+				print('otherProps[' .. prop .. '] = ' .. tostring(val));
+				return;
 			end
-		},
-		{
-			name = 'UseMaxTerrs',
+		end
+
+		setting[prop] = val;
+	end
+
+	if inputType == 'bool' then
+		-- no special checks required
+	elseif inputType == 'text' then
+		if setting.charLimit and setting.charLimit < 1 then
+			print('addSetting error: otherProps.charLimit should always be higher than 0 or else user cant enter text')
+			print('otherProps.charLimit = ' .. tostring(setting.charLimit));
+			return;
+		end
+	else
+		if (setting.minValue > setting.maxValue) or (setting.maxValue < setting.minValue) then
+			print('addSetting error: otherProps.minValue must be lower than otherProps.maxValue and otherProps.maxValue must be higher than otherProps.minValue')
+			print('minValue = ' .. tostring(setting.minValue);
+			print('maxValue = ' .. tostring(setting.maxValue));
+			return;
+		end
+
+		if setting.absoluteMax then
+			if setting.absoluteMax < setting.maxValue then
+				print('addSetting error: otherProps.absoluteMax must be higher than otherProps.maxValue');
+				print('absoluteMax = ' .. tostring(setting.absoluteMax));
+				print('maxValue = ' .. tostring(setting.maxValue));
+				return;
+			end
+		end
+
+		if setting.absoluteMin then
+			if setting.absoluteMin > setting.minValue then
+				print('addSetting error: otherProps.absoluteMin must be lower than otherProps.minValue');
+				print('absoluteMin = ' .. tostring(setting.absoluteMin));
+				print('minValue = ' .. tostring(setting.minValue));
+				return;
+			end
+		end
+	end
+
+	return setting;
+end
+
+function addSettingTemplate(name, btnText, options, get)
+	if type(name) ~= 'string' then
+		print('addSettingTemplate error: name must be a string');
+		print('name = ' .. tostring(name));
+		return;
+	end
+
+	if type(btnText) ~= 'string' then
+		print('addSettingTemplate error: btnText must be a string');
+		print('btnText = ' .. tostring(btnText));
+		return;
+	end
+
+	if options == nil then
+		options = {};
+	else
+		if type(options) ~= 'table' then
+			print('addSettingTemplate error: options must be a table or nil');
+			print('options = ' .. tostring(options));
+			return;
+		end
+	end
+
+	if type(get) ~= 'function' then
+		print('addSettingTemplate error: get must be a function(n)');
+		print('get = ' .. tostring(get));
+		return;
+	end
+
+	local setting = {name = name, btnText = btnText, isTemplate = true, btnColor = options.btnColor, btnTextColor = options.btnTextColor, bkwards = options.bkwards};
+
+	setting.get = function(n)
+		local tmp = get(n);
+
+		if type(tmp) ~= 'table' then
+			print('addSettingTemplate error: get(n) must return a table');
+			print('get(n) = ' .. tostring(tmp));
+			return;
+		end
+
+		if type(tmp.label) ~= 'string' then
+			print('addSettingTemplate error: get(n).label must be a string');
+			print('get(n).label = ' .. tostring(tmp.label));
+			return;
+		end
+
+		-- cant do checkbox label color
+
+		if type(tmp.settings) ~= 'table' then
+			print('addSettingTemplate error: get(n).settings must be a table');
+			print('get(n).settings = ' .. tostring(tmp.settings));
+			return;
+		end
+
+		for i, ss in ipairs(tmp.settings) do
+			local name = tmp.settings[i].name;
+
+			if type(name) ~= 'string' then
+				print('addSettingTemplate error: get(n).settings[i].name must be a string');
+				print('get(n).settings[i].name = ' .. tostring(ss.name));
+				return;
+			end
+
+			tmp.settings[i].name = setting.name .. '_' .. n .. '_' .. name;
+		end
+
+		return {
+			name = setting.name .. '_' .. n,
 			inputType = 'bool',
 			defaultValue = true,
-			label = 'Prevent wastelands from reducing max territory limit',
-			help = function(parent)
-				Label(parent).SetText('If there is no territory limit then all players will have at least one spawn');
-				Label(parent).SetText('Applies to normal wastelands and extra distribution wastelands');
-			end
-		},
-		{
-			name = 'OverlapsEnabled',
-			inputType = 'bool',
-			defaultValue = false,
-			bkwrds = true,
-			label = 'Enable wasteland overlaps',
-			help = function(parent)
-				Label(parent).SetText('Wastelands occpy as many neutral or pickable territories as possable before replacing an existing wasteland');
-				Label(parent).SetText('The "Overlap mode" will decide how overlaps are dealt with');
-			end,
-			subsettings = {
-				{
-					name = 'OverlapMode',
-					inputType = 'int',
-					defaultValue = 1,
-					minValue = 1,
-					maxValue = 4,
-					label = 'Overlap mode',
-					help = function(parent)
-						Label(parent).SetText('In the event of wastelands randomly getting placed on top of each other, what should happen?');
-						Label(parent).SetText('1 = randomly choose which gets used');
-						Label(parent).SetText('2 = newest overrides');
-						Label(parent).SetText('3 = use smallest wasteland');
-						Label(parent).SetText('4 = use largest wasteland');
-					end
-				},
-				{
-					name = 'TreatAllNeutralsAsWastelands',
-					inputType = 'bool',
-					defaultValue = true,
-					label = 'Treat all neutrals as wastelands',
-					help = function(parent)
-						Label(parent).SetText('If enabled the runtime wastelands will follow the wasteland overlap mode for all neutral territories');
-						Label(parent).SetText('If disabled the new wasteland will always replace the territory');
-						Label(parent).SetText('If "Max overlaps per turn" is 1 then no new wastelands will be created');
-						Label(parent).SetText('Applies to runtime wastelands only');
-					end
-				},
-				{
-					name = 'MaxOverlaps',
-					inputType = 'int',
-					defaultValue = 0,
-					minValue = 0,
-					maxValue = 3,
-					bkwrds = 0,
-					label = 'Max overlaps per turn',
-					help = function(parent)
-						Label(parent).SetText('This setting is only here for performance reasons');
-						Label(parent).SetText('Fewer overlaps is faster; 0 = unlimited');
-						Label(parent).SetText('Existing wastelands are decided first then lowest to highest wasteland group number are created');
-					end
-				}
-			}
-		},
-		templates.extraWasteland
-	};
+			label = tmp.label,
+			subsettings = tmp.settings
+		};
+	end
+
+	return setting;
+end
+
+-- used to keep track of which areas exist in Client_PresentSettingsUI
+local numsSettingGroups = 0;
+
+function addSettingGroup(btnTxt, options, settings)
+	numsSettingGroups = numsSettingGroups + 1;
+
+	if type(btnText) ~= 'string' then
+		print('addSettingGroup error: btnText must be a string');
+		print('btnText = ' .. tostring(btnText));
+		return;
+	end
+
+	if options == nil then
+		options = {};
+	end
+
+	if type(options) ~= 'table' then
+		print('addSettingGroup error: options must be a table or nil');
+		print('options = ' .. tostring(options));
+		return;
+	end
+
+	if options.onExpand == nil then
+		options.onExpand = function() end;
+	end
+
+	if type(options.onExpand) ~= 'function' then
+		print('addSettingGroup error: options.onExpand must be a function(vert) or nil');
+		print('options.onExpand = ' .. tostring(options.onExpand));
+		return;
+	end
+
+	-- this doesnt need to use options.bkwards
+	return {isGroup = true, btnText = btnText, btnColor = options.btnColor, btnTextColor = options.btnTextColor, onExpand = options.onExpand, subsettings: settings, ID = numsSettingGroups};
+end
+
+function getSetting(name, template)
+	if type(name) ~= 'string' then
+		print('getSetting error: name must be a string');
+		print('name = ' .. tostring(name));
+		return;
+	end
+
+	if template ~= nil then
+		if type(template) ~= 'table' then
+			print('getSetting error: template must be a table or non-existent');
+			print('template = ' .. tostring(template));
+			return;
+		end
+
+		if type(template.n) ~= 'number' then
+			print('getSetting error: template.n must be a number');
+			print('template.n = ' .. tostring(template.n));
+			return;
+		end
+
+		if type(template.name) ~= 'string' then
+			print('getSetting error: template.name must be a string');
+			print('template.name = ' .. tostring(template.name));
+			return;
+		end
+
+		name = name .. '_' .. template.n .. '_' .. template.name;
+	end
+
+	if Mod.Settings[name] == nil then
+		print('getSetting warning: setting ' .. name .. ' doesnt exist');
+		return;
+	end
+
+	return Mod.Settings[name];
+end
+
+function getCollapseBtnLabelTxt()
+	-- https://www.amp-what.com &#9650;
+
+	return '▲';
+end
+
+function getExpandBtnLabelTxt()
+	-- https://www.amp-what.com &#9660;
+
+	return '▼';
 end

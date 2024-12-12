@@ -1,4 +1,4 @@
-require 'wastelands'
+require('wastelands');
 
 local wastelands = {};
 local wastelanded = {list = {}, length = 0};
@@ -32,6 +32,7 @@ function makeRuntimeWastelands(game, addNewOrder)
 
 			if Mod.PublicGameData.wastelands[terrId] or Mod.Settings.TreatAllNeutralsAsWastelands then
 				local ret = addWasteland(terrId, terr.NumArmies.NumArmies, wastelands, wastelanded);
+
 				wastelands = ret.wastelands;
 				wastelanded = ret.wastelanded;
 
@@ -73,6 +74,7 @@ function placeWasteland(terrId, size, game)
 		-- armiesToAdd = 3
 
 		local terrMod = WL.TerritoryModification.Create(terrId);
+
 		terrMod.AddArmies = armiesToAdd;
 		-- terrMod.SetArmiesTo = size;
 		tMods.add(terrId, terrMod);
@@ -80,9 +82,18 @@ function placeWasteland(terrId, size, game)
 end
 
 function rWGenerateWastelandGroup(game, numWastelands, size, rand)
-	local ret = generateWastelandGroup(numWastelands, size, rand, function(terrId, wSize)
-		placeWasteland(terrId, wSize, game);
-	end, available, wastelands, wastelanded);
+	local ret = generateWastelandGroup(
+		numWastelands,
+		size,
+		rand,
+		function(terrId, wSize)
+			placeWasteland(terrId, wSize, game);
+		end,
+		available,
+		wastelands,
+		wastelanded
+	);
+
 	available = ret.available;
 	wastelands = ret.wastelands;
 	wastelanded = ret.wastelanded;

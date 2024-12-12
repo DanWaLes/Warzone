@@ -1,5 +1,3 @@
-require 'util'
-
 function decideWastelandSize(base, rand)
 	local size = base + math.random(-rand, rand);
 
@@ -29,12 +27,6 @@ function addWasteland(terrId, size, wastelands, wastelanded)
 		wastelands[terrId].numSizes = wastelands[terrId].numSizes + 1;
 		wastelands[terrId].sizes[wastelands[terrId].numSizes] = size;
 	else
-		-- for backwards compatibility
-		-- used to be a oldest preserved setting (as 2). is no longer needed
-		if Mod.Settings.OverlapsEnabled == nil then
-			overlapMode = overlapMode - 1;
-		end
-
 		if wastelands[terrId] then
 			if overlapMode == 3 then
 				wastelands[terrId] = size;
@@ -55,11 +47,11 @@ function addWasteland(terrId, size, wastelands, wastelanded)
 end
 
 function generateWastelands(notIncluding, gwg)
-	local numWastelandGroups = (Mod.Settings.extraWasteland or 5) + 1;-- 5+1 is for backwards compatibility
+	local numWastelandGroups = Mod.Settings.extraWasteland + 1;
 	local n = 1;
 
 	while n < numWastelandGroups do
-		if Mod.Settings['EnabledW' .. n] then
+		if Mod.Settings['extraWasteland_' .. n] then
 			local numWastelands = Mod.Settings['W' .. n .. 'Num'];
 
 			if Mod.Settings['W' .. n .. 'Type'] == notIncluding then
@@ -104,6 +96,7 @@ function generateWastelandGroup(numWastelands, size, rand, placeWasteland, avail
 		local wSize = decideWastelandSize(size, rand);
 
 		local ret = addWasteland(terrId, wSize, wastelands, wastelanded);
+
 		wastelands = ret.wastelands;
 		wastelanded = ret.wastelanded;
 
@@ -119,6 +112,7 @@ function generateWastelandGroup(numWastelands, size, rand, placeWasteland, avail
 	end
 
 	local pgd = Mod.PublicGameData;
+
 	pgd.terrCount = terrCount;
 	pgd.numOverlaps = numOverlaps;
 	Mod.PublicGameData = pgd;
@@ -141,6 +135,7 @@ function finish(wastelands, placeWasteland)
 	end
 
 	local pgd = Mod.PublicGameData;
+
 	pgd.wastelands = wastelands;
 	pgd.terrCount = 1;
 	pgd.numOverlaps = 0;

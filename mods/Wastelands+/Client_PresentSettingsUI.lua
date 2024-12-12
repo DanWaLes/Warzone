@@ -1,22 +1,20 @@
-require 'ui'
-require 'settings'
+-- copied from https://github.com/DanWaLes/Warzone/tree/master/mods/libs/AutoSettingsFiles
 
-local expand = '˅';-- https://www.amp-what.com/unicode/search/down%20arrow &#709;
+require('__settings');
 
 function Client_PresentSettingsUI(rootParent)
 	cps(rootParent, getSettings(), 0);
 end
 
 function cps(rootParent, settings)
-	local vert = Vert(rootParent);
+	local vert = UI.CreateVerticalLayoutGroup(rootParent);
 
 	for _, setting in ipairs(settings) do
-		if setting.isTemplate then			
+		if setting.isTemplate then
 			local n = 1;
 
 			while n < ((Mod.Settings[setting.name] or setting.bkwrds) + 1) do
-				local toAdd = setting.get(n);
-				cpsDoSetting(vert, toAdd);
+				cpsDoSetting(vert, setting.get(n));
 				n = n + 1;
 			end
 		else
@@ -26,35 +24,51 @@ function cps(rootParent, settings)
 end
 
 function cpsDoSetting(vert, setting)
-	local settingValue = Mod.Settings[setting.name];
-	local vert2 = Vert(vert);
-	local horz = Horz(vert2);
+	local vert2 = UI.CreateVerticalLayoutGroup(vert);
+	local horz = UI.CreateHorizontalLayoutGroup(vert2);
 
-	Label(horz).SetText(setting.label .. ': ');
+	if setting.isGroup then
+		local btn = UI.CreateButton(horz).SetText(setting.btnText);
+
+		if setting.btnColor then
+			btn.SetColor(setting.btnColor);
+		end
+
+		if setting.btnTextColor then
+			btn.SetTextColor(setting.btnTextColor);
+		end
+
+		btn.SetOnClick(function()
+			settingGroupBtnClicked(btn, vert2, setting);
+		end);
+
+		return;
+	end
+
+	local settingValue = Mod.Settings[setting.name];
+	local label = UI.CreateLabel(horz).SetText(setting.label .. ': ');
+
+	if setting.labelColor then
+		label.SetColor(setting.labelColor);
+	end
+
 	createHelpBtn(horz, vert2, setting);
 
 	if settingValue == nil and setting.bkwrds ~= nil then
 		settingValue = setting.bkwrds;
 	end
 
-	-- just for this mod, remove this part if copying this file
-	if Mod.Settings.OverlapsEnabled == nil then
-		if setting.name == 'OverlapMode' then
-			if settingValue > 1 then
-				settingValue = settingValue - 1;
-			end
-		end
+	UI.CreateLabel(horz).SetText(tostring(settingValue));
+
+	if not (setting.subsettings and settingValue) then
+		return;
 	end
 
-	Label(horz).SetText(tostring(settingValue));
+	local btn = UI.CreateButton(horz).SetText(getExpandBtnLabelTxt()).SetColor('#23A0FF');
 
-	if setting.subsettings and settingValue then
-		local btn = Btn(horz).SetText(expand).SetColor('#23A0FF');
-
-		btn.SetOnClick(function()
-			expandCollapseSubSettingBtnClicked(btn, vert2, setting);
-		end);
-	end
+	btn.SetOnClick(function()
+		expandCollapseSubSettingBtnClicked(btn, vert2, setting);
+	end);
 end
 
 local settingHelpAreas = {};
@@ -64,9 +78,14 @@ function createHelpBtn(btnParent, helpParent, setting)
 		return;
 	end
 
-	Btn(btnParent).SetText('?').SetColor('#23A0FF').SetOnClick(function()
-		if UI.IsDestroyed(settingHelpAreas[setting.name]) then
-			settingHelpAreas[setting.name] = Vert(helpParent);
+	UI.CreateButton(btnParent).SetText('?').SetColor('#23A0FF').SetOnClick(function()
+		if not (WL and WL.IsVersionOrHigher and WL.IsVersionOrHigher('5.21')) then
+			if not settingHelpAreas[setting.name] then
+				settingHelpAreas[setting.name] = UI.CreateVerticalLayoutGroup(helpParent);
+				setting.help(settingHelpAreas[setting.name]);
+			end
+		elseif UI.IsDestroyed(settingHelpAreas[setting.name]) then
+			settingHelpAreas[setting.name] = UI.CreateVerticalLayoutGroup(helpParent);
 			setting.help(settingHelpAreas[setting.name]);
 		else
 			UI.Destroy(settingHelpAreas[setting.name]);
@@ -77,13 +96,37 @@ end
 local subsettingsAreas = {};
 
 function expandCollapseSubSettingBtnClicked(btn, detailsParent, setting)
-	if UI.IsDestroyed(subsettingsAreas[setting.name]) then
-		btn.SetText('^');
-		subsettingsAreas[setting.name] = Vert(detailsParent);
+	if not (WL and WL.IsVersionOrHigher and WL.IsVersionOrHigher('5.21')) then
+		if not subsettingsAreas[setting.name] then
+			subsettingsAreas[setting.name] = UI.CreateVerticalLayoutGroup(detailsParent);
+			cps(subsettingsAreas[setting.name], setting.subsettings);
+		end
+	elseif UI.IsDestroyed(subsettingsAreas[setting.name]) then
+		btn.SetText(getCollapseBtnLabelTxt());
+		subsettingsAreas[setting.name] = UI.CreateVerticalLayoutGroup(detailsParent);
 		cps(subsettingsAreas[setting.name], setting.subsettings);
 	else
 		UI.Destroy(subsettingsAreas[setting.name]);
 		subsettingsAreas[setting.name] = nil;
-		btn.SetText(expand);
+		btn.SetText(getExpandBtnLabelTxt());
+	end
+end
+
+local settingGroupAreas = {};
+
+function settingGroupBtnClicked(btn, detailsParent, setting)
+	if not (WL and WL.IsVersionOrHigher and WL.IsVersionOrHigher('5.21')) then
+		if not settingGroupAreas[setting.ID] then
+			settingGroupAreas[setting.ID] = UI.CreateVerticalLayoutGroup(detailsParent);
+			setting.onExpand(btn, UI.CreateVerticalLayoutGroup(settingGroupAreas[setting.ID]));
+			cps(settingGroupAreas[setting.ID], setting.subsettings);
+		end
+	elseif UI.IsDestroyed(settingGroupAreas[setting.ID]) then
+		settingGroupAreas[setting.ID] = UI.CreateVerticalLayoutGroup(detailsParent);
+		setting.onExpand(UI.CreateVerticalLayoutGroup(settingGroupAreas[setting.ID]));
+		cps(settingGroupAreas[setting.ID], setting.subsettings);
+	else
+		UI.Destroy(settingGroupAreas[setting.ID]);
+		settingGroupAreas[setting.ID] = nil;
 	end
 end

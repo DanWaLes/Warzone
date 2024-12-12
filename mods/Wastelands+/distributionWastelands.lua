@@ -1,4 +1,4 @@
-require 'wastelands'
+require('wastelands');
 
 local wastelands = {};
 local wastelanded = {list = {}, length = 0};
