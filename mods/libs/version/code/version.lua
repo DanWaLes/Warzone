@@ -1,3 +1,5 @@
+-- copied from https://github.com/DanWaLes/Warzone/tree/master/mods/libs/ui
+
 require('__mod');
 
 local function isVersionOrHigher(version)
