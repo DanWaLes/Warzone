@@ -6,6 +6,7 @@ local available = {list = {}, length = 0};
 
 function makeDistributionWastelands(game, standing)
 	local numPlayers = 0;
+
 	for _ in pairs(game.ServerGame.Game.Players) do
 		numPlayers = numPlayers + 1;
 	end
@@ -24,6 +25,7 @@ function makeDistributionWastelands(game, standing)
 		if wastelanded.length < game.Settings.NumberOfWastelands then
 			if terr.IsNeutral and terr.NumArmies.NumArmies == game.Settings.WastelandSize then
 				local ret = addWasteland(terrId, game.Settings.WastelandSize, wastelands, wastelanded);
+
 				wastelands = ret.wastelands;
 				wastelanded = ret.wastelanded;
 
@@ -45,12 +47,22 @@ function makeDistributionWastelands(game, standing)
 
 	while wastelanded.length > maxWastelandedTerrs do
 		local terrId = wastelandIndexes[wastelanded.length];
+
 		wastelands[terrId] = nil;
 		wastelanded[wastelanded.length] = nil;
 		wastelandIndexes[wastelanded.length] = nil;
 		wastelanded.length = wastelanded.length - 1;
-		standing.Territories[terrId].OwnerPlayerID = WL.PlayerID.AvailableForDistribution;
+
+		if not game.Settings.AutomaticTerritoryDistribution then
+			-- https://www.warzone.com/wiki/Mod_API_Reference#Newer_API_features
+
+			if ((not game.Settings.SinglePlayer) or (game.Settings.SinglePlayer and WL and WL.isVersionOrHigher and WL.isVersionOrHigher('5.20'))) then 
+				-- was a built in wasteland so change owner to available for distribution
+				standing.Territories[terrId].OwnerPlayerID = WL.PlayerID.AvailableForDistribution;
+			end
+		end
 	end
+
 	wastelandIndexes = nil;
 
 	while available.length + wastelanded.length > maxWastelandedTerrs do
@@ -77,9 +89,19 @@ function placeWasteland(terrId, size, standing)
 end
 
 function dWGenerateWastelandGroup(standing, maxWastelandedTerrs, numWastelands, size, rand)
-	local ret = generateWastelandGroup(numWastelands, size, rand, function(terrId, wSize)
-		placeWasteland(terrId, wSize, standing);
-	end, available, wastelands, wastelanded, maxWastelandedTerrs);
+	local ret = generateWastelandGroup(
+		numWastelands,
+		size,
+		rand,
+		function(terrId, wSize)
+			placeWasteland(terrId, wSize, standing);
+		end,
+		available,
+		wastelands,
+		wastelanded,
+		maxWastelandedTerrs
+	);
+
 	available = ret.available;
 	wastelands = ret.wastelands;
 	wastelanded = ret.wastelanded;
