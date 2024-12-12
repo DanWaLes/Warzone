@@ -1,3 +1,5 @@
+-- modified from https://github.com/DanWaLes/Warzone/tree/master/mods/libs/version
+
 -- https://www.warzone.com/wiki/Mod_API_Reference#Newer_API_features
 
 MOD = {
