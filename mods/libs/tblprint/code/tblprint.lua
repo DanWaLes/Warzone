@@ -1,3 +1,5 @@
+-- copied from https://github.com/DanWaLes/Warzone/tree/master/mods/libs/tblprint
+
 local function getFullTableLength(tbl)
 	-- for use on tables which are not array-like
 
