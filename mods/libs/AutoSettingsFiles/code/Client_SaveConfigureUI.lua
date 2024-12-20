@@ -120,7 +120,7 @@ function cscDoSetting(setting)
 		local isTooHigh = settingVal > absoluteMax;
 		local isTooLow = settingVal < absoluteMin;
 
-		if !(isTooLow or isTooHigh) then
+		if not (isTooLow or isTooHigh) then
 			return;
 		end
 
