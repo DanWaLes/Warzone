@@ -1,6 +1,7 @@
 require('tblprint');
 require('ui');
 require('placeOrderInCorrectPosition');
+require('version');
 
 local WIDTH = 800;
 local HEIGHT = 190;
@@ -9,6 +10,10 @@ local HEIGHT = 190;
 local CHARLIMIT = 50;
 
 function Client_PresentMenuUI(rootParent, setMaxSize, setScrollable, game, close)
+	if not canRunMod() then
+		return;
+	end
+
 	setMaxSize(WIDTH, HEIGHT);
 	setScrollable(false, true);
 
@@ -38,7 +43,7 @@ function main(rootParent, vert, game)
 		.SetPreferredWidth(WIDTH)
 		.SetFlexibleWidth(1);
 
-	Label(horz).SetText('Note')
+	Label(horz).SetText('Note');
 	Label(horz).SetText(' | ');
 
 	local orderNotesSubmitBtn = Btn(horz);
@@ -51,6 +56,7 @@ function main(rootParent, vert, game)
 			orderNotesTextInput.SetInteractable(false);
 
 			local txt = orderNotesTextInput.GetText();
+
 			orderNotesTextInput.SetText('');
 
 			if (#txt < #('A')) or (#txt > CHARLIMIT) then
