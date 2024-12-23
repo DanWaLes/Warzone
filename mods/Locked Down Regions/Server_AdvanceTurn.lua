@@ -1,3 +1,4 @@
+require('tblprint');
 require('_util');
 require('version');
 

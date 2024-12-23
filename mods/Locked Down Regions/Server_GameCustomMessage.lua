@@ -1,3 +1,5 @@
+require('tblprint');
+
 function Server_GameCustomMessage(game, playerId, payload, setReturn)
 	local host = game.Settings.StartedBy;
 
