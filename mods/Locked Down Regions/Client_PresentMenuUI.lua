@@ -161,7 +161,7 @@ function makeHostMenu(storage, vert)
 				UI.Destroy(results);
 				results = Vert(selectBonusFromListVert);
 
-				local searchingFor = toCaseInsensativePattern(escapePattern(searchFor.GetText()));
+				local searchingFor = toCaseInsensitivePattern(escapePattern(searchFor.GetText()));
 				-- print('searchingFor = ' .. searchingFor);
 
 				if searchingFor == '' then

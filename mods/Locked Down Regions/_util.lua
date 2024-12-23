@@ -23,7 +23,7 @@ function escapePattern(str)
 	return string.gsub(str, '([%(%)%.%%%+%-%*%?%[%]%^%$])', '%%%1');
 end
 
-function toCaseInsensativePattern(str)
+function toCaseInsensitivePattern(str)
 	-- https://www.lua.org/pil/20.4.html
 
     return string.gsub(str, "%a", function(c)
