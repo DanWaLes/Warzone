@@ -1,5 +1,5 @@
-require '_util';
-require 'version';
+require('_util');
+require('version');
 
 local canRun;
 
@@ -140,8 +140,8 @@ function Server_AdvanceTurn_Order(Game, order, result, skipThisOrder, addNewOrde
 	local playerId = WL.PlayerID.Neutral;-- neutral so that skipped orders cant be used as delays
 	local affectedTerr = fromIsActiveLockdown and fromTerr or toTerr;-- should only be from or to. if both use from
 	local event = WL.GameOrderEvent.Create(playerId, msg, {}, {WL.TerritoryModification.Create(affectedTerr.ID)});
-	event.JumpToActionSpotOpt = WL.RectangleVM.Create(affectedTerr.MiddlePointX , affectedTerr.MiddlePointY, affectedTerr.MiddlePointX, affectedTerr.MiddlePointY);
 
+	event.JumpToActionSpotOpt = WL.RectangleVM.Create(affectedTerr.MiddlePointX , affectedTerr.MiddlePointY, affectedTerr.MiddlePointX, affectedTerr.MiddlePointY);
 	addNewOrder(event);
 end
 

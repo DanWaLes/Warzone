@@ -1,6 +1,6 @@
-require '_util';
-require '_ui';
-require 'version';
+require('_util');
+require('_ui');
+require('version');
 
 function Client_PresentMenuUI(RootParent, setMaxSize, setScrollable, Game, close)
 	rootParent = RootParent;
@@ -55,8 +55,8 @@ function makeHostMenu(storage, vert)
 	
 	local vert1 = Vert(vert);
 	local vert2;
+	local addLockedDownRegionBtn = Btn(vert1).SetText('Add locked down region');
 
-	local addLockedDownRegionBtn = Btn(vert1).SetText('Add locked down region');		
 	addLockedDownRegionBtn.SetOnClick(function()
 		addLockedDownRegionBtn.SetInteractable(false);
 
@@ -102,7 +102,9 @@ function makeHostMenu(storage, vert)
 
 			selectBonusFromOption = Horz(selectBonusFromOptionContainer);
 			Label(selectBonusFromOption).SetText('or');
+
 			local choseFromListBtn = Btn(selectBonusFromOption).SetText('chose from a list');
+
 			choseFromListBtn.SetOnClick(function()
 				choseFromListBtn.SetInteractable(false);
 				makeChoseFromListMenu();
@@ -121,10 +123,15 @@ function makeHostMenu(storage, vert)
 			end);
 
 			selectBonusFromListVert = Vert(selectBonusFromListVertContainer);
+
 			local searchBar = Horz(selectBonusFromListVert);
+
 			Label(searchBar).SetText('Search:');
+
 			local searchFor = TextInput(searchBar).SetFlexibleWidth(1).SetFlexibleHeight(1).SetPreferredWidth(300);
+
 			Label(selectBonusFromListVert).SetText('Search is case-sensitive. Clear the search to view all.');
+
 			local searchBtn = Btn(searchBar).SetText('Go');
 			local results = Vert(selectBonusFromListVert);
 
