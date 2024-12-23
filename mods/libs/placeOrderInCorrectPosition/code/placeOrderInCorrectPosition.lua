@@ -30,3 +30,4 @@ function placeOrderInCorrectPosition(clientGame, newOrder)
 		clientGame.Orders = orders;
 	end
 end
+
