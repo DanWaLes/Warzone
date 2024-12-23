@@ -1,3 +1,5 @@
+-- modified from https://github.com/DanWaLes/Warzone/tree/master/mods/libs/AutoSettingsFiles
+
 require('settings');
 require('ui');
 
