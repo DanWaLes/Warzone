@@ -1,4 +1,25 @@
-local function tblprint_DumpProxy(obj, indent)
+-- copied from https://github.com/DanWaLes/Warzone/tree/master/mods/libs/tblprint
+
+local function getFullTableLength(tbl)
+	-- for use on tables which are not array-like
+
+	if type(tbl) ~= 'table' then
+		print('tbl in tblLen(tbl) must be a table');
+		return;
+	end
+
+	local n = 0;
+
+	for k, v in pairs(tbl) do
+		n = n + 1;
+	end
+
+	return n;
+end
+
+local function tblprint_PrintProxyInfo(obj, indent)
+	-- https://www.warzone.com/wiki/Mod_API_Reference#Proxy_Objects
+
 	if type(obj) ~= 'table' then
 		return tostring(obj);
 	end
@@ -34,6 +55,8 @@ local function tblprint_DumpProxy(obj, indent)
 end
 
 local function tblprint_tprint(tbl, indent)
+	-- modified from https://stackoverflow.com/questions/41942289/display-contents-of-tables-in-lua#answer-41943392
+
 	if type(tbl) ~= 'table' then
 		return tostring(tbl);
 	end
@@ -42,12 +65,13 @@ local function tblprint_tprint(tbl, indent)
 		indent = 0;
 	end
 
-	-- arrays dont have a proxy type
-	if tblLen(tbl) ~= #tbl and tbl.proxyType then
-		return tblprint_DumpProxy(tbl, indent + 2);
+	-- arrays dont have a proxy type and gives error if trying to read that non-existant key
+	if getFullTableLength(tbl) ~= #tbl and tbl.proxyType then
+		return tblprint_PrintProxyInfo(tbl, indent + 2);
 	end
 
 	local toprint = '{\r\n';
+
 	indent = indent + 2;
 
 	for k, v in pairs(tbl) do
@@ -61,7 +85,7 @@ local function tblprint_tprint(tbl, indent)
 
 		if type(v) == 'table' then
 			if v.__proxyID then
-				toprint = toprint .. tblprint_DumpProxy(v, indent + 2) .. ',\r\n';
+				toprint = toprint .. tblprint_PrintProxyInfo(v, indent + 2) .. ',\r\n';
 			else
 				toprint = toprint .. tblprint_tprint(v, indent + 2) .. ',\r\n';
 			end
