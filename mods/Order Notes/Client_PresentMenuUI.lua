@@ -1,5 +1,5 @@
 require('tblprint');
-require('_ui');
+require('ui');
 require('placeOrderInCorrectPosition');
 
 local WIDTH = 800;
