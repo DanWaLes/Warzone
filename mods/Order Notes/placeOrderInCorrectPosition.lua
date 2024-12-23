@@ -1,6 +1,9 @@
+-- copied from https://github.com/DanWaLes/Warzone/tree/master/mods/libs/placeOrderInCorrectPosition
+
 function placeOrderInCorrectPosition(clientGame, newOrder)
 	if not newOrder.OccursInPhase then
 		local orders = clientGame.Orders;
+
 		table.insert(orders, newOrder);
 		clientGame.Orders = orders;
 	else
@@ -11,7 +14,7 @@ function placeOrderInCorrectPosition(clientGame, newOrder)
 			if order.OccursInPhase then
 				if not addedNewOrder and order.OccursInPhase > newOrder.OccursInPhase then
 					table.insert(orders, newOrder);
-					addedNewOrder = true;;
+					addedNewOrder = true;
 				end
 
 				table.insert(orders, order);
