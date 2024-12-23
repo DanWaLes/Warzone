@@ -1,6 +1,6 @@
-require 'util';
-require '_ui';
-require 'placeOrderInCorrectPosition';
+require('util');
+require('_ui');
+require('placeOrderInCorrectPosition');
 
 local WIDTH = 800;
 local HEIGHT = 190;
@@ -24,11 +24,13 @@ function main(rootParent, vert, game)
 
 	if game.Game.State ~= WL.GameState.Playing then
 		Label(vert).SetText('You can not use this mod because the game is not in-progress');
+
 		return;
 	end
 
 	if not game.Us or (game.Us and game.Us.State ~= WL.GamePlayerState.Playing) then
 		Label(vert).SetText('You can not use this mod because you are not in this game');
+
 		return;
 	end
 
@@ -54,10 +56,12 @@ function main(rootParent, vert, game)
 			if (#txt < #('A')) or (#txt > CHARLIMIT) then
 				orderNotesTextInput.SetInteractable(true);
 				orderNotesSubmitBtn.SetInteractable(true);
+
 				return;
 			end
 
 			local order = WL.GameOrderCustom.Create(game.Us.PlayerID, txt, 'OrderNotes');
+
 			placeOrderInCorrectPosition(game, order);
 
 			orderNotesTextInput.SetInteractable(true);
