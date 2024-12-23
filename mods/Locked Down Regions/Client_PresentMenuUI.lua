@@ -1,5 +1,5 @@
 require('_util');
-require('_ui');
+require('ui');
 require('version');
 
 function Client_PresentMenuUI(RootParent, setMaxSize, setScrollable, Game, close)
