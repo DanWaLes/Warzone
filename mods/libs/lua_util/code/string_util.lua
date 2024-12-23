@@ -19,3 +19,19 @@ function split(str, separator)
 
 	return t;
 end
+
+function escapePattern(str)
+	-- https://www.lua.org/pil/20.2.html
+	-- https://www.lua.org/pil/20.3.html
+	-- https://stackoverflow.com/questions/9790688/escaping-strings-for-gsub
+
+	return string.gsub(str, '([%(%)%.%%%+%-%*%?%[%]%^%$])', '%%%1');
+end
+
+function toCaseInsensitivePattern(str)
+	-- https://www.lua.org/pil/20.4.html
+
+    return string.gsub(str, "%a", function(c)
+		return string.format("[%s%s]", string.lower(c), string.upper(c));
+	end);
+end

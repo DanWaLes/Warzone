@@ -26,3 +26,15 @@ There are currently two files:
     * `str` - string - the string to split
     * `separator` - string or falsey - the [pattern](https://www.lua.org/pil/20.2.html) to split the string using. If this is falsey then `'%s'` is used.
   * Returns: array of string
+
+* `escapePattern(str)`
+  * Escapes special characters used in patters so that they can be used as a plain character with no special meaning
+  * Arguments:
+    * `str` - string - the [pattern](https://www.lua.org/pil/20.2.html) to escape
+  * Returns: string
+
+* `toCaseInsensitivePattern(str)`
+  * Makes a [pattern](https://www.lua.org/pil/20.2.html) case-insensitive by replacing `'%a'` characters with their lowercase and uppercase form
+  * Arguments:
+    * `str` - string - the pattern to make case-insensitive
+  * Returns: string
