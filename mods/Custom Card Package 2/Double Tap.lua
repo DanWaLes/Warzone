@@ -56,9 +56,11 @@ function playCardDoubleTap(game, tabData, cardName, btn, vert, vert2, data)
 	end);
 
 	local modes = {'Attack or Transfer'};
+
 	if game.Settings.AllowAttackOnly then
 		table.insert(modes, 'Attack Only');
 	end
+
 	if game.Settings.AllowTransferOnly then
 		table.insert(modes, 'Transfer Only');
 	end
@@ -105,18 +107,25 @@ local function doDoubleTapCardEffect(wz, player, cardName, param)
 			local to = wz.game.ServerGame.LatestTurnStanding.Territories[tonumber(params[2])];
 			local mode = WL.AttackTransferEnum[params[3]];
 
-			if from.OwnerPlayerID == player.ID and failedAttacks[player.ID] and failedAttacks[player.ID][from.ID] and failedAttacks[player.ID][from.ID][to.ID] then
+			if (
+				from.OwnerPlayerID == player.ID and
+				failedAttacks[player.ID] and
+				failedAttacks[player.ID][from.ID] and
+				failedAttacks[player.ID][from.ID][to.ID]
+			) then
 				local order = failedAttacks[player.ID][from.ID][to.ID][1];
 				local numArmies = from.NumArmies.Subtract(WL.Armies.Create(wz.game.Settings.OneArmyMustStandGuardOneOrZero));
 				local newOrder = WL.GameOrderAttackTransfer.Create(player.ID, from.ID, to.ID, mode, false, numArmies, order.AttackTeammates);
 
 				table.remove(failedAttacks[player.ID][from.ID][to.ID], 1);
+
 				if #failedAttacks[player.ID][from.ID][to.ID] < 1 then
 					failedAttacks[player.ID][from.ID][to.ID] = nil;
 				end
 
 				removeActiveCardInstance(cardName, i);
 				wz.addNewOrder(newOrder);
+
 				break;
 			end
 		end
@@ -125,6 +134,7 @@ end
 
 function playedCardDoubleTap(wz, player, cardName, param)
 	local params = split(param, '_');
+
 	if #params ~= 3 then
 		return;
 	end
@@ -150,6 +160,7 @@ function playedCardDoubleTap(wz, player, cardName, param)
 	end
 
 	local mode = params[3];
+
 	if type(WL.AttackTransferEnum[mode]) ~= 'number' then
 		return;
 	end

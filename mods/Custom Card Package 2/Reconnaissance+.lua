@@ -16,6 +16,7 @@ local function doReconnaissanceCardAffect(wz, cardName, i, activeCardInstance)
 		end
 
 		local nextTerrs = {};
+
 		for _, terrId in pairs(terrIds) do
 			if not doneTerrs[terrId] then
 				local reconCard = WL.NoParameterCardInstance.Create(WL.CardID.Reconnaissance);
@@ -90,9 +91,9 @@ function processStartTurnReconnaissance(game, addNewOrder, cardName)
 	for i, activeCardInstance in pairs(Mod.PublicGameData.activeCards[cardName]) do
 		local terr = game.Map.Territories[tonumber(activeCardInstance.param)];
 		local order = WL.GameOrderEvent.Create(activeCardInstance.playedBy, 'Continue ' .. cardName .. ' Card on ' .. terr.Name .. ' which was played during turn ' .. activeCardInstance.playedOnTurn);
+
 		order.JumpToActionSpotOpt = WL.RectangleVM.Create(terr.MiddlePointX, terr.MiddlePointY, terr.MiddlePointX, terr.MiddlePointY);
 		addNewOrder(order);
-
 		doReconnaissanceCardAffect({game = game, addNewOrder = addNewOrder}, cardName, i, activeCardInstance);
 	end
 end

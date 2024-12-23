@@ -1,4 +1,4 @@
-require '_util';
+require('tblprint');
 
 function Client_GameRefresh(game)
 	if not (game.Us and game.Us.State == WL.GamePlayerState.Playing) then

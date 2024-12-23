@@ -1,5 +1,5 @@
-require '_settings';
-require '_ui';
+require('settings');
+require('ui');
 
 local function Card(cardName, p1, p2, p3)
 	local isNewCard = p1 and type(p1) == 'boolean';

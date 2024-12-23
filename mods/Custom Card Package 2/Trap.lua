@@ -43,8 +43,8 @@ local function doTrapCardEffect(wz, cardName, i, activeCardInstance)
 	end
 
 	local armiesTakingOver = wz.result.ActualArmies.Subtract(wz.result.AttackingArmiesKilled);
-
 	local specialUnitsToRemove = {};
+
 	for _, unit in pairs(armiesTakingOver.SpecialUnits) do
 		if eliminateIfCommander and unit.proxyType == 'Commander' then
 			eliminatingBecauseCommander = true;
@@ -54,6 +54,7 @@ local function doTrapCardEffect(wz, cardName, i, activeCardInstance)
 	end
 
 	local mod = WL.TerritoryModification.Create(targetTerr);
+
 	mod.SetOwnerOpt = WL.PlayerID.Neutral;
 	mod.AddArmies = round(armiesTakingOver.NumArmies * getSetting(cardName .. 'Multiplier')) - armiesTakingOver.NumArmies;
 	-- mod.SetArmiesTo = round(armiesTakingOver.NumArmies * getSetting(cardName .. 'Multiplier'));
@@ -61,8 +62,8 @@ local function doTrapCardEffect(wz, cardName, i, activeCardInstance)
 
 	if eliminatingBecauseCommander then
 		local mods = eliminate({attackedBy}, wz.game.ServerGame.LatestTurnStanding.Territories);
-		table.insert(mods, mod);
 
+		table.insert(mods, mod);
 		wz.addNewOrder(WL.GameOrderEvent.Create(playedById, 'Trap activated', {}, mods), true);
 	else
 		wz.addNewOrder(WL.GameOrderEvent.Create(playedById, 'Trap activated', {}, {mod}), true);
@@ -85,6 +86,7 @@ function processOrderTrap(wz, cardName)
 	end
 
 	local i = 1;
+
 	while true do
 		if not Mod.PublicGameData.activeCards or not Mod.PublicGameData.activeCards[cardName] then
 			break;

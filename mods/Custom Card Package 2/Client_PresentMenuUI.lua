@@ -1,8 +1,12 @@
-require 'version';
-require '_ui';
-require '_settings';
-require '_util';
-require 'cards';
+require('settings');
+require('number_util');
+require('string_util');
+require('placeOrderInCorrectPosition');
+require('tblprint');
+require('ui');
+require('version');
+require('util');
+require('cards');
 
 local rootParent = nil;
 local game = nil;
@@ -11,6 +15,7 @@ local stored = nil;
 
 function Client_PresentMenuUI(_rootParent, setMaxSize, setScrollable, _game, close)
 	game = _game;
+	rootParent = _rootParent;
 
 	if not game.Us or game.Us.State ~= WL.GamePlayerState.Playing then
 		return;
@@ -21,8 +26,6 @@ function Client_PresentMenuUI(_rootParent, setMaxSize, setScrollable, _game, clo
 	end
 
 	setMaxSize(400, 300);
-
-	rootParent = _rootParent;
 	main({
 		PlayerGameData = Mod.PlayerGameData,
 		PublicGameData = Mod.PublicGameData
@@ -43,8 +46,8 @@ function main(_stored, i)
 	if not UI.IsDestroyed(mainVert) then
 		UI.Destroy(mainVert);
 	end
-	mainVert = Vert(rootParent);
 
+	mainVert = Vert(rootParent);
 	stored = _stored;
 
 	local tabs = {'Cards', 'Preferences'};
@@ -56,6 +59,7 @@ function main(_stored, i)
 	end
 
 	local tabData = Tabs(mainVert, Horz, tabs, clicks);
+
 	tabData.tabClicked(tabs[i], clicks[i]);
 end
 
@@ -68,6 +72,7 @@ function cardsClicked(tabData)
 	end
 
 	local tabs = {};
+
 	for _, cardName in pairs(Mod.PublicGameData.cardNames) do
 		if getSetting('Enable' .. cardName) then
 			table.insert(tabs, cardName);
@@ -75,6 +80,7 @@ function cardsClicked(tabData)
 	end
 
 	local clicks = {};
+
 	for _, cardName in pairs(tabs) do
 		table.insert(clicks, function(tabData2)
 			cardNameClicked(tabData2, cardName);
@@ -82,6 +88,7 @@ function cardsClicked(tabData)
 	end
 
 	local tabData2 = Tabs(tabData.tabContents, Vert, tabs, clicks);
+
 	tabData2.tabClicked(tabs[1], clicks[1]);
 end
 
@@ -230,6 +237,7 @@ function createSelectTerritoryMenu(parent, selectedTerr, newTerrSelectedCallback
 	local selectTerritoryHorz = Horz(parent);
 	local label = Label(selectTerritoryHorz).SetText('Selected: ');
 	local selectTerritoryBtn = Btn(selectTerritoryHorz);
+
 	selectTerritoryBtn.SetText(selectedTerr and selectedTerr.Name or 'None');
 	selectTerritoryBtn.SetOnClick(function()
 		label.SetText('');
@@ -238,6 +246,7 @@ function createSelectTerritoryMenu(parent, selectedTerr, newTerrSelectedCallback
 
 		local isCanceled = false;
 		local cancelBtn = Btn(selectTerritoryHorz);
+
 		cancelBtn.SetText('Cancel');
 		cancelBtn.SetOnClick(function()
 			isCanceled = true;
@@ -341,13 +350,14 @@ Dropdowns = {
 		});
 
 		local dd = Dropdowns.list[index];
+
 		dd.selected.SetOnClick(function()
 			Dropdowns.selectedClicked(index);
 		end)
 
 		Dropdowns.optionClicked(index, dd.selectedOptionNo);
 	end
-}
+};
 
 function preferencesClicked(tabData)
 	local preferences = {
@@ -356,18 +366,23 @@ function preferencesClicked(tabData)
 
 	for pref, label in pairs(preferences) do
 		Label(tabData.tabContents).SetText(label .. ': ');
+
 		local btn = Btn(tabData.tabContents);
+
 		btn.SetText(tostring(stored.PlayerGameData[pref]))
 		btn.SetOnClick(function()
 			btn.SetInteractable(false);
-
-			game.SendGameCustomMessage('Updating preferences...', {
-				PlayerGameData = {
-					[pref] = not stored.PlayerGameData[pref]
-				}
-			}, function(_stored)
-				main(_stored, 2);
-			end);
+			game.SendGameCustomMessage(
+				'Updating preferences...',
+				{
+					PlayerGameData = {
+						[pref] = not stored.PlayerGameData[pref]
+					}
+				},
+				function(_stored)
+					main(_stored, 2);
+				end
+			);
 		end);
 	end
 end

@@ -39,6 +39,7 @@ end
 
 local function doImmobilizeCardEffect(wz, cardName, i, activeCardInstance)
 	local affectedTerr = wz.game.Map.Territories[tonumber(activeCardInstance.param)];
+
 	local isAttackTransfer = wz.order.proxyType == 'GameOrderAttackTransfer';
 	local isAirlift = wz.order.proxyType == 'GameOrderPlayCardAirlift';
 
@@ -57,12 +58,10 @@ local function doImmobilizeCardEffect(wz, cardName, i, activeCardInstance)
 
 	wz.skipThisOrder(WL.ModOrderControl.SkipAndSupressSkippedMessage);
 
-	local msg = 'Skipped ' .. movementType .. ' to ' .. toName .. ' from ' .. fromName;
-	msg = msg .. ' because a ' .. cardName .. ' Card was played on ' .. affectedTerr.Name;
-
+	local msg = 'Skipped ' .. movementType .. ' to ' .. toName .. ' from ' .. fromName .. ' because a ' .. cardName .. ' Card was played on ' .. affectedTerr.Name;
 	local event = WL.GameOrderEvent.Create(WL.PlayerID.Neutral, msg, {}, {WL.TerritoryModification.Create(affectedTerr.ID)});
-	event.JumpToActionSpotOpt = WL.RectangleVM.Create(affectedTerr.MiddlePointX , affectedTerr.MiddlePointY, affectedTerr.MiddlePointX, affectedTerr.MiddlePointY);
 
+	event.JumpToActionSpotOpt = WL.RectangleVM.Create(affectedTerr.MiddlePointX, affectedTerr.MiddlePointY, affectedTerr.MiddlePointX, affectedTerr.MiddlePointY);
 	wz.addNewOrder(event);
 end
 
@@ -87,6 +86,7 @@ function processOrderImmobilize(wz, cardName)
 	end
 
 	local i = 1;
+
 	while true do
 		if not Mod.PublicGameData.activeCards or not Mod.PublicGameData.activeCards[cardName] then
 			break;

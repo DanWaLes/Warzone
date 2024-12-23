@@ -7,17 +7,20 @@ function playCardRushedBlockade(game, tabData, cardName, btn, vert, vert2, data)
 		data.validateTerrSelection = function(selectedTerr)
 			if game.Settings.MultiAttack then
 				data.selectedTerr = selectedTerr;
+
 				return true;
 			else
 				local terrId = selectedTerr.ID;
 
 				if game.LatestStanding.Territories[terrId].OwnerPlayerID == game.Us.ID then
 					data.selectedTerr = selectedTerr;
+
 					return true;
 				else
 					for terrId in pairs(selectedTerr.ConnectedTo) do
 						if game.LatestStanding.Territories[terrId].OwnerPlayerID == game.Us.ID then
 							data.selectedTerr = selectedTerr;
+
 							return true;
 						end
 					end
@@ -43,6 +46,7 @@ function playedCardRushedBlockade(wz, player, cardName, param)
 		end
 
 		local terrMod = WL.TerritoryModification.Create(terrId);
+
 		terrMod.SetOwnerOpt = WL.PlayerID.Neutral;	
 		terrMod.AddArmies = round(terr.NumArmies.NumArmies * getSetting(cardName .. 'Multiplier')) - terr.NumArmies.NumArmies;
 		-- terrMod.SetArmiesTo = round(terr.NumArmies.NumArmies * getSetting(cardName .. 'Multiplier'));
@@ -57,6 +61,7 @@ function playedCardRushedBlockade(wz, player, cardName, param)
 
 			table.insert(removeSpecialUnitsOpt, unit.ID);
 		end
+
 		terrMod.RemoveSpecialUnitsOpt = removeSpecialUnitsOpt;
 
 		local mods = nil;

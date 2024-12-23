@@ -28,8 +28,8 @@ function playedCardRecycle(wz, player, cardName, param)
 		local firstArmiesOnTerr = terrFirstTurn.NumArmies.NumArmies;
 		local eliminateIfCommander = getSetting(cardName .. 'EliminateIfCommander');
 		local eliminatingBecauseCommander = false;
-
 		local armiesToAdd = -(currArmiesOnTerr - firstArmiesOnTerr);
+
 		-- currArmiesOnTerr = 5, firstArmiesOnTerr = 2
 		-- armiesToAdd = -(5 - 2)
 		-- armiesToAdd = -(3)
@@ -40,6 +40,7 @@ function playedCardRecycle(wz, player, cardName, param)
 		-- armiesToAdd = 3
 
 		local terrMod = WL.TerritoryModification.Create(terrId);
+
 		terrMod.SetOwnerOpt = WL.PlayerID.Neutral;
 		terrMod.AddArmies = armiesToAdd;
 		-- terrMod.SetArmiesTo = firstArmiesOnTerr;
@@ -52,6 +53,7 @@ function playedCardRecycle(wz, player, cardName, param)
 			table.insert(removeSpecialUnitsOpt , unit.ID);
 
 			local unitValue = 0;
+
 			unitValuesStr = unitValuesStr .. '\n';
 
 			if unit.proxyType == 'CustomSpecialUnit' then
@@ -87,6 +89,7 @@ function playedCardRecycle(wz, player, cardName, param)
 		end
 
 		terrMod.RemoveSpecialUnitsOpt = removeSpecialUnitsOpt;
+
 		local incomeModMsg = 'Value of armies that were on ' .. wz.game.Map.Territories[terrId].Name;
 
 		if totalSpecialUnitValue > 0 then

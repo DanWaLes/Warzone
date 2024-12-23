@@ -1,4 +1,4 @@
-require '_util';
+require('tblprint');
 
 function Server_GameCustomMessage(game, playerId, payload, setReturn)
 	if type(payload) ~= 'table' then

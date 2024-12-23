@@ -1,8 +1,11 @@
-require 'version';
-require '_settings';
-require '_util';
-require 'eliminate';
-require 'cards';
+require('settings');
+require('eliminate');
+require('number_util');
+require('string_util');
+require('tblprint');
+require('version');
+require('util');
+require('cards');
 
 function cardNameToFnName(cardName)
 	-- for _G - https://stackoverflow.com/questions/1791234/lua-call-function-from-a-string-with-function-name
@@ -32,6 +35,10 @@ end
 local playersWithSuccessfulAttacks = {};
 
 function Server_AdvanceTurn_Start(game, addNewOrder)
+	if not serverCanRunMod(game) then
+		return;
+	end
+
 	function LOG(msg)
 		addNewOrder(WL.GameOrderEvent.Create(WL.PlayerID.Neutral, msg, nil));
 	end
@@ -41,8 +48,8 @@ function Server_AdvanceTurn_Start(game, addNewOrder)
 	end
 
 	local reconPlus = 'Reconnaissance+';
-	if getSetting('Enable' .. reconPlus) and getSetting(reconPlus .. 'RandomAutoplay') then
 
+	if getSetting('Enable' .. reconPlus) and getSetting(reconPlus .. 'RandomAutoplay') then
 		for teamType in pairs(Mod.PublicGameData.cardPieces) do
 			for teamId in pairs(Mod.PublicGameData.cardPieces[teamType]) do
 				local teamLeader = tonumber(teamType == 'teammed' and Mod.PublicGameData.teams[teamId].members[1] or teamId);
@@ -73,6 +80,10 @@ function Server_AdvanceTurn_Start(game, addNewOrder)
 end
 
 function Server_AdvanceTurn_Order(game, order, result, skipThisOrder, addNewOrder)
+	if not serverCanRunMod(game) then
+		return;
+	end
+
 	local wz = {
 		game = game,
 		order = order,
@@ -98,6 +109,10 @@ function Server_AdvanceTurn_Order(game, order, result, skipThisOrder, addNewOrde
 end
 
 function Server_AdvanceTurn_End(game, addNewOrder)
+	if not serverCanRunMod(game) then
+		return;
+	end
+
 	-- automatically discard cards if cards held is above the limit
 	if getSetting('LimitMaxCards') then
 		local msgPrefix = 'Automatically removing card pieces from ';
@@ -196,6 +211,7 @@ function Server_AdvanceTurn_End(game, addNewOrder)
 
 	for playerId in pairs(earnedPieces) do
 		local msg = game.ServerGame.Game.PlayingPlayers[playerId].DisplayName(nil, false) .. ' earned card pieces';
+
 		addNewOrder(WL.GameOrderEvent.Create(playerId, msg, visibleToTeammates(playerId, game.ServerGame.Game.Players)));
 
 		local payloadPrefix = 'CCP2_addCardPieces_' .. playerId .. '_<';
@@ -234,6 +250,7 @@ function parseGameOrderCustom(wz)
 	if not (command and _G[command] and playerId and cards) then
 		wz.LOG('invalid payload: ' .. wz.order.Payload);
 		wz.skipThisOrder(WL.ModOrderControl.SkipAndSupressSkippedMessage);
+
 		return;
 	end
 
@@ -242,6 +259,7 @@ function parseGameOrderCustom(wz)
 	if not wz.game.ServerGame.Game.PlayingPlayers[playerId] then
 		wz.LOG('player ' .. tostring(playerId) .. ' isnt playing, payload = ' .. wz.order.Payload);
 		wz.skipThisOrder(WL.ModOrderControl.SkipAndSupressSkippedMessage);
+
 		return;
 	end
 
@@ -369,6 +387,7 @@ function playedCard(wz, player, cardName, param)
 	end
 
 	local success = _G['playedCard' .. cardNameToFnName(cardName)](wz, player, cardName, param);
+
 	if not success then
 		return;
 	end
@@ -391,6 +410,7 @@ function playedCard(wz, player, cardName, param)
 
 	-- reduce number of current pieces
 	local result = publicGD.cardPieces[teamType][teamId].currentPieces[cardName] - piecesInCard;
+
 	publicGD.cardPieces[teamType][teamId].currentPieces[cardName] = result > -1 and result or 0;
 	Mod.PublicGameData = publicGD;
 
@@ -420,6 +440,7 @@ function playedTerritorySelectionCard(wz, player, cardName, param, modifyEvent)
 	end
 
 	local modifiedEvent = {};
+
 	if type(modifyEvent) == 'function' then
 		modifiedEvent = modifyEvent();
 	end
@@ -429,8 +450,8 @@ function playedTerritorySelectionCard(wz, player, cardName, param, modifyEvent)
 	-- tblprint(modifiedEvent);
 
 	local event = WL.GameOrderEvent.Create(player.ID, msg, visTo, modifiedEvent.terrModsOpt, modifiedEvent.setResourcesOpt, modifiedEvent.incomeModsOpt);
-	event.JumpToActionSpotOpt = WL.RectangleVM.Create(terr.MiddlePointX, terr.MiddlePointY, terr.MiddlePointX, terr.MiddlePointY);
 
+	event.JumpToActionSpotOpt = WL.RectangleVM.Create(terr.MiddlePointX, terr.MiddlePointY, terr.MiddlePointX, terr.MiddlePointY);
 	wz.addNewOrder(event);
 
 	return true;
@@ -439,12 +460,12 @@ end
 function buyCard(wz, player, cardName)
 	local visTo = visibleToTeammates(player.ID, wz.game.ServerGame.Game.Players);
 	local order = WL.GameOrderEvent.Create(player.ID, 'Bought a ' .. cardName .. ' Card', visTo);
+
 	order.AddResourceOpt = {
 		[player.ID] = {
 			[WL.ResourceType.Gold] = -getSetting(cardName .. 'Cost');
 		}
 	};
-
 	wz.addNewOrder(order);
 
 	local piecesInCard = getSetting(cardName .. 'PiecesInCard');
@@ -524,8 +545,8 @@ function removeExpiredCardInstances(game, addNewOrder, cardName)
 			local terr = game.Map.Territories[tonumber(activeCardInstance.param)];
 			local msg = 'A ' .. cardName .. ' Card that was played on ' .. terr.Name .. ' during turn ' .. activeCardInstance.playedOnTurn .. ' wore off';
 			local event = WL.GameOrderEvent.Create(activeCardInstance.playedBy, msg, nil);
-			event.JumpToActionSpotOpt = WL.RectangleVM.Create(terr.MiddlePointX, terr.MiddlePointY, terr.MiddlePointX, terr.MiddlePointY);
 
+			event.JumpToActionSpotOpt = WL.RectangleVM.Create(terr.MiddlePointX, terr.MiddlePointY, terr.MiddlePointX, terr.MiddlePointY);
 			addNewOrder(event);
 			removeActiveCardInstance(cardName, i);
 			i = i - 1;

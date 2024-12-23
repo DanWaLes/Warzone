@@ -1,11 +1,10 @@
-require '_util';
-require '_settings';
-require 'cards';
+require('settings');
+require('tblprint');
+require('cards');
 
 function setup(game)
 	local cardNames = getCardNames();
 	local cardsThatCanBeActive = getCardsThatCanBeActive();
-
 	local teams = {};
 	local cardPieces = {
 		noTeam = {},
@@ -81,6 +80,7 @@ function setup(game)
 	end
 
 	local terrsArray = nil;
+
 	if getSetting('EnableReconnaissance+') and getSetting('Reconnaissance+RandomAutoplay') or getSetting('AIsPlayCards') then
 		terrsArray = {};
 
