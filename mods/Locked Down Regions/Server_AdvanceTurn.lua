@@ -1,5 +1,4 @@
 require('tblprint');
-require('_util');
 require('version');
 
 local canRun;

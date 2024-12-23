@@ -1,4 +1,4 @@
-require('_util');
+require('string_util');
 require('tblprint');
 require('ui');
 require('version');
