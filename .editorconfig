@@ -4,7 +4,7 @@ root = true
 end_of_line = lf
 insert_final_newline = false
 
-[*.{html,css,js,py,lua,json,md}]
+[*.{html,css,js,py,lua,json,md,txt}]
 charset = utf-8
 
 [*.{html,css,js,py,lua}]
