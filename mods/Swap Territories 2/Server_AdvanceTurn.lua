@@ -1,5 +1,5 @@
 require('settings');
-require('_util');
+require('tblprint');
 require('version');
 
 local executed = false;
