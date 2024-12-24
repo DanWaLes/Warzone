@@ -1,6 +1,6 @@
 require 'getTeams';
 
-function Server_StartGame(game)
+function Server_StartDistribution(game)
 	local teams = getTeams(game);
 
 	if not teams then
