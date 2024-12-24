@@ -1,17 +1,13 @@
-require '_util';
-require 'version';
-require 'eliminate';
+require('_util');
+require('version');
+require('eliminate');
 
 local satsPayload = 'NoTeaming_ServerAdvanceTurnStart';
+local eliminatedPlayers = nil;
 
 function Server_AdvanceTurn_Start(game, addNewOrder)
 	if game.Settings.SinglePlayer and not canRunMod() then
 		return;
-	end
-
-	if not Mod.PublicGameData.FixedSetupStorage then
-		require('setup');
-		setup(game);
 	end
 
 	host = game.Settings.StartedBy;
@@ -26,13 +22,7 @@ function Server_AdvanceTurn_Start(game, addNewOrder)
 		return;
 	end
 
-	local teams = Mod.PublicGameData.teams;
-
-	if not teams then
-		return;
-	end
-
-	if not ((hostPlayer.Team == -1) or (hostPlayer.Team ~= -1 and teams[hostPlayer.Team] == 1)) then
+	if not ((hostPlayer.Team == -1) or (hostPlayer.Team ~= -1 and Mod.PublicGameData.teams[hostPlayer.Team] == 1)) then
 		return;
 	end
 
@@ -44,6 +34,7 @@ function sats(game, addNewOrder)
 	giveSpyCardPieces(game, addNewOrder);
 
 	local playerGD = Mod.PlayerGameData;
+
 	playerGD[host].eliminating = {};
 	Mod.PlayerGameData = playerGD;
 end
@@ -51,6 +42,7 @@ end
 function eliminatePlayers(game, addNewOrder)
 	local eliminating = {};
 	local msg = 'Eliminate ';
+
 	eliminatedPlayers = {};
 
 	for playerId in pairs(Mod.PlayerGameData[host].eliminating) do
@@ -72,6 +64,7 @@ end
 
 function giveSpyCardPieces(game, addNewOrder)
 	local spyCardSettings = game.ServerGame.Settings.Cards[WL.CardID.Spy];
+
 	playersNeedToSpyOn = {};
 	numPlayersNeedToSpyOn = 0;
 	existingSpyCards = {};
