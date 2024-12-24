@@ -1,4 +1,10 @@
+-- copied from https://github.com/DanWaLes/Warzone/tree/master/mods/libs/ui
+
 -- shorthand function names
+
+function Empty(parent)
+	return UI.CreateEmpty(parent);
+end
 
 function Vert(parent)
 	return UI.CreateVerticalLayoutGroup(parent);
