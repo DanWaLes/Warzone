@@ -1,5 +1,7 @@
-require '_settings'
-require '_ui'
+-- modified from https://github.com/DanWaLes/Warzone/tree/master/mods/libs/AutoSettingsFiles
+
+require('settings');
+require('_ui');
 
 function getSettings()
 	return {

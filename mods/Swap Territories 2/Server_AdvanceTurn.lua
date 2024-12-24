@@ -1,6 +1,6 @@
-require 'version';
-require '_settings';
-require '_util';
+require('settings');
+require('_util');
+require('version');
 
 local executed = false;
 local payload = 'SwapTerritories2_ServerAdvanceTurnEnd';
