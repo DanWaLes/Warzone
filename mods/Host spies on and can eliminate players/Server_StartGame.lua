@@ -1,4 +1,4 @@
-require 'setup';
+require('setup');
 
 function Server_StartGame(game, standing)
 	isAutoDist = game.ServerGame.Settings.AutomaticTerritoryDistribution;
