@@ -1,5 +1,5 @@
-require '_util';
-require 'version';
+require('_util');
+require('version');
 
 local canRun = nil;
 local doneSkippingTurn1 = false;
@@ -33,6 +33,7 @@ function Server_AdvanceTurn_End(game, addNewOrder)
 	makeAttacks(game, addNewOrder);
 
 	local playerOwnedTerrs = setupNextTurn(game, addNewOrder);
+
 	setIncomesToZero(game, addNewOrder, playerOwnedTerrs);
 end
 
@@ -147,6 +148,7 @@ function setupNextTurn(game, addNewOrder)
 	end
 
 	local pgd = Mod.PublicGameData;
+
 	pgd.terrNo = terrNo;
 	Mod.PublicGameData = pgd;
 
@@ -180,5 +182,5 @@ function setIncomesToZero(game, addNewOrder, playerOwnedTerrs)
 		end
 	end
 
-	addNewOrder(WL.GameOrderEvent.Create(WL.PlayerID.Neutral, 'Removed everyones income', nil, nil, nil, mods));
+	addNewOrder(WL.GameOrderEvent.Create(WL.PlayerID.Neutral, "Removed everyone's income", nil, nil, nil, mods));
 end
