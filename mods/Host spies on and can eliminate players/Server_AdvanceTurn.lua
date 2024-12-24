@@ -58,7 +58,7 @@ function eliminatePlayers(game, addNewOrder)
 	msg = string.gsub(msg, ', $', '');
 
 	if #eliminating > 0 then
-		addNewOrder(WL.GameOrderEvent.Create(host, msg, nil, eliminate(eliminating, game.ServerGame.LatestTurnStanding.Territories)));
+		addNewOrder(WL.GameOrderEvent.Create(host, msg, nil, eliminate(eliminating, game.ServerGame.LatestTurnStanding.Territories, true, game.Settings.SinglePlayer)));
 	end
 end
 
