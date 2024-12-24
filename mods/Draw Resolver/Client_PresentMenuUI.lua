@@ -1,11 +1,16 @@
 require('tblprint');
 require('ui');
+require('version');
 
 function Client_PresentMenuUI(rootParent, setMaxSize, setScrollable, game, close)
 	local playerIsPlaying = (game.Us ~= nil) and (game.Us.State == WL.GamePlayerState.Playing);
 	local distributionOver = game.Game.TurnNumber > 0;
 
 	if not playerIsPlaying or not distributionOver then
+		return;
+	end
+
+	if not canRunMod() then
 		return;
 	end
 
