@@ -1,4 +1,4 @@
-require '_util';
+require('_util');
 
 function Server_Created(game, settings)
 	local cards = {};
