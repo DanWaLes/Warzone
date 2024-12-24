@@ -1,4 +1,4 @@
-require('_util');
+require('tblprint');
 require('version');
 
 function Server_StartGame(game, standing)
