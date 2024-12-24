@@ -1,11 +1,6 @@
-require('setup');
-require('version');
+require 'setup';
 
 function Server_StartGame(game, standing)
-	if not serverCanRunMod(game) then
-		return;
-	end
-
 	isAutoDist = game.ServerGame.Settings.AutomaticTerritoryDistribution;
 
 	if isAutoDist then
