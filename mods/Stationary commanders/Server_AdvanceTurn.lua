@@ -1,4 +1,4 @@
-require('_util');
+require('tblprint');
 
 function Server_AdvanceTurn_Order(game, order, result, skipThisOrder, addNewOrder)
 	local isAttackTransfer = order.proxyType == 'GameOrderAttackTransfer';
