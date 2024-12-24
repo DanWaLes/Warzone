@@ -1,3 +1,4 @@
+require('tblprint');
 require('getTeams');
 
 function Server_StartDistribution(game)
