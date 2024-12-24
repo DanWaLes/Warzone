@@ -52,6 +52,6 @@ end
 function Server_AdvanceTurn_Order(game, order, result, skipThisOrder, addNewOrder)
 	if order.proxyType == 'GameOrderCustom' and order.Payload == satsPayload then
 		skipThisOrder(WL.ModOrderControl.SkipAndSupressSkippedMessage);
-		addNewOrder(WL.GameOrderEvent.Create(winnerId, 'Decided random winner', {}, eliminate(votes.players, game.ServerGame.LatestTurnStanding.Territories)));
+		addNewOrder(WL.GameOrderEvent.Create(winnerId, 'Decided random winner', {}, eliminate(votes.players, game.ServerGame.LatestTurnStanding.Territories, true, game.Settings.SinglePlayer)));
 	end
 end
