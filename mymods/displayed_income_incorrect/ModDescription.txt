@@ -1,1 +1,0 @@
-Makes sets gold for each player to be 1 in picks (manual dist) and after picks (autodist).
