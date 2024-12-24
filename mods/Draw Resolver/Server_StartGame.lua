@@ -1,6 +1,11 @@
 require('tblprint');
+require('version');
 
 function Server_StartGame(game)
+	if not serverCanRunMod(game) then
+		return;
+	end
+
 	local publicGameData = Mod.PublicGameData;
 
 	publicGameData.votes = {};

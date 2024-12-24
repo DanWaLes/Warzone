@@ -3,9 +3,12 @@ require('tblprint');
 require('version');
 
 local satsPayload = 'DrawResolver_ServerAdvanceTurnStart';
+local canRun = false;
 
 function Server_AdvanceTurn_Start(game, addNewOrder)
-	if game.Settings.SinglePlayer and not canRunMod() then
+	canRun = serverCanRunMod(game);
+
+	if not canRun then
 		return;
 	end
 
@@ -50,8 +53,14 @@ function checkVotes(game)
 end
 
 function Server_AdvanceTurn_Order(game, order, result, skipThisOrder, addNewOrder)
-	if order.proxyType == 'GameOrderCustom' and order.Payload == satsPayload then
-		skipThisOrder(WL.ModOrderControl.SkipAndSupressSkippedMessage);
-		addNewOrder(WL.GameOrderEvent.Create(winnerId, 'Decided random winner', {}, eliminate(votes.players, game.ServerGame.LatestTurnStanding.Territories, true, game.Settings.SinglePlayer)));
+	if not (order.proxyType == 'GameOrderCustom' and order.Payload == satsPayload) then
+		return;
 	end
+
+	if not canRun then
+		return;
+	end
+
+	skipThisOrder(WL.ModOrderControl.SkipAndSupressSkippedMessage);
+	addNewOrder(WL.GameOrderEvent.Create(winnerId, 'Decided random winner', {}, eliminate(votes.players, game.ServerGame.LatestTurnStanding.Territories, true, game.Settings.SinglePlayer)));
 end
