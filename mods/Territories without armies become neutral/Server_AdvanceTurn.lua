@@ -1,5 +1,5 @@
-require 'util';
-require 'version';
+require('util');
+require('version');
 
 local payloadPrefix = 'TWABN_TerrsChanged=';
 
@@ -63,8 +63,8 @@ function processTerrsAffectedOrder(game, payload, addNewOrder)
 
 			if terr and terrHasNoArmies(terr) then
 				local terrMod = WL.TerritoryModification.Create(terr.ID);
-				terrMod.SetOwnerOpt = WL.PlayerID.Neutral;
 
+				terrMod.SetOwnerOpt = WL.PlayerID.Neutral;
 				table.insert(terrMods, terrMod);
 			end
 
@@ -113,6 +113,7 @@ function terrHasNoArmies(terr)
 	for _, unit in pairs(terr.NumArmies.SpecialUnits) do
 		if unit.OwnerID == terr.OwnerPlayerID then
 			hasSpecialUnits = true;
+
 			break;
 		end
 	end
