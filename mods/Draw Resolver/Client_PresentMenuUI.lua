@@ -1,5 +1,5 @@
 require('tblprint');
-require('_ui');
+require('ui');
 
 function Client_PresentMenuUI(rootParent, setMaxSize, setScrollable, game, close)
 	local playerIsPlaying = (game.Us ~= nil) and (game.Us.State == WL.GamePlayerState.Playing);
