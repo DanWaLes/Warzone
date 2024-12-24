@@ -2,9 +2,14 @@ require('tblprint');
 require('version');
 
 local payloadPrefix = 'TWABN_TerrsChanged=';
+local canRun = nil;
 
 function Server_AdvanceTurn_Order(game, order, result, skipThisOrder, addNewOrder)
-	if game.Settings.SinglePlayer and not canRunMod() then
+	if canRun == nil then
+		canRun = serverCanRunMod(game);
+	end
+
+	if not canRun then
 		return;
 	end
 
