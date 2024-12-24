@@ -1,3 +1,5 @@
+require('tblprint');
+
 function Server_StartGame(game, standing)
 	setup(game, standing);
 end

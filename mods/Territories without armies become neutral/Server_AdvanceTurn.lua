@@ -1,4 +1,4 @@
-require('util');
+require('tblprint');
 require('version');
 
 local payloadPrefix = 'TWABN_TerrsChanged=';
