@@ -1,5 +1,6 @@
-require('setup');
+require('tblprint');
 require('version');
+require('setup');
 
 function Server_StartGame(game, standing)
 	if not serverCanRunMod(game) then
