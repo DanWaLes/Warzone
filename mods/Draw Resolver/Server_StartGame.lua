@@ -1,56 +1,13 @@
-require('eliminate');
-require('version');
+require('tblprint');
 
-local satsPayload = 'DrawResolver_ServerAdvanceTurnStart';
-
-function Server_AdvanceTurn_Start(game, addNewOrder)
-	if game.Settings.SinglePlayer and not canRunMod() then
-		return;
-	end
-
-	votes = checkVotes(game)
-
-	if votes.numPlaying ~= votes.numVotes then
-		return;
-	end
-
-	local winner = math.random(1, votes.numPlaying);
-
-	winnerId = votes.players[winner];
-	votes.players[winner] = nil;
-
-	addNewOrder(WL.GameOrderCustom.Create(winnerId, '', satsPayload));
-end
-
-function checkVotes(game)
+function Server_StartGame(game)
 	local publicGameData = Mod.PublicGameData;
-	local numPlaying = 0;
-	local numVotes = 0;
-	local players = {};
 
-	for playerId, player in pairs(game.ServerGame.Game.Players) do
-		local playing = player.State == WL.GamePlayerState.Playing;
+	publicGameData.votes = {};
 
-		if playing then
-			numPlaying = numPlaying + 1;
-			players[numPlaying] = playerId;
-
-			if publicGameData.votes[playerId] or player.IsAIOrHumanTurnedIntoAI then
-				numVotes = numVotes + 1;
-			end
-		else
-			publicGameData.votes[playerId] = false;
-		end
+	for playerId, _ in pairs(game.ServerGame.Game.Players) do
+		publicGameData.votes[playerId] = false;
 	end
 
 	Mod.PublicGameData = publicGameData;
-
-	return {players = players, numPlaying = numPlaying, numVotes = numVotes};
-end
-
-function Server_AdvanceTurn_Order(game, order, result, skipThisOrder, addNewOrder)
-	if order.proxyType == 'GameOrderCustom' and order.Payload == satsPayload then
-		skipThisOrder(WL.ModOrderControl.SkipAndSupressSkippedMessage);
-		addNewOrder(WL.GameOrderEvent.Create(winnerId, 'Decided random winner', {}, eliminate(votes.players, game.ServerGame.LatestTurnStanding.Territories)));
-	end
 end
