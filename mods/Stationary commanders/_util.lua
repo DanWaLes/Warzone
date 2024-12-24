@@ -91,13 +91,6 @@ function tblprint(tbl)
 	print(p(tbl));
 end
 
-function round(n, dp)
-	-- http://lua-users.org/wiki/SimpleRound
-	local multi = 10 ^ (dp or 0);
-
-	return math.floor((n * multi + 0.5)) / multi;
-end
-
 function numKeys(tbl)
 	local n = 0;
 
@@ -106,8 +99,4 @@ function numKeys(tbl)
 	end
 
 	return n;
-end
-
-function startsWith(str, sub)
-	return string.sub(str, 1, string.len(sub)) == sub;
 end
