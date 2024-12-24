@@ -1,6 +1,5 @@
-require('_util');
-require('ui');
-require('version');
+require '_util';
+require '_ui';
 
 -- local doingSinglePlayerTesting = false;
 
@@ -31,23 +30,24 @@ function Client_PresentMenuUI(RootParent, setMaxSize, setScrollable, Game, close
 	makeMenu();
 end
 
-function playerIsNotTeamed(player)
+function playerIsNotTeamed(player, stored)
 	if player.Team == -1 then
 		return true;
 	end
 
-	return Mod.PublicGameData.teams[player.Team] == 1;
+	local teams = stored.PublicGameData.teams;
+
+	return teams and teams[player.Team] and teams[player.Team] == 1;
 end
 
 function makeMenu(stored, vert)
-	if not canRunMod() then
-		return;
-	end
-
 	-- print('init makeMenu');
 
 	if not stored then
-		stored = Mod.PlayerGameData;
+		stored = {
+			PlayerGameData = Mod.PlayerGameData,
+			PublicGameData = Mod.PublicGameData
+		};
 	end
 
 	-- tblprint(stored);
@@ -58,10 +58,18 @@ function makeMenu(stored, vert)
 
 	vert = Vert(rootParent);
 
+	if not stored.PublicGameData or not stored.PublicGameData.FixedSetupStorage then
+		game.SendGameCustomMessage('Fixing setup storage bug...', {fixSetupStorage = true}, function(newStorage)
+			makeMenu(newStorage, vert);
+		end);
+
+		return;
+	end
+
 	local startedBy = game.Settings.StartedBy;
 	local weAreHost = game.Us.ID == startedBy;
 
-	if weAreHost and playerIsNotTeamed(game.Us) then
+	if weAreHost and playerIsNotTeamed(game.Us, stored) then
 		makeHostMenu(stored, vert);
 	elseif weAreHost then
 		Label(vert).SetText('You can only use this mod if you are not teamed up with anyone else, otherwise your team would get an unfair advantage by seeing everything.');
@@ -69,7 +77,7 @@ function makeMenu(stored, vert)
 		if startedBy then
 			local host = game.Game.Players[startedBy];
 
-			if host and playerIsNotTeamed(host) then
+			if host and playerIsNotTeamed(host, stored) then
 				Label(vert).SetText('The host can eliminate any player they like whenever they want. The host also spies on everyone (and neutral depending on Spy Card settings. This is to discourage collusion (making alliances etc.) in games that are meant to be actual FFAs for example.');
 				Label(vert).SetText('If the host abuses this mod, you should avoid joining their games in future.');
 			else
@@ -121,9 +129,14 @@ function displayPlayer(stored, vert, playerId)
 
 	local player = game.Game.PlayingPlayers[playerId];
 	local horz = Horz(vert);
+
+	-- print(playerId);
+	-- tblprint(stored);
+
 	local checkbox = Checkbox(horz)
 		.SetText('')
-		.SetIsChecked(not not stored.eliminating[playerId]);
+		.SetIsChecked(not not stored.PlayerGameData.eliminating[playerId]);
+
 	checkbox.SetOnValueChanged(function()
 		checkbox.SetInteractable(false);
 		game.SendGameCustomMessage('Updating...', {
