@@ -24,24 +24,24 @@ end
 
 function makeMenu(game, uiElements, votes)
 	local container = Vert(uiElements.vert);
-	local vtfContainer = Vert(container);
-	local vtfBtn = Btn(vtfContainer);
-	local votesList = Vert(vtfContainer);
+	local vtdContainer = Vert(container);
+	local vtdBtn = Btn(vtdContainer);
+	local votesList = Vert(vtdContainer);
 	local votesContainer = Vert(container);
 
 	local hasVoted = votes[game.Us.ID];
 
 	if hasVoted then
-		vtfBtn.SetText('Un-vote to decide a random winner');
-		vtfBtn.SetOnClick(function()
+		vtdBtn.SetText('Un-vote to decide a random winner');
+		vtdBtn.SetOnClick(function()
 			UI.Destroy(container);
 			game.SendGameCustomMessage('Un-voting...', {vote = false}, function(votes)
 				makeMenu(game, uiElements, votes);
 			end);
 		end);
 	else
-		vtfBtn.SetText('Vote to decided a random winner');
-		vtfBtn.SetOnClick(function()
+		vtdBtn.SetText('Vote to decided a random winner');
+		vtdBtn.SetOnClick(function()
 			UI.Destroy(container);
 			game.SendGameCustomMessage('Voting...', {vote = true}, function(votes)
 				makeMenu(game, uiElements, votes);
