@@ -1,5 +1,5 @@
-require '_util';
-require 'version';
+require('tblprint');
+require('version');
 
 function Server_Created(game, settings)
 	if not settings.MapTestingGame then
