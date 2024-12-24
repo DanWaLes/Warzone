@@ -1,4 +1,4 @@
-require '_ui'
+require('_ui');
 
 function Client_PresentMenuUI(rootParent, setMaxSize, setScrollable, game, close)
 	local playerIsPlaying = (game.Us ~= nil) and (game.Us.State == WL.GamePlayerState.Playing);
@@ -10,6 +10,7 @@ function Client_PresentMenuUI(rootParent, setMaxSize, setScrollable, game, close
 
 	local WIDTH = 400;
 	local HEIGHT = 250;
+
 	setMaxSize(WIDTH, HEIGHT);
 
 	local vert = Vert(rootParent);
