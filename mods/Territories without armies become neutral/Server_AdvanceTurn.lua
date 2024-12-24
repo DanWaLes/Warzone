@@ -1,10 +1,15 @@
-require 'util';
-require 'version';
+require('tblprint');
+require('version');
 
 local payloadPrefix = 'TWABN_TerrsChanged=';
+local canRun = nil;
 
 function Server_AdvanceTurn_Order(game, order, result, skipThisOrder, addNewOrder)
-	if game.Settings.SinglePlayer and not canRunMod() then
+	if canRun == nil then
+		canRun = serverCanRunMod(game);
+	end
+
+	if not canRun then
 		return;
 	end
 
@@ -63,8 +68,8 @@ function processTerrsAffectedOrder(game, payload, addNewOrder)
 
 			if terr and terrHasNoArmies(terr) then
 				local terrMod = WL.TerritoryModification.Create(terr.ID);
-				terrMod.SetOwnerOpt = WL.PlayerID.Neutral;
 
+				terrMod.SetOwnerOpt = WL.PlayerID.Neutral;
 				table.insert(terrMods, terrMod);
 			end
 
@@ -113,6 +118,7 @@ function terrHasNoArmies(terr)
 	for _, unit in pairs(terr.NumArmies.SpecialUnits) do
 		if unit.OwnerID == terr.OwnerPlayerID then
 			hasSpecialUnits = true;
+
 			break;
 		end
 	end
