@@ -1,5 +1,6 @@
-require 'eliminate'
-require 'version'
+require('eliminate');
+require('tblprint');
+require('version');
 
 local satsPayload = 'DrawResolver_ServerAdvanceTurnStart';
 
@@ -15,8 +16,8 @@ function Server_AdvanceTurn_Start(game, addNewOrder)
 	end
 
 	local winner = math.random(1, votes.numPlaying);
-	winnerId = votes.players[winner];
 
+	winnerId = votes.players[winner];
 	votes.players[winner] = nil;
 
 	addNewOrder(WL.GameOrderCustom.Create(winnerId, '', satsPayload));
