@@ -1,4 +1,4 @@
-require '_util';
+require('_util');
 
 function Server_AdvanceTurn_Order(game, order, result, skipThisOrder, addNewOrder)
 	local isAttackTransfer = order.proxyType == 'GameOrderAttackTransfer';
@@ -15,6 +15,7 @@ function Server_AdvanceTurn_Order(game, order, result, skipThisOrder, addNewOrde
 	end
 
 	local commanders = {};
+
 	for _, unit in pairs(orderArmies.SpecialUnits) do
 		if unit.proxyType == 'Commander' then
 			table.insert(commanders, unit);
@@ -43,6 +44,7 @@ function Server_AdvanceTurn_Order(game, order, result, skipThisOrder, addNewOrde
 
 		local playerOwnedTerrs = {};
 		local canSkip = false;
+
 		for _, territory in pairs(game.ServerGame.LatestTurnStanding.Territories) do
 			if not territory.IsNeutral then
 				if not playerOwnedTerrs[territory.OwnerPlayerID] then
