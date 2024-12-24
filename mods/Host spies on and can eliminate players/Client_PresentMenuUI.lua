@@ -1,5 +1,6 @@
 require('_util');
 require('ui');
+require('version');
 
 -- local doingSinglePlayerTesting = false;
 
@@ -39,6 +40,10 @@ function playerIsNotTeamed(player)
 end
 
 function makeMenu(stored, vert)
+	if not canRunMod() then
+		return;
+	end
+
 	-- print('init makeMenu');
 
 	if not stored then
