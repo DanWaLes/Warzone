@@ -1,12 +1,15 @@
+require('eliminate');
 require('_util');
 require('version');
-require('eliminate');
 
 local satsPayload = 'NoTeaming_ServerAdvanceTurnStart';
 local eliminatedPlayers = nil;
+local canRun = false;
 
 function Server_AdvanceTurn_Start(game, addNewOrder)
-	if game.Settings.SinglePlayer and not canRunMod() then
+	canRun = serverCanRunMod(game);
+
+	if not canRun then
 		return;
 	end
 
@@ -139,6 +142,10 @@ function Server_AdvanceTurn_Order(game, order, result, skipThisOrder, addNewOrde
 	local hostPlayer = game.Game.Players[host];
 
 	if not hostPlayer then
+		return;
+	end
+
+	if not canRun then
 		return;
 	end
 
