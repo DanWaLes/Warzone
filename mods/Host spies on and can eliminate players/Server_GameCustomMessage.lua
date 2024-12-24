@@ -1,23 +1,14 @@
+require('tblprint');
+
 function Server_GameCustomMessage(game, playerId, payload, setReturn)
 	local host = game.ServerGame.Settings.StartedBy;
 
-	if payload and payload.fixSetupStorage then
-		require('setup');
-		setup(game);
-	end
-
 	if not host or not Mod.PlayerGameData[playerId] then
-		return setReturn({
-			PlayerGameData = {},
-			PublicGameData = Mod.PublicGameData
-		});
+		return setReturn({});
 	end
 
 	if not payload then
-		return setReturn({
-			PlayerGameData = Mod.PlayerGameData[playerId],
-			PublicGameData = Mod.PublicGameData
-		});
+		return setReturn(Mod.PlayerGameData[playerId]);
 	end
 
 	local playerGD = Mod.PlayerGameData;
@@ -28,8 +19,5 @@ function Server_GameCustomMessage(game, playerId, payload, setReturn)
 
 	Mod.PlayerGameData = playerGD;
 
-	setReturn({
-		PlayerGameData = Mod.PlayerGameData[host],
-		PublicGameData = Mod.PublicGameData
-	});
+	setReturn(Mod.PlayerGameData[host]);
 end
