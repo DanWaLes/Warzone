@@ -1,5 +1,5 @@
-require '_util';
-require '_settings'
+require('_util');
+require('_settings');
 
 function Server_Created(game, settings)
 	if not settings.Cards then
