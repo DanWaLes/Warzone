@@ -1,4 +1,4 @@
-require '_util';
+require('tblprint');
 
 function Server_Created(game, settings)
 	local cards = {};

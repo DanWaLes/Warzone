@@ -1,17 +1,16 @@
-require '_util';
-require 'version';
-require 'eliminate';
+require('eliminate');
+require('tblprint');
+require('version');
 
 local satsPayload = 'NoTeaming_ServerAdvanceTurnStart';
+local eliminatedPlayers = nil;
+local canRun = false;
 
 function Server_AdvanceTurn_Start(game, addNewOrder)
-	if game.Settings.SinglePlayer and not canRunMod() then
-		return;
-	end
+	canRun = serverCanRunMod(game);
 
-	if not Mod.PublicGameData.FixedSetupStorage then
-		require('setup');
-		setup(game);
+	if not canRun then
+		return;
 	end
 
 	host = game.Settings.StartedBy;
@@ -26,13 +25,7 @@ function Server_AdvanceTurn_Start(game, addNewOrder)
 		return;
 	end
 
-	local teams = Mod.PublicGameData.teams;
-
-	if not teams then
-		return;
-	end
-
-	if not ((hostPlayer.Team == -1) or (hostPlayer.Team ~= -1 and teams[hostPlayer.Team] == 1)) then
+	if not ((hostPlayer.Team == -1) or (hostPlayer.Team ~= -1 and Mod.PublicGameData.teams[hostPlayer.Team] == 1)) then
 		return;
 	end
 
@@ -44,6 +37,7 @@ function sats(game, addNewOrder)
 	giveSpyCardPieces(game, addNewOrder);
 
 	local playerGD = Mod.PlayerGameData;
+
 	playerGD[host].eliminating = {};
 	Mod.PlayerGameData = playerGD;
 end
@@ -51,6 +45,7 @@ end
 function eliminatePlayers(game, addNewOrder)
 	local eliminating = {};
 	local msg = 'Eliminate ';
+
 	eliminatedPlayers = {};
 
 	for playerId in pairs(Mod.PlayerGameData[host].eliminating) do
@@ -66,12 +61,13 @@ function eliminatePlayers(game, addNewOrder)
 	msg = string.gsub(msg, ', $', '');
 
 	if #eliminating > 0 then
-		addNewOrder(WL.GameOrderEvent.Create(host, msg, nil, eliminate(eliminating, game.ServerGame.LatestTurnStanding.Territories)));
+		addNewOrder(WL.GameOrderEvent.Create(host, msg, nil, eliminate(eliminating, game.ServerGame.LatestTurnStanding.Territories, true, game.Settings.SinglePlayer)));
 	end
 end
 
 function giveSpyCardPieces(game, addNewOrder)
 	local spyCardSettings = game.ServerGame.Settings.Cards[WL.CardID.Spy];
+
 	playersNeedToSpyOn = {};
 	numPlayersNeedToSpyOn = 0;
 	existingSpyCards = {};
@@ -146,6 +142,10 @@ function Server_AdvanceTurn_Order(game, order, result, skipThisOrder, addNewOrde
 	local hostPlayer = game.Game.Players[host];
 
 	if not hostPlayer then
+		return;
+	end
+
+	if not canRun then
 		return;
 	end
 
