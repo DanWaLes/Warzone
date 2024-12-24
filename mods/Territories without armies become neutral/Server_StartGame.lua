@@ -8,6 +8,7 @@ function setup(game, standing)
 	if not playerForGameOrderCustoms then
 		for playerId in pairs(game.ServerGame.Game.Players) do
 			playerForGameOrderCustoms = playerId;
+
 			break;
 		end
 	end
