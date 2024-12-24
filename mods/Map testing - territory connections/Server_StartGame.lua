@@ -1,5 +1,5 @@
-require '_util';
-require 'version';
+require('_util');
+require('version');
 
 function Server_StartGame(game, standing)
 	if not game.Settings.MapTestingGame then
@@ -16,6 +16,7 @@ function Server_StartGame(game, standing)
 	end
 
 	local n = 1;
+
 	for id, player in pairs(game.ServerGame.Game.Players) do
 		-- map choice when trying to create a game prevents n > #Mod.PublicGameData.terrNames from happening
 		local terr = Mod.PublicGameData.terrNames[n];
@@ -25,6 +26,7 @@ function Server_StartGame(game, standing)
 	end
 
 	local pgd = Mod.PublicGameData;
+
 	pgd.terrNo = n;
 	pgd.numPlayers = n - 1;
 	Mod.PublicGameData = pgd;
