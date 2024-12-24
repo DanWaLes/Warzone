@@ -1,5 +1,6 @@
 require('_util');
 require('settings');
+require('string_util');
 
 local reachedEndOfTurn = false;
 
