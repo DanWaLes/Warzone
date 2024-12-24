@@ -1,6 +1,6 @@
-require('_util');
 require('settings');
 require('string_util');
+require('tblprint');
 
 local reachedEndOfTurn = false;
 

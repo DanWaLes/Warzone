@@ -1,5 +1,5 @@
-require('_util');
 require('settings');
+require('tblprint');
 
 function Server_Created(game, settings)
 	if not settings.Cards then
