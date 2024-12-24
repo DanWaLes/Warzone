@@ -1,5 +1,6 @@
-require '_util';
-require '_settings';
+require('settings');
+require('string_util');
+require('tblprint');
 
 local reachedEndOfTurn = false;
 
@@ -71,6 +72,7 @@ function Server_AdvanceTurn_End(game, addNewOrder)
 							end
 
 							local piecesToAdd = getSetting('Pieces' .. cardName) - pgd.teams[teamType][teamId].rewardedPieces[cardId];
+
 							if piecesToAdd > 0 then
 								if not cardPiecesToAdd[playerId] then
 									cardPiecesToAdd[playerId] = {};
@@ -102,6 +104,7 @@ function Server_AdvanceTurn_End(game, addNewOrder)
 		-- no order is created if no cardPiecesToAdd given
 
 		local event = WL.GameOrderEvent.Create(playerId, 'Receive card pieces', game.Settings.HasAnySortOfFog and {} or nil);
+
 		event.AddCardPiecesOpt = {[playerId] = pieces};
 		addNewOrder(event);
 	end

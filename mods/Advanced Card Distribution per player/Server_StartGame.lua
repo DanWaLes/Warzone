@@ -1,4 +1,5 @@
-require 'getTeams';
+require('tblprint');
+require('getTeams');
 
 function Server_StartGame(game)
 	local teams = getTeams(game);
@@ -8,6 +9,7 @@ function Server_StartGame(game)
 	end
 
 	local pgd = Mod.PublicGameData;
+
 	pgd.teams = teams;
 	Mod.PublicGameData = pgd;
 end
