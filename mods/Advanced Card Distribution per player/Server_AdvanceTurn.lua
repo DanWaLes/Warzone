@@ -1,5 +1,5 @@
 require('_util');
-require('_settings');
+require('settings');
 
 local reachedEndOfTurn = false;
 
