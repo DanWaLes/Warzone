@@ -1,5 +1,5 @@
 require('_util');
-require('_ui');
+require('ui');
 
 -- local doingSinglePlayerTesting = false;
 
