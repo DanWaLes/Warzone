@@ -1,5 +1,5 @@
 require('eliminate');
-require('_util');
+require('tblprint');
 require('version');
 
 local satsPayload = 'NoTeaming_ServerAdvanceTurnStart';
