@@ -67,7 +67,7 @@ function playedCardRushedBlockade(wz, player, cardName, param)
 		local mods = nil;
 
 		if eliminatingBecauseCommander then
-			mods = eliminate({player.ID}, wz.game.ServerGame.LatestTurnStanding.Territories);
+			mods = eliminate({player.ID}, wz.game.ServerGame.LatestTurnStanding.Territories, true, wz.game.Settings.SinglePlayer);
 			table.insert(mods, terrMod);
 		else
 			mods = {terrMod};
