@@ -1,5 +1,6 @@
 require('settings');
 require('_util');
+require('number_util');
 
 function Server_Created(game, settings)
 	settings.AllowAttackOnly = randomBool();
