@@ -1,4 +1,4 @@
-require('_settings');
+require('settings');
 require('_util');
 
 function Server_AdvanceTurn_Order(game, order, result, skipThisOrder, addNewOrder)
