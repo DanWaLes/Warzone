@@ -1,5 +1,5 @@
-require '_settings';
-require '_util';
+require('settings');
+require('tblprint');
 
 function Server_AdvanceTurn_Order(game, order, result, skipThisOrder, addNewOrder)
 	if order.proxyType ~= 'GameOrderAttackTransfer' or order.PlayerID == WL.PlayerID.Neutral then
@@ -7,6 +7,7 @@ function Server_AdvanceTurn_Order(game, order, result, skipThisOrder, addNewOrde
 	end
 
 	local us = game.ServerGame.Game.PlayingPlayers[order.PlayerID];
+
 	if not us.IsAIOrHumanTurnedIntoAI then
 		return;
 	end
