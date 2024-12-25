@@ -1,14 +1,30 @@
-require '__settings'
-require '_util'
+-- copied from https://github.com/DanWaLes/Warzone/tree/master/mods/libs/AutoSettingsFiles
+
+require('__settings');
 
 local errMsg;
 local settingValues;
+local modDevMadeError = false;
 
 function Client_SaveConfigureUI(alert)
 	errMsg = nil;
 	settingValues = {};
 
-	csc(getSettings());
+	if type(getSettings) ~= 'function' then
+		getSettings = function()
+			return nil;
+		end;
+	end
+
+	local settings = getSettings()
+
+	initaliseSettingValues(settings);
+	csc(settings);
+
+	if modDevMadeError then
+		settingValues = {};
+		errMsg = 'The mod developer made an error while adding settings';
+	end
 
 	if errMsg then
 		alert(errMsg);
@@ -23,7 +39,20 @@ function Client_SaveConfigureUI(alert)
 end
 
 function csc(settings)
+	if type(settings) ~= 'table' then
+		modDevMadeError = true;
+	end
+
+	if modDevMadeError then
+		return;
+	end
+
 	for _, setting in ipairs(settings) do
+		if type(setting) ~= 'table' then
+			modDevMadeError = true;
+			return;
+		end
+
 		if setting.isTemplate then
 			Mod.Settings[setting.name] = GLOBALS[setting.name];
 			local n = 1;
@@ -42,7 +71,10 @@ end
 function cscDoSetting(setting)
 	local settingVal;
 
-	if setting.inputType == 'bool' then
+	if setting.isGroup then
+		csc(setting.subsettings);
+		return;
+	elseif setting.inputType == 'bool' then
 		settingVal = GLOBALS[setting.name].GetIsChecked();
 	elseif setting.inputType == 'text' then
 		settingVal = GLOBALS[setting.name].GetText();
@@ -82,26 +114,32 @@ function cscDoSetting(setting)
 		end
 
 		local absoluteMax = setting.absoluteMax or setting.maxValue;
-		local usingMax = type(setting.absoluteMax) == 'number' or setting.absoluteMax == nil;
-		local isTooLow = settingVal < setting.minValue;
+		local absoluteMin = setting.absoluteMin or setting.minValue;
+		local usingMax = type(setting.absoluteMax) == 'number' and settingVal > setting.maxValue;
+		local usingMin = type(setting.absoluteMin) == 'number' and settingVal < setting.minValue;
 		local isTooHigh = settingVal > absoluteMax;
+		local isTooLow = settingVal < absoluteMin;
 
-		if isTooLow or (usingMax and isTooHigh) then
-			if errMsg == nil then
-				errMsg = '';
-			end
+		if not (isTooLow or isTooHigh) then
+			return;
+		end
 
-			if errMsg ~= '' then
-				errMsg = errMsg .. '\n';
-			end
+		if errMsg == nil then
+			errMsg = '';
+		end
 
-			errMsg = errMsg .. setting.label .. ' must be ';
+		if errMsg ~= '' then
+			errMsg = errMsg .. '\n';
+		end
 
-			if isTooLow and not usingMax then
-				errMsg = errMsg .. 'at least ' .. tostring(setting.minValue);
-			elseif isTooLow or isTooHigh then
-				errMsg = errMsg .. 'between ' .. tostring(setting.minValue) .. ' and ' .. tostring(absoluteMax);
-			end
+		errMsg = errMsg .. setting.label .. ' must be ';
+
+		if isTooLow and not usingMin then
+			errMsg = errMsg .. 'greater than ' .. tostring(setting.minValue);
+		elseif isTooHigh and not usingMax then
+			errMsg = errMsg .. 'less than ' .. tostring(setting.maxValue);
+		else
+			errMsg = errMsg .. 'between ' .. tostring(absoluteMin) .. ' and ' .. tostring(absoluteMax);
 		end
 	end
 
@@ -110,4 +148,47 @@ function cscDoSetting(setting)
 	if settingVal and setting.inputType == 'bool' and setting.subsettings then
 		csc(setting.subsettings);
 	end
+end
+
+function initaliseSettingValues(settings)
+	-- initialise setting values, might not be initialised because of setting groups
+
+	if Mod.Settings.INITALISED_SETTING_VALUES then
+		return;
+	end
+
+	if type(settings) ~= 'table' then
+		modDevMadeError = true;
+		return;
+	end
+
+	for _, setting in ipairs(settings) do
+		if type(setting) == 'table' and setting.isGroup then
+			if type(setting.subsettings) ~= 'table' then
+				modDevMadeError = true;
+				return;
+			end
+
+			for _, ss in ipairs(setting.subsettings)
+				if type(ss) == 'table' then
+					if ss.isGroup then
+						initialSettingValues(ss.subsettings);
+					elseif type(ss.name) == 'string' then
+						if Mod.Settings[ss.name] == nil then
+							Mod.Settings[ss.name] = ss.defaultValue;
+						end
+					end
+				end
+			end
+		end
+	end
+
+	Mod.Settings.INITALISED_SETTING_VALUES = true;
+end
+
+function round(n, dp)
+	-- http://lua-users.org/wiki/SimpleRound
+	local multi = 10 ^ (dp or 0);
+
+	return math.floor((n * multi + 0.5)) / multi;
 end
