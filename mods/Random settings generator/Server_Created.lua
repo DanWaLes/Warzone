@@ -1,5 +1,5 @@
-require '_util';
-require '_settings';
+require('_util');
+require('_settings');
 
 function Server_Created(game, settings)
 	settings.AllowAttackOnly = randomBool();
@@ -54,11 +54,13 @@ function Server_Created(game, settings)
 		'LightFog',
 		'Foggy'
 	};
+
 	if getSetting('AllowHeavierFogs') then
 		table.insert(fogLevels, 'ModerateFog');
 		table.insert(fogLevels, 'VeryFoggy');
 		table.insert(fogLevels, 'ExtremeFog');
 	end
+
 	settings.FogLevel = WL.GameFogLevel[fogLevels[math.random(1, #fogLevels)]];
 
 	settings.RoundingMode = WL.RoundingModeEnum[(math.random(1, 2) == 1 and 'StraightRound' or 'WeightedRandom')];
@@ -99,6 +101,7 @@ end
 
 function randomFloat(lower, greater)
 	-- https://stackoverflow.com/questions/11548062/how-to-generate-random-float-in-lua#answer-18209644
+
 	return round(lower + math.random()  * (greater - lower), 2);
 end
 
@@ -149,7 +152,16 @@ function randomiseCards(settings)
 		forcing = false,
 		atLeast1Enabeled = false
 	};
-	if getSetting('AllowHeavierFogs') and getSetting('ForceHeavierFogCards') and (settings.FogLevel == WL.GameFogLevel.ModerateFog or settings.FogLevel == WL.GameFogLevel.VeryFoggy or settings.FogLevel == WL.GameFogLevel.ExtremeFog) then
+
+	if (
+		getSetting('AllowHeavierFogs') and
+		getSetting('ForceHeavierFogCards') and
+		(
+			settings.FogLevel == WL.GameFogLevel.ModerateFog or
+			settings.FogLevel == WL.GameFogLevel.VeryFoggy or
+			settings.FogLevel == WL.GameFogLevel.ExtremeFog
+		)
+	) then
 		mustForceEnabelAtleastOneOf.forcing = true;
 		mustForceEnabelAtleastOneOf.Reconnaissance = true;
 		mustForceEnabelAtleastOneOf.Surveillance = true;
@@ -158,18 +170,37 @@ function randomiseCards(settings)
 
 	local cards = {};
 	local numCardsInGame = 0;
+
 	for cardName, cardId in pairs(WL.CardID) do
 		if cardName == 'EmergencyBlockade' then
 			cardName = 'Abandon';
 		end
 
-		if randomBool() or (mustForceEnabelAtleastOneOf.forcing and not mustForceEnabelAtleastOneOf.atLeast1Enabeled) then
+		if (
+			randomBool() or
+			(
+				mustForceEnabelAtleastOneOf.forcing and
+				not mustForceEnabelAtleastOneOf.atLeast1Enabeled
+			)
+		) then
 			local pieces = math.random(1, 10);
 			local minPerTurn = 1;
 			local weight = 1;
 			local initialPieces = 0;
 
-			cards[cardId] = WL['CardGame' .. cardName].Create(pieces, minPerTurn, weight, initialPieces, getCardParam(cardId, 1), getCardParam(cardId, 2), getCardParam(cardId, 3));
+			cards[cardId] = (
+				WL['CardGame' .. cardName]
+					.Create(
+						pieces,
+						minPerTurn,
+						weight,
+						initialPieces,
+						getCardParam(cardId, 1),
+						getCardParam(cardId, 2),
+						getCardParam(cardId, 3)
+					)
+			);
+
 			numCardsInGame = numCardsInGame + 1;
 
 			if mustForceEnabelAtleastOneOf[cardName] then
