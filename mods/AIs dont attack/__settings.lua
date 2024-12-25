@@ -1,5 +1,5 @@
-require '_settings'
-require '_ui'
+require('_settings');
+require('_ui');
 
 function getSettings()
 	return {
