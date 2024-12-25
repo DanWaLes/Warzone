@@ -1,6 +1,6 @@
 require('settings');
-require('_util');
 require('number_util');
+require('tblprint');
 
 function Server_Created(game, settings)
 	settings.AllowAttackOnly = randomBool();
