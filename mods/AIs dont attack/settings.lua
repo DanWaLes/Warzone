@@ -1,3 +1,5 @@
+-- copied from https://github.com/DanWaLes/Warzone/tree/master/mods/libs/AutoSettingsFiles
+
 function addSetting(name, label, inputType, defaultValue, otherProps)
 	local allowedInputTypes = {
 		int = 'number',
@@ -7,26 +9,26 @@ function addSetting(name, label, inputType, defaultValue, otherProps)
 	};
 
 	if type(name) ~= 'string' then
-		print('name in addSetting must be a string\nname is');
-		print(name);
+		print('addSetting error: name must be a string');
+		print('name = ' .. tostring(name));
 		return;
 	end
 
 	if type(label) ~= 'string' then
-		print('label in addSetting must be a string\nlabel is');
-		print(label);
+		print('addSetting error: label in must be a string');
+		print('label = ' .. tostring(label));
 		return;
 	end
 
 	if not allowedInputTypes[inputType] then
-		print('inputType in addSetting must be one of "int", "float", "bool", "text"\ninputType is');
-		print(inputType);
+		print('addSetting error: inputType must be one of "int", "float", "bool", "text"');
+		print('inputType = ' .. tostring(inputType));
 		return;
 	end
 
 	if type(defaultValue) ~= allowedInputTypes[inputType] then
-		print('defaultValue in addSetting must be ' .. allowedInputTypes[inputType] .. ' for inputType ' .. inputType .. '\ndefaultValue is');
-		print(defaultValue);
+		print('addSetting error: defaultValue for inputType ' .. inputType .. ' must be a ' .. allowedInputTypes[inputType]);
+		print('defaultValue = ' .. tostring(defaultValue));
 		return;
 	end
 
@@ -37,8 +39,8 @@ function addSetting(name, label, inputType, defaultValue, otherProps)
 	end
 
 	if type(otherProps) ~= 'table' then
-		print('otherProps in addSetting must be a table\notherProps is');
-		print(otherProps);
+		print('addSetting error: otherProps must be a table')
+		print('otherProps = ' .. tostring(otherProps));
 		return;
 	end
 
@@ -71,14 +73,15 @@ function addSetting(name, label, inputType, defaultValue, otherProps)
 		forcedProps.minValue = 'number';
 		forcedProps.maxValue = 'number';
 		optionalProps.absoluteMax = 'number';
+		optionalProps.absoluteMin = 'number';
 	end
 
 	for prop, tpe in pairs(forcedProps) do
 		local val = otherProps[prop];
 
 		if type(val) ~= tpe then
-			print(prop .. ' must be a ' .. tpe .. ' for inputType ' .. inputType .. ' in addSetting\nis');
-			print(val)
+			print('addSetting error: otherProps[' .. prop .. '] must be a ' .. tpe .. ' for inputType ' .. inputType);
+			print('otherProps[' .. prop .. '] = ' .. tostring(val));
 			return;
 		end
 
@@ -90,8 +93,8 @@ function addSetting(name, label, inputType, defaultValue, otherProps)
 
 		if val ~= nil then
 			if type(val) ~= tpe then
-				print(prop .. ' must be a ' .. tpe .. ' for inputType ' .. inputType .. ' or non-existent in addSetting\nis');
-				print(val);
+				print('addSetting error: otherProps[' .. prop .. '] must be a ' .. tpe .. ' for inputType ' .. inputType .. ' or non-existent');
+				print('otherProps[' .. prop .. '] = ' .. tostring(val));
 				return;
 			end
 		end
@@ -99,20 +102,54 @@ function addSetting(name, label, inputType, defaultValue, otherProps)
 		setting[prop] = val;
 	end
 
+	if inputType == 'bool' then
+		-- no special checks required
+	elseif inputType == 'text' then
+		if setting.charLimit and setting.charLimit < 1 then
+			print('addSetting error: otherProps.charLimit should always be higher than 0 or else user cant enter text')
+			print('otherProps.charLimit = ' .. tostring(setting.charLimit));
+			return;
+		end
+	else
+		if (setting.minValue > setting.maxValue) or (setting.maxValue < setting.minValue) then
+			print('addSetting error: otherProps.minValue must be lower than otherProps.maxValue and otherProps.maxValue must be higher than otherProps.minValue')
+			print('minValue = ' .. tostring(setting.minValue);
+			print('maxValue = ' .. tostring(setting.maxValue));
+			return;
+		end
+
+		if setting.absoluteMax then
+			if setting.absoluteMax < setting.maxValue then
+				print('addSetting error: otherProps.absoluteMax must be higher than otherProps.maxValue');
+				print('absoluteMax = ' .. tostring(setting.absoluteMax));
+				print('maxValue = ' .. tostring(setting.maxValue));
+				return;
+			end
+		end
+
+		if setting.absoluteMin then
+			if setting.absoluteMin > setting.minValue then
+				print('addSetting error: otherProps.absoluteMin must be lower than otherProps.minValue');
+				print('absoluteMin = ' .. tostring(setting.absoluteMin));
+				print('minValue = ' .. tostring(setting.minValue));
+				return;
+			end
+		end
+	end
+
 	return setting;
 end
 
 function addSettingTemplate(name, btnText, options, get)
-	-- todo add bkwards
 	if type(name) ~= 'string' then
-		print('name in addSettingTemplate must be a string\nname is');
-		print(name);
+		print('addSettingTemplate error: name must be a string');
+		print('name = ' .. tostring(name));
 		return;
 	end
 
 	if type(btnText) ~= 'string' then
-		print('btnText in addSettingTemplate must be a string\nname is');
-		print(btnText);
+		print('addSettingTemplate error: btnText must be a string');
+		print('btnText = ' .. tostring(btnText));
 		return;
 	end
 
@@ -120,46 +157,49 @@ function addSettingTemplate(name, btnText, options, get)
 		options = {};
 	else
 		if type(options) ~= 'table' then
-			print('options in addSettingTemplate must be a table or nil\noptions is');
-			print(options);
+			print('addSettingTemplate error: options must be a table or nil');
+			print('options = ' .. tostring(options));
 			return;
 		end
 	end
 
 	if type(get) ~= 'function' then
-		print('get in addSettingTemplate must be a function(n)\nget is');
-		print(groupLabel);
+		print('addSettingTemplate error: get must be a function(n)');
+		print('get = ' .. tostring(get));
 		return;
 	end
 
 	local setting = {name = name, btnText = btnText, isTemplate = true, btnColor = options.btnColor, btnTextColor = options.btnTextColor, bkwards = options.bkwards};
+
 	setting.get = function(n)
 		local tmp = get(n);
+
 		if type(tmp) ~= 'table' then
-			print('get(n) must return a table in addSettingTemplate\nis');
-			print(tmp);
+			print('addSettingTemplate error: get(n) must return a table');
+			print('get(n) = ' .. tostring(tmp));
 			return;
 		end
 
 		if type(tmp.label) ~= 'string' then
-			print('get(n).label must be a string\nis');
-			print(tmp.label);
+			print('addSettingTemplate error: get(n).label must be a string');
+			print('get(n).label = ' .. tostring(tmp.label));
 			return;
 		end
 
 		-- cant do checkbox label color
 
 		if type(tmp.settings) ~= 'table' then
-			print('get(n).settings must be a table in addSettingTemplate\nis');
-			print(tmp.settings);
+			print('addSettingTemplate error: get(n).settings must be a table');
+			print('get(n).settings = ' .. tostring(tmp.settings));
 			return;
 		end
 
 		for i, ss in ipairs(tmp.settings) do
 			local name = tmp.settings[i].name;
+
 			if type(name) ~= 'string' then
-				print('get(n).settings[' .. i .. '].name must be a string\nis');
-				print(ss.name);
+				print('addSettingTemplate error: get(n).settings[i].name must be a string');
+				print('get(n).settings[i].name = ' .. tostring(ss.name));
 				return;
 			end
 
@@ -178,29 +218,65 @@ function addSettingTemplate(name, btnText, options, get)
 	return setting;
 end
 
+-- used to keep track of which areas exist in Client_PresentSettingsUI
+local numsSettingGroups = 0;
+
+function addSettingGroup(btnTxt, options, settings)
+	numsSettingGroups = numsSettingGroups + 1;
+
+	if type(btnText) ~= 'string' then
+		print('addSettingGroup error: btnText must be a string');
+		print('btnText = ' .. tostring(btnText));
+		return;
+	end
+
+	if options == nil then
+		options = {};
+	end
+
+	if type(options) ~= 'table' then
+		print('addSettingGroup error: options must be a table or nil');
+		print('options = ' .. tostring(options));
+		return;
+	end
+
+	if options.onExpand == nil then
+		options.onExpand = function() end;
+	end
+
+	if type(options.onExpand) ~= 'function' then
+		print('addSettingGroup error: options.onExpand must be a function(vert) or nil');
+		print('options.onExpand = ' .. tostring(options.onExpand));
+		return;
+	end
+
+	-- this doesnt need to use options.bkwards
+	return {isGroup = true, btnText = btnText, btnColor = options.btnColor, btnTextColor = options.btnTextColor, onExpand = options.onExpand, subsettings: settings, ID = numsSettingGroups};
+end
+
 function getSetting(name, template)
 	if type(name) ~= 'string' then
-		print('name in getSetting must be a string\nis');
-		print(name);
+		print('getSetting error: name must be a string');
+		print('name = ' .. tostring(name));
 		return;
 	end
 
 	if template ~= nil then
 		if type(template) ~= 'table' then
-			print('template in getSetting must be a table or non-existent\nis');
-			print(template);
+			print('getSetting error: template must be a table or non-existent');
+			print('template = ' .. tostring(template));
 			return;
 		end
 
 		if type(template.n) ~= 'number' then
-			print('template.n must be a number in getSetting\nis');
-			print(template.n);
+			print('getSetting error: template.n must be a number');
+			print('template.n = ' .. tostring(template.n));
 			return;
 		end
 
 		if type(template.name) ~= 'string' then
-			print('template.name must be a string in getSetting\nis');
-			print(template.name);
+			print('getSetting error: template.name must be a string');
+			print('template.name = ' .. tostring(template.name));
 			return;
 		end
 
@@ -208,9 +284,21 @@ function getSetting(name, template)
 	end
 
 	if Mod.Settings[name] == nil then
-		print('setting ' .. name .. ' doesnt exist');
+		print('getSetting warning: setting ' .. name .. ' doesnt exist');
 		return;
 	end
 
 	return Mod.Settings[name];
+end
+
+function getCollapseBtnLabelTxt()
+	-- https://www.amp-what.com &#9650;
+
+	return '▲';
+end
+
+function getExpandBtnLabelTxt()
+	-- https://www.amp-what.com &#9660;
+
+	return '▼';
 end
