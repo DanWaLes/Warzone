@@ -45,11 +45,11 @@ function cpsDoSetting(vert, setting)
 		return;
 	end
 
+	local settingLabel = UI.CreateLabel(horz).SetText(setting.label .. ': ');
 	local settingValue = Mod.Settings[setting.name];
-	local label = UI.CreateLabel(horz).SetText(setting.label .. ': ');
 
 	if setting.labelColor then
-		label.SetColor(setting.labelColor);
+		settingLabel.SetColor(setting.labelColor);
 	end
 
 	createHelpBtn(horz, vert2, setting);
@@ -58,7 +58,20 @@ function cpsDoSetting(vert, setting)
 		settingValue = setting.bkwrds;
 	end
 
-	UI.CreateLabel(horz).SetText(tostring(settingValue));
+	local settingValueLabel = UI.CreateLabel(horz);
+
+	if setting.inputType == 'radio' then
+		local control = setting.controls[settingValue];
+		local controlIsString = type(control) == 'string';
+
+		settingValueLabel.SetText(tostring((controlIsString and control) or control.label));
+
+		if not controlIsString and control.labelColor then
+			settingValueLabel.SetColor(control.labelColor);
+		end
+	else
+		settingValueLabel.SetText(tostring(settingValue));
+	end
 
 	if not (setting.subsettings and settingValue) then
 		return;
