@@ -44,6 +44,7 @@ function cpc(parent, settings)
 	for _, setting in ipairs(settings) do
 		if type(setting) ~= 'table' then
 			modDevMadeError = true;
+
 			return;
 		end
 
@@ -118,7 +119,47 @@ function cpcDoSetting(vert, setting)
 		initialSettingValue = setting.defaultValue;
 	end
 
-	if setting.inputType == 'bool' then
+	if setting.inputType == 'radio' then
+		local label = UI.CreateLabel(horz).SetText(setting.label);
+
+		if setting.labelColor then
+			label.SetColor(setting.labelColor);
+		end
+
+		local vert3 = UI.CreateVerticalLayoutGroup(vert2);
+
+		createHelpBtn(horz, UI.CreateVerticalLayoutGroup(vert3), setting);
+
+		local horz2 = UI.CreateHorizontalLayoutGroup(vert2);
+		local selectedCheckbox = nil;
+
+		for a, option in ipairs(setting.controls) do
+			local i = a;
+			local isSelectedCheckbox = i == initialSettingValue;
+			local checkbox = UI.CreateCheckBox(horz2).SetText('').SetIsChecked(isSelectedCheckbox);
+			local checkboxLabel = UI.CreateLabel(horz2).SetText((type(option) == 'string' and option) or option.label);
+
+			if option.labelColor then
+				checkboxLabel.SetColor(option.labelColor);
+			end
+
+			if isSelectedCheckbox then
+				Mod.Settings[setting.name] = i;
+				selectedCheckbox = checkbox;
+			end
+
+			checkbox.SetOnClick(function()
+				Mod.Settings[setting.name] = i;
+
+				if selectedCheckbox then
+					selectedCheckbox.SetIsChecked(false);
+				end
+
+				checkbox.SetIsChecked(true);
+				selectedCheckbox = checkbox;
+			end);
+		end
+	elseif setting.inputType == 'bool' then
 		GLOBALS[setting.name] = UI.CreateCheckBox(horz)
 			.SetText('')
 			.SetIsChecked(initialSettingValue);
@@ -200,6 +241,7 @@ function cpcDoSetting(vert, setting)
 		end
 	else
 		local label = UI.CreateLabel(horz).SetText(setting.label);
+
 		if setting.labelColor then
 			label.SetColor(setting.labelColor);
 		end
@@ -216,7 +258,7 @@ function cpcDoSetting(vert, setting)
 			if setting.charLimit then
 				GLOBALS[setting.name].SetCharacterLimit(setting.charLimit);
 			end
-		else
+		elseif setting.inputType == 'int' or setting.inputType == 'float' then
 			GLOBALS[setting.name] = UI.CreateNumberInputField(horz);
 
 			if setting.inputType == 'float' then

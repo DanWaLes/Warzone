@@ -4,11 +4,12 @@ The file must have a `getSetting` function. returns array of `setting`. `setting
 ## addSetting
 * `name` - string - name of the setting. all names must be unique to function correctly
 * `label` - string - summery of what the setting does
-* `inputType` - one of `'int'`, `'float'`, `'bool'` or `'text'`
+* `inputType` - string - one of `'int'`, `'float'`, `'bool'`, `'text'` or `'radio'`
 * `defaultValue` - same type as `inputType` - the default value for the setting's value in Client_PresentConfigureUI
 * `otherProps` - table or nil - if table then these keys are optional:
   * `help` - `function(parent)` - gives a more detailed explanation of what the setting does when a help button (?) is clicked
   * `labelColor` - string - color of the setting's label
+  * `bkwards` - same type as what is used in `defaultValue` or nil - the value to use in setting menus if Mod.Settings\[`name`\] is `nil`
 ### inputType
 Depending on the `inputType` certain keys on `otherProps` are forced and some become optional
 #### int
@@ -33,6 +34,15 @@ Optional keys:
 Optional keys:
 * `placeholder` - string - the placeholder text
 * `charLimit` - number - the maximum number of characters that can be entered
+### radio
+This makes a group of checkboxes where only one checkbox can be checked at any time. `defaultValue` and `otherProps.bkwards` (if specified) must be a number index that can be indexed by `controls`. `defaultValue` becomes the initial checkbox to check. The value of the setting  is saved as the index of the currently selected `control`.
+
+Forced keys:
+* `controls` - array of `control` - details about the checkbox listed under `label`
+
+`control` - string (treated as table with key `label`) or table with keys:
+* `label` - string - summary of what the radio button does
+* `labelColor` - string or nil - color of `label` text
 ## addSettingTemplate
 In the event of wanting to have infinite groups of settings, setting templates can be used.
 

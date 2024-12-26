@@ -28,6 +28,7 @@ function Client_SaveConfigureUI(alert)
 
 	if errMsg then
 		alert(errMsg);
+
 		return;
 	end
 
@@ -50,15 +51,18 @@ function csc(settings)
 	for _, setting in ipairs(settings) do
 		if type(setting) ~= 'table' then
 			modDevMadeError = true;
+
 			return;
 		end
 
 		if setting.isTemplate then
 			Mod.Settings[setting.name] = GLOBALS[setting.name];
+
 			local n = 1;
 
 			while n < (Mod.Settings[setting.name] + 1) do
 				local toAdd = setting.get(n);
+
 				cscDoSetting(toAdd);
 				n = n + 1;
 			end
@@ -73,6 +77,7 @@ function cscDoSetting(setting)
 
 	if setting.isGroup then
 		csc(setting.subsettings);
+
 		return;
 	elseif setting.inputType == 'bool' then
 		settingVal = GLOBALS[setting.name].GetIsChecked();
@@ -159,6 +164,7 @@ function initaliseSettingValues(settings)
 
 	if type(settings) ~= 'table' then
 		modDevMadeError = true;
+
 		return;
 	end
 
@@ -166,13 +172,14 @@ function initaliseSettingValues(settings)
 		if type(setting) == 'table' and setting.isGroup then
 			if type(setting.subsettings) ~= 'table' then
 				modDevMadeError = true;
+
 				return;
 			end
 
 			for _, ss in ipairs(setting.subsettings)
 				if type(ss) == 'table' then
 					if ss.isGroup then
-						initialSettingValues(ss.subsettings);
+						initaliseSettingValues(ss.subsettings);
 					elseif type(ss.name) == 'string' then
 						if Mod.Settings[ss.name] == nil then
 							Mod.Settings[ss.name] = ss.defaultValue;
