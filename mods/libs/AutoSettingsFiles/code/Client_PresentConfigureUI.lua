@@ -130,10 +130,11 @@ function cpcDoSetting(vert, setting)
 
 		createHelpBtn(horz, UI.CreateVerticalLayoutGroup(vert3), setting);
 
-		local horz2 = UI.CreateHorizontalLayoutGroup(vert2);
 		local selectedCheckbox = nil;
 
 		for a, option in ipairs(setting.controls) do
+			local vert4 = UI.CreateVerticalLayoutGroup(vert3);
+			local horz2 = UI.CreateHorizontalLayoutGroup(vert4);
 			local i = a;
 			local isSelectedCheckbox = i == initialSettingValue;
 			local checkbox = UI.CreateCheckBox(horz2).SetText('').SetIsChecked(isSelectedCheckbox);
@@ -177,43 +178,34 @@ function cpcDoSetting(vert, setting)
 
 		if setting.subsettings then
 			local expandCollapseBtn = nil;
-			local expandCollapseBtnClicked;
 			local subsettingEnabledOrDisabled;
 			local vert4 = nil;
 
-			expandCollapseBtnClicked = function()
-				-- save - destroying otherwise goes back to default setting values
+			function makeExpandCollapseBtn()
+				expandCollapseBtn = createExpandCollaseBtn(
+					horz,
+					function()
+						-- save - destroying otherwise goes back to default setting values
 
-				if not Client_SaveConfigureUI(UI.Alert) then
-					-- if theres an error dont allow settings to collapse
-					return;
-				end
-
-				if expandCollapseBtn.GetText() == getExpandBtnLabelTxt() then
-					expandCollapseBtn.SetText(getCollapseBtnLabelTxt());
-				else
-					expandCollapseBtn.SetText(getExpandBtnLabelTxt());
-				end
-
-				if (WL and WL.IsVersionOrHigher and WL.IsVersionOrHigher('5.21')) then
-					if not UI.IsDestroyed(vert4) then
-						UI.Destroy(vert4);
-						vert4 = nil;
-					end
-				end
-
-				if expandCollapseBtn.GetText() == getCollapseBtnLabelTxt() then
-					subsettingEnabledOrDisabled();
-				end
+						if not Client_SaveConfigureUI(UI.Alert) then
+							-- if theres an error dont allow settings to collapse
+							return;
+						end
+					end,
+					function()
+						if not UI.IsDestroyed(vert4) then
+							UI.Destroy(vert4);
+							vert4 = nil;
+						end
+					end,
+					subsettingEnabledOrDisabled
+				);
 			end
 
 			subsettingEnabledOrDisabled = function()
 				if not (WL and WL.IsVersionOrHigher and WL.IsVersionOrHigher('5.21')) then
 					if not expandCollapseBtn then
-						expandCollapseBtn = UI.CreateButton(horz);
-						expandCollapseBtn.SetColor('#23A0FF')
-						expandCollapseBtn.SetText(getCollapseBtnLabelTxt());
-						expandCollapseBtn.SetOnClick(expandCollapseBtnClicked);
+						makeExpandCollapseBtn();
 					end
 
 					if not vert4 then
@@ -222,10 +214,7 @@ function cpcDoSetting(vert, setting)
 					end
 				elseif GLOBALS[setting.name].GetIsChecked() then
 					if UI.IsDestroyed(expandCollapseBtn) then
-						expandCollapseBtn = UI.CreateButton(horz);
-						expandCollapseBtn.SetColor('#23A0FF')
-						expandCollapseBtn.SetText(getCollapseBtnLabelTxt());
-						expandCollapseBtn.SetOnClick(expandCollapseBtnClicked);
+						makeExpandCollapseBtn();
 					end
 
 					vert4 = UI.CreateVerticalLayoutGroup(vert3);
@@ -294,4 +283,30 @@ function createHelpBtn(btnParent, helpParent, setting)
 			settingHelpAreas[setting.name] = nil;
 		end
 	end);
+end
+
+function createExpandCollaseBtn(parent, onBeforeExpandOrCollapse, onCollapse, onExpand)
+	local expandCollapseBtn = UI.CreateButton(parent);
+
+	expandCollapseBtn.SetColor('#23A0FF')
+	expandCollapseBtn.SetText(getCollapseBtnLabelTxt());
+	expandCollapseBtn.SetOnClick(function()
+		onBeforeExpandOrCollapse();
+
+		if expandCollapseBtn.GetText() == getExpandBtnLabelTxt() then
+			expandCollapseBtn.SetText(getCollapseBtnLabelTxt());
+		else
+			expandCollapseBtn.SetText(getExpandBtnLabelTxt());
+		end
+
+		if (WL and WL.IsVersionOrHigher and WL.IsVersionOrHigher('5.21')) then
+			onCollapse();
+		end
+
+		if expandCollapseBtn.GetText() == getCollapseBtnLabelTxt() then
+			onExpand();
+		end
+	end);
+
+	return expandCollapseBtn;
 end
