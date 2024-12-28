@@ -112,6 +112,9 @@ function cpcDoSetting(setting, vert)
 		local vert5 = nil;
 		local selectedCheckbox = nil;
 		local selectedRadioButtonLabel = nil;
+		local selectedRadioButtonLabelHelp = nil;
+		local selectedRadioButtonLabelHelpHelpParentParent = nil;
+		local selectedRadioButtonLabelHelpHelpParent = nil;
 
 		function getLabelFromOption(option)
 			return (type(option) == 'string' and option) or option.label;
@@ -121,15 +124,25 @@ function cpcDoSetting(setting, vert)
 			return (type(option) == 'table' and option.labelColor) or nil;
 		end
 
-		function updateLabelWithOption(label, option)
+		function updateLabelWithOption(option)
 			local text = getLabelFromOption(option);
 			local color = getLabelColorFromOption(option);
 
-			label.SetText(text);
+			selectedRadioButtonLabel.SetText(text);
 
 			if color then
-				label.SetColor(color);
+				selectedRadioButtonLabel.SetColor(color);
 			end
+
+			if not selectedRadioButtonLabelHelp then
+				return;
+			end
+
+			UI.Destroy(selectedRadioButtonLabelHelp);
+			UI.Destroy(selectedRadioButtonLabelHelpHelpParent);
+			settingHelpAreas[setting.name .. tostring(-1)] = nil;
+			selectedRadioButtonLabelHelpHelpParent = UI.CreateVerticalLayoutGroup(selectedRadioButtonLabelHelpHelpParentParent);
+			selectedRadioButtonLabelHelp = makeLabelHelpFromOption(horz, selectedRadioButtonLabelHelpHelpParent, option, -1);
 		end
 
 		function makeLabelFromOption(parent, option)
@@ -137,6 +150,23 @@ function cpcDoSetting(setting, vert)
 				label = getLabelFromOption(option)
 				labelColor = getLabelColorFromOption(option)
 			});
+		end
+
+		function makeLabelHelpFromOption(btnParent, helpParent, option, fakeSettingNameSuffix)
+			local hasHelp = type('option') == 'table' and option.help;
+
+			if not hasHelp then
+				return;
+			end
+
+			-- make a fake setting so that createHelpBtn can be reused using option
+
+			local fakeSetting = {
+				name = setting.name .. tostring(fakeSettingNameSuffix),
+				help = option.help
+			};
+
+			return createHelpBtn(btnParent, helpParent, fakeSetting);
 		end
 
 		function listAllOptions()
@@ -153,13 +183,14 @@ function cpcDoSetting(setting, vert)
 					.SetIsChecked(isSelectedCheckbox);
 
 				makeLabelFromOption(horz2, option);
+				makeLabelHelpFromOption(horz2, UI.CreateVerticalLayoutGroup(horz2), option, a);
 
 				if isSelectedCheckbox then
 					Mod.Settings[setting.name] = i;
 					selectedCheckbox = checkbox;
 
 					if selectedRadioButtonLabel then
-						updateLabelWithOption(selectedRadioButtonLabel, option);
+						updateLabelWithOption(option);
 					end
 				end
 
@@ -174,7 +205,7 @@ function cpcDoSetting(setting, vert)
 					selectedCheckbox = checkbox;
 
 					if selectedRadioButtonLabel then
-						updateLabelWithOption(selectedRadioButtonLabel, option);
+						updateLabelWithOption(option);
 					end
 				end);
 			end
@@ -187,6 +218,11 @@ function cpcDoSetting(setting, vert)
 			local initialSelectedOption = setting.controls[initialSettingValue];
 
 			selectedRadioButtonLabel = makeLabelFromOption(horz, initialSelectedOption);
+
+			selectedRadioButtonLabelHelpHelpParentParent = UI.CreateVerticalLayoutGroup(horz);
+			selectedRadioButtonLabelHelpHelpParent = UI.CreateVerticalLayoutGroup(selectedRadioButtonLabelHelpHelpParentParent);
+			selectedRadioButtonLabelHelp = makeLabelHelpFromOption(horz, selectedRadioButtonLabelHelpHelpParent, initialSelectedOption, -1);
+
 			createExpandCollaseBtn(
 				horz,
 				true,
@@ -256,17 +292,22 @@ function createHelpBtn(btnParent, helpParent, setting)
 		settingHelpAreas[setting.name] = nil;
 	end
 
-	UI.CreateButton(btnParent).SetText('?').SetColor('#23A0FF').SetOnClick(function()
-		if not (WL and WL.IsVersionOrHigher and WL.IsVersionOrHigher('5.21')) then
-			if not settingHelpAreas[setting.name] then
-				showHelp();
+	return UI.CreateButton(btnParent)
+		.SetText('?')
+		.SetColor('#23A0FF')
+		.SetOnClick(
+			function()
+				if not canUseUIElementIsDestroyed then
+					if not settingHelpAreas[setting.name] then
+						showHelp();
+					end
+				elseif UI.IsDestroyed(settingHelpAreas[setting.name]) then
+					showHelp();
+				else
+					hideHelp();
+				end
 			end
-		elseif UI.IsDestroyed(settingHelpAreas[setting.name]) then
-			showHelp();
-		else
-			hideHelp();
-		end
-	end);
+		);
 end
 
 function createExpandCollaseBtn(parent, startCollapsed, onBeforeExpandOrCollapse, onCollapse, onExpand)
