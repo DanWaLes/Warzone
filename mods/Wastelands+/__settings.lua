@@ -20,10 +20,10 @@ function getSettings()
 		addSetting('OverlapsEnabled', 'Enable wasteland overlaps', 'bool', false, {
 			help = function(parent)
 				Label(parent).SetText('Wastelands occupy as many neutral or pickable territories as possible before replacing an existing wasteland');
-				Label(parent).SetText('The "Overlap mode" will decide how overlaps are dealt with');
+				Label(parent).SetText('The "Overlap resolution" will decide how overlaps are dealt with');
 			end,
 			subsettings = {
-				addSetting('OverlapMode', 'Overlap mode', 'radio', 1, {
+				addSetting('OverlapMode', 'Overlap resolution', 'radio', 1, {
 					controls = {
 						'Randomly choose which wasteland used',
 						'Newest wasteland overrides',
@@ -31,17 +31,12 @@ function getSettings()
 						'Use largest wasteland'
 					},
 					help = function(parent)
-						Label(parent).SetText('In the event of wastelands randomly getting placed on top of each other, the selected option will be enforced');
-						Label(parent).SetText('Options:');
-						Label(parent).SetText('"Randomly choose which wasteland used"');
-						Label(parent).SetText('"Newest wasteland overrides"');
-						Label(parent).SetText('"Use smallest wasteland"');
-						Label(parent).SetText('"Use largest wasteland"');
+						Label(parent).SetText('In the event of wastelands randomly getting placed on top of each other when generating wastelands, the selected option will be enforced');
 					end
 				}),
 				addSetting('TreatAllNeutralsAsWastelands', 'Treat all neutrals as wastelands', 'bool', true, {
 					help = function(parent)
-						Label(parent).SetText('If enabled the runtime wastelands will follow the wasteland overlap mode for all neutral territories');
+						Label(parent).SetText('If enabled the runtime wastelands will follow the wasteland overlap resolution for all neutral territories');
 						Label(parent).SetText('If disabled the new wasteland will always replace the territory');
 						Label(parent).SetText('If "Max overlaps per turn" is 1 then no new wastelands will be created');
 						Label(parent).SetText('Applies to runtime wastelands only');
@@ -82,20 +77,25 @@ function getSettings()
 					}),
 					addSetting('W' .. tostring(n) .. 'Type', 'Wasteland type', 'radio', 1, {
 						controls = {
-							'Distribution wasteland',
-							'Runtime wasteland',
-							'Distribution and Runtime wasteland'
-						},
-						help = function(parent)
-							Label(parent).SetText('Only single wasteland type can be chosen');
-							Label(parent).SetText('Options:');
-							Label(parent).SetText('"Distribution wasteland"');
-							Label(parent).SetText('"Runtime wasteland"');
-							Label(parent).SetText('"Distribution and Runtime wasteland"');
-							Empty(parent);
-							Label(parent).SetText('"Distribution wastelands" are only placed at the start of the game');
-							Label(parent).SetText('"Runtime wastelands" are placed throughout the game, after the game has started');
-						end
+							{
+								label = 'Distribution wasteland',
+								labelHelp = function(parent)
+									Label(parent).SetText('These are only placed at the start of the game');
+								end
+							},
+							{
+								label = 'Runtime wasteland',
+								labelHelp = function(parent)
+									Label(parent).SetText('These are placed throughout the game, after the game has started');
+								end
+							},
+							{
+								label = 'Distribution and Runtime wasteland',
+								labelHelp = function(parent)
+									Label(parent).SetText('These are placed both at the start of the game and throught the game');
+								end
+							}
+						}
 					})
 				}
 			}
