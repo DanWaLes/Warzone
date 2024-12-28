@@ -232,7 +232,15 @@ function addSetting(name, label, inputType, defaultValue, otherProps)
 				if not (not value.labelColor or type(value.labelColor) == 'string') then
 					print('addSetting error: otherProps.controls[' .. i .. '].labelColor must falsey or a color');
 					print('name = ' .. name);
-					print('otherProps.controls[' .. i .. '].label = ' .. tostring(otherProps.controls[i].label));
+					print('otherProps.controls[' .. i .. '].labelColor = ' .. tostring(otherProps.controls[i].labelColor));
+
+					return;
+				end
+
+				if not (not value.labelHelp or type(value.labelHelp) == 'function') then
+					print('addSetting error: otherProps.controls[' .. i .. '].labelHelp must be falsey or a function(parent)');
+					print('name = ' .. name);
+					print('otherProps.controls[' .. i .. '].labelHelp = ' .. tostring(otherProps.controls[i].labelHelp));
 
 					return;
 				end
