@@ -25,14 +25,18 @@ function getSettings()
 			subsettings = {
 				addSetting('OverlapMode', 'Overlap mode', 'radio', 1, {
 					controls = {
-						'Randomly choose which gets used',
-						'Newest overrides',
+						'Randomly choose which wasteland used',
+						'Newest wasteland overrides',
 						'Use smallest wasteland',
 						'Use largest wasteland'
 					},
 					help = function(parent)
-						Label(parent).SetText('In the event of wastelands randomly getting placed on top of each other, what should happen?');
-						Label(parent).SetText('Only one option can be selected');
+						Label(parent).SetText('In the event of wastelands randomly getting placed on top of each other, the selected option will be enforced');
+						Label(parent).SetText('Options:');
+						Label(parent).SetText('"Randomly choose which wasteland used"');
+						Label(parent).SetText('"Newest wasteland overrides"');
+						Label(parent).SetText('"Use smallest wasteland"');
+						Label(parent).SetText('"Use largest wasteland"');
 					end
 				}),
 				addSetting('TreatAllNeutralsAsWastelands', 'Treat all neutrals as wastelands', 'bool', true, {
@@ -83,7 +87,14 @@ function getSettings()
 							'Distribution and Runtime wasteland'
 						},
 						help = function(parent)
-							Label(parent).SetText('Only one option can be selected');
+							Label(parent).SetText('Only single wasteland type can be chosen');
+							Label(parent).SetText('Options:');
+							Label(parent).SetText('"Distribution wasteland"');
+							Label(parent).SetText('"Runtime wasteland"');
+							Label(parent).SetText('"Distribution and Runtime wasteland"');
+							Empty(parent);
+							Label(parent).SetText('"Distribution wastelands" are only placed at the start of the game');
+							Label(parent).SetText('"Runtime wastelands" are placed throughout the game, after the game has started');
 						end
 					})
 				}
