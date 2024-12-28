@@ -2,11 +2,22 @@
 
 require('__settings');
 
-local modDevMadeError = false;
-
 GLOBALS = {};
 
+local modDevMadeError = false;
+local settingHelpAreas = {};
+local canUseUIElementIsDestroyed = false;
+local save = nil;
+
 function Client_PresentConfigureUI(rootParent)
+	canUseUIElementIsDestroyed = WL and WL.IsVersionOrHigher and WL.IsVersionOrHigher('5.21');
+	save = function()
+		-- save because destroying otherwise goes back to default setting values
+		-- returns true if there isnt a error, false if there is an error
+
+		return Client_SaveConfigureUI(UI.Alert);
+	end
+
 	local root = UI.CreateVerticalLayoutGroup(rootParent);
 
 	if type(getSettings) ~= 'function' then
@@ -23,7 +34,7 @@ function Client_PresentConfigureUI(rootParent)
 
 	GLOBALS = {};
 
-	if (WL and WL.IsVersionOrHigher and WL.IsVersionOrHigher('5.21')) then
+	if canUseUIElementIsDestroyed then
 		UI.Destroy(root);
 	end
 
@@ -97,40 +108,103 @@ function cpcDoSetting(setting, vert)
 
 	if setting.inputType == 'radio' then
 		local vert3 = UI.CreateVerticalLayoutGroup(vert2);
+		local vert4 = UI.CreateVerticalLayoutGroup(vert3);
+		local vert5 = nil;
 		local selectedCheckbox = nil;
+		local selectedRadioButtonLabel = nil;
+
+		function getLabelFromOption(option)
+			return (type(option) == 'string' and option) or option.label;
+		end
+
+		function getLabelColorFromOption(option)
+			return (type(option) == 'table' and option.labelColor) or nil;
+		end
+
+		function updateLabelWithOption(label, option)
+			local text = getLabelFromOption(option);
+			local color = getLabelColorFromOption(option);
+
+			label.SetText(text);
+
+			if color then
+				label.SetColor(color);
+			end
+		end
+
+		function makeLabelFromOption(parent, option)
+			return createLabel(parent, {
+				label = getLabelFromOption(option)
+				labelColor = getLabelColorFromOption(option)
+			});
+		end
+
+		function listAllOptions()
+			if not vert5 then
+				vert5 = UI.CreateVerticalLayoutGroup(vert4);
+			end
+
+			for a, option in ipairs(setting.controls) do
+				local horz2 = UI.CreateHorizontalLayoutGroup(UI.CreateVerticalLayoutGroup(vert5));
+				local i = a;
+				local isSelectedCheckbox = i == initialSettingValue;
+				local checkbox = UI.CreateCheckBox(horz2)
+					.SetText('')
+					.SetIsChecked(isSelectedCheckbox);
+
+				makeLabelFromOption(horz2, option);
+
+				if isSelectedCheckbox then
+					Mod.Settings[setting.name] = i;
+					selectedCheckbox = checkbox;
+
+					if selectedRadioButtonLabel then
+						updateLabelWithOption(selectedRadioButtonLabel, option);
+					end
+				end
+
+				checkbox.SetOnClick(function()
+					Mod.Settings[setting.name] = i;
+
+					if selectedCheckbox then
+						selectedCheckbox.SetIsChecked(false);
+					end
+
+					checkbox.SetIsChecked(true);
+					selectedCheckbox = checkbox;
+
+					if selectedRadioButtonLabel then
+						updateLabelWithOption(selectedRadioButtonLabel, option);
+					end
+				end);
+			end
+		end
 
 		createLabel(horz, setting);
 		createHelpBtn(horz, UI.CreateVerticalLayoutGroup(vert3), setting);
 
-		for a, option in ipairs(setting.controls) do
-			local vert4 = UI.CreateVerticalLayoutGroup(vert3);
-			local horz2 = UI.CreateHorizontalLayoutGroup(vert4);
-			local i = a;
-			local isSelectedCheckbox = i == initialSettingValue;
-			local checkbox = UI.CreateCheckBox(horz2)
-				.SetText('')
-				.SetIsChecked(isSelectedCheckbox);
+		if canUseUIElementIsDestroyed then
+			local initialSelectedOption = setting.controls[initialSettingValue];
 
-			createLabel(horz2, {
-				label = (type(option) == 'string' and option) or option.label
-				labelColor = (type(option) == 'table' and option.labelColor) or nil
-			});
+			selectedRadioButtonLabel = makeLabelFromOption(horz, initialSelectedOption);
+			createExpandCollaseBtn(
+				horz,
+				true,
+				function()
+					-- if theres an error dont allow options to collapse
 
-			if isSelectedCheckbox then
-				Mod.Settings[setting.name] = i;
-				selectedCheckbox = checkbox;
-			end
-
-			checkbox.SetOnClick(function()
-				Mod.Settings[setting.name] = i;
-
-				if selectedCheckbox then
-					selectedCheckbox.SetIsChecked(false);
-				end
-
-				checkbox.SetIsChecked(true);
-				selectedCheckbox = checkbox;
-			end);
+					return save();
+				end,
+				function()
+					if not UI.IsDestroyed(vert5) then
+						UI.Destroy(vert5);
+						vert5 = nil;
+					end
+				end,
+				listAllOptions
+			);
+		else
+			listAllOptions();
 		end
 	elseif setting.inputType == 'bool' then
 		local vert3 = UI.CreateVerticalLayoutGroup(vert2);
@@ -163,9 +237,9 @@ function createLabel(parent, options)
 	if options.labelColor then
 		label.SetColor(options.labelColor);
 	end
-end
 
-local settingHelpAreas = {};
+	return label;
+end
 
 function createHelpBtn(btnParent, helpParent, setting)
 	if not setting.help then
@@ -195,13 +269,16 @@ function createHelpBtn(btnParent, helpParent, setting)
 	end);
 end
 
-function createExpandCollaseBtn(parent, onBeforeExpandOrCollapse, onCollapse, onExpand)
+function createExpandCollaseBtn(parent, startCollapsed, onBeforeExpandOrCollapse, onCollapse, onExpand)
 	local expandCollapseBtn = UI.CreateButton(parent);
+	local startText = (startCollapsed and getExpandBtnLabelTxt()) or getCollapseBtnLabelTxt();
 
 	expandCollapseBtn.SetColor('#23A0FF')
-	expandCollapseBtn.SetText(getCollapseBtnLabelTxt());
+	expandCollapseBtn.SetText(startText);
 	expandCollapseBtn.SetOnClick(function()
-		onBeforeExpandOrCollapse();
+		if not onBeforeExpandOrCollapse() then
+			return;
+		end
 
 		if expandCollapseBtn.GetText() == getExpandBtnLabelTxt() then
 			expandCollapseBtn.SetText(getCollapseBtnLabelTxt());
@@ -209,7 +286,7 @@ function createExpandCollaseBtn(parent, onBeforeExpandOrCollapse, onCollapse, on
 			expandCollapseBtn.SetText(getExpandBtnLabelTxt());
 		end
 
-		if (WL and WL.IsVersionOrHigher and WL.IsVersionOrHigher('5.21')) then
+		if canUseUIElementIsDestroyed then
 			onCollapse();
 		end
 
@@ -240,12 +317,12 @@ function cpcDoSettingGroup(setting, horz, vert)
 			setting.onExpand(btn, UI.CreateVerticalLayoutGroup(vert2));
 			cpc(vert2, setting.subsettings);
 		else
-			if not Client_SaveConfigureUI(UI.Alert) then
+			if not save() then
 				-- if theres an error dont allow settings to collapse
 				return;
 			end
 
-			if (WL and WL.IsVersionOrHigher and WL.IsVersionOrHigher('5.21')) then
+			if canUseUIElementIsDestroyed then
 				UI.Destroy(vert2);
 				vert2 = nil;
 			end
@@ -264,13 +341,11 @@ function cpcDoSettingBoolSubsettings(setting, horz, vert)
 	local makeExpandCollapseBtn = function()
 		expandCollapseBtn = createExpandCollaseBtn(
 			horz,
+			false,
 			function()
-				-- save because destroying otherwise goes back to default setting values
 				-- if theres an error dont allow settings to collapse
 
-				if not Client_SaveConfigureUI(UI.Alert) then
-					return;
-				end
+				return save();
 			end,
 			function()
 				if not UI.IsDestroyed(vert2) then
@@ -283,7 +358,7 @@ function cpcDoSettingBoolSubsettings(setting, horz, vert)
 	end
 
 	subsettingEnabledOrDisabled = function()
-		if not (WL and WL.IsVersionOrHigher and WL.IsVersionOrHigher('5.21')) then
+		if not canUseUIElementIsDestroyed then
 			if not expandCollapseBtn then
 				makeExpandCollapseBtn();
 			end
