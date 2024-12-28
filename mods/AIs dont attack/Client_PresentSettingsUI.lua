@@ -62,12 +62,25 @@ function cpsDoSetting(vert, setting)
 
 	if setting.inputType == 'radio' then
 		local control = setting.controls[settingValue];
-		local controlIsString = type(control) == 'string';
+		local controlIsTable = type(control) == 'table';
 
-		settingValueLabel.SetText(tostring((controlIsString and control) or control.label));
+		settingValueLabel.SetText(tostring((controlIsTable and control.label) or label));
 
-		if not controlIsString and control.labelColor then
-			settingValueLabel.SetColor(control.labelColor);
+		if controlIsTable then
+			if control.labelColor then
+				settingValueLabel.SetColor(control.labelColor);
+			end
+
+			if control.labelHelp then
+				-- make a fake setting to reuse createHelpBtn
+
+				local fakeSetting = {
+					name = setting.name .. tostring(settingValue),
+					help = control.labelHelp
+				};
+
+				createHelpBtn(horz, vert2, fakeSetting);
+			end
 		end
 	else
 		settingValueLabel.SetText(tostring(settingValue));
