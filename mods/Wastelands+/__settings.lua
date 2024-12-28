@@ -23,15 +23,16 @@ function getSettings()
 				Label(parent).SetText('The "Overlap mode" will decide how overlaps are dealt with');
 			end,
 			subsettings = {
-				addSetting('OverlapMode', 'Overlap mode', 'int', 1, {
-					minValue = 1,
-					maxValue = 4,
+				addSetting('OverlapMode', 'Overlap mode', 'radio', 1, {
+					controls = {
+						'Randomly choose which gets used',
+						'Newest overrides',
+						'Use smallest wasteland',
+						'Use largest wasteland'
+					},
 					help = function(parent)
 						Label(parent).SetText('In the event of wastelands randomly getting placed on top of each other, what should happen?');
-						Label(parent).SetText('1 = randomly choose which gets used');
-						Label(parent).SetText('2 = newest overrides');
-						Label(parent).SetText('3 = use smallest wasteland');
-						Label(parent).SetText('4 = use largest wasteland');
+						Label(parent).SetText('Only one option can be selected');
 					end
 				}),
 				addSetting('TreatAllNeutralsAsWastelands', 'Treat all neutrals as wastelands', 'bool', true, {
@@ -75,13 +76,14 @@ function getSettings()
 							Label(parent).SetText('Wastelands will have their size increased or lowered by up to this much');
 						end
 					}),
-					addSetting('W' .. tostring(n) .. 'Type', 'Wasteland type', 'int', 1, {
-						minValue = 1,
-						maxValue = 3,
+					addSetting('W' .. tostring(n) .. 'Type', 'Wasteland type', 'radio', 1, {
+						controls = {
+							'Distribution wasteland',
+							'Runtime wasteland',
+							'Distribution and Runtime wasteland'
+						},
 						help = function(parent)
-							Label(parent).SetText('1 = distribution wasteland');
-							Label(parent).SetText('2 = runtime wasteland');
-							Label(parent).SetText('3 = both');
+							Label(parent).SetText('Only one option can be selected');
 						end
 					})
 				}
