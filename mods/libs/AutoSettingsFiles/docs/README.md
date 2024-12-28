@@ -43,7 +43,7 @@ Forced keys:
 `control` - string (treated as table with key `label`) or table with keys:
 * `label` - string - summary of what the radio button does
 * `labelColor` - string or nil - color of `label` text
-* `labelHelp` - `function(parent)` or nil - gives a more detailed explanation of what the control does when a help button (?) is clicked
+* `labelHelp` - `function(parent)` or nil - gives a more detailed explanation of what the radio button does when a help button (?) is clicked
 ## addSettingTemplate
 In the event of wanting to have infinite groups of settings, setting templates can be used.
 
