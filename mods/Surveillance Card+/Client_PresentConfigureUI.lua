@@ -2,18 +2,29 @@
 
 require('__settings');
 
-local modDevMadeError = false;
-
 GLOBALS = {};
 
+local modDevMadeError = false;
+local settingHelpAreas = {};
+local canUseUIElementIsDestroyed = false;
+local save = nil;
+
 function Client_PresentConfigureUI(rootParent)
+	canUseUIElementIsDestroyed = WL and WL.IsVersionOrHigher and WL.IsVersionOrHigher('5.21');
+	save = function()
+		-- save because destroying otherwise goes back to default setting values
+		-- returns true if there isnt a error, false if there is an error
+
+		return Client_SaveConfigureUI(UI.Alert);
+	end
+
+	local root = UI.CreateVerticalLayoutGroup(rootParent);
+
 	if type(getSettings) ~= 'function' then
 		getSettings = function()
 			return nil;
 		end;
 	end
-
-	local root = UI.CreateVerticalLayoutGroup(rootParent);
 
 	cpc(root, getSettings());
 
@@ -23,7 +34,7 @@ function Client_PresentConfigureUI(rootParent)
 
 	GLOBALS = {};
 
-	if (WL and WL.IsVersionOrHigher and WL.IsVersionOrHigher('5.21')) then
+	if canUseUIElementIsDestroyed then
 		UI.Destroy(root);
 	end
 
@@ -49,68 +60,44 @@ function cpc(parent, settings)
 		end
 
 		if setting.isTemplate then
-			GLOBALS[setting.name] = Mod.Settings[setting.name] or 0;
-
-			local vert2 = UI.CreateVerticalLayoutGroup(vert);
-			local i = 1;
-
-			while i < (GLOBALS[setting.name] + 1) do
-				cpcDoSetting(vert2, setting.get(i));
-				i = i + 1;
-			end
-
-			local btn = UI.CreateButton(vert).SetColor(setting.btnColor or '#00FF05').SetText(setting.btnText);
-
-			if setting.btnTextColor then
-				btn.SetTextColor(setting.btnTextColor);
-			end
-
-			btn.SetOnClick(function()
-				GLOBALS[setting.name] = GLOBALS[setting.name] + 1;
-				cpcDoSetting(vert2, setting.get(GLOBALS[setting.name]));
-			end);
+			cpcDoTemplate(setting, vert);
 		else
-			cpcDoSetting(vert, setting);
+			cpcDoSetting(setting, vert);
 		end
 	end
 end
 
-function cpcDoSetting(vert, setting)
+function cpcDoTemplate(setting, vert)
+	GLOBALS[setting.name] = Mod.Settings[setting.name] or 0;
+
+	local vert2 = UI.CreateVerticalLayoutGroup(vert);
+	local i = 1;
+
+	while i < (GLOBALS[setting.name] + 1) do
+		cpcDoSetting(setting.get(i), vert2);
+		i = i + 1;
+	end
+
+	local btn = UI.CreateButton(vert)
+		.SetColor(setting.btnColor or '#00FF05')
+		.SetText(setting.btnText);
+
+	if setting.btnTextColor then
+		btn.SetTextColor(setting.btnTextColor);
+	end
+
+	btn.SetOnClick(function()
+		GLOBALS[setting.name] = GLOBALS[setting.name] + 1;
+		cpcDoSetting(setting.get(GLOBALS[setting.name]), vert2);
+	end);
+end
+
+function cpcDoSetting(setting, vert)
 	local horz = UI.CreateHorizontalLayoutGroup(vert);
 	local vert2 = UI.CreateVerticalLayoutGroup(vert);
 
 	if setting.isGroup then
-		local btn = UI.CreateButton(horz).SetText(setting.btnText);
-
-		if setting.btnColor then
-			btn.SetColor(setting.btnColor);
-		end
-
-		if setting.btnTextColor then
-			btn.SetTextColor(setting.btnTextColor);
-		end
-
-		local vert3 = nil;
-
-		btn.SetOnClick(function()
-			if not vert3 then
-				vert3 = UI.CreateVerticalLayoutGroup(vert2);
-				setting.onExpand(btn, UI.CreateVerticalLayoutGroup(vert3));
-				cpc(vert3, setting.subsettings);
-			else
-				if not Client_SaveConfigureUI(UI.Alert) then
-					-- if theres an error dont allow settings to collapse
-					return;
-				end
-
-				if (WL and WL.IsVersionOrHigher and WL.IsVersionOrHigher('5.21')) then
-					UI.Destroy(vert3);
-					vert3 = nil;
-				end
-			end
-		end);
-
-		return;
+		return cpcDoSettingGroup(setting, horz, vert2);
 	end
 
 	local initialSettingValue = Mod.Settings[setting.name];
@@ -120,178 +107,304 @@ function cpcDoSetting(vert, setting)
 	end
 
 	if setting.inputType == 'radio' then
-		local label = UI.CreateLabel(horz).SetText(setting.label);
+		local vert3 = UI.CreateVerticalLayoutGroup(vert2);
+		local vert4 = UI.CreateVerticalLayoutGroup(vert3);
+		local vert5 = nil;
+		local selectedCheckbox = nil;
+		local selectedRadioButtonLabel = nil;
 
-		if setting.labelColor then
-			label.SetColor(setting.labelColor);
+		function getLabelFromOption(option)
+			return (type(option) == 'string' and option) or option.label;
 		end
 
-		local vert3 = UI.CreateVerticalLayoutGroup(vert2);
+		function getLabelColorFromOption(option)
+			return (type(option) == 'table' and option.labelColor) or nil;
+		end
 
-		createHelpBtn(horz, UI.CreateVerticalLayoutGroup(vert3), setting);
+		function updateLabelWithOption(label, option)
+			local text = getLabelFromOption(option);
+			local color = getLabelColorFromOption(option);
 
-		local horz2 = UI.CreateHorizontalLayoutGroup(vert2);
-		local selectedCheckbox = nil;
+			label.SetText(text);
 
-		for a, option in ipairs(setting.controls) do
-			local i = a;
-			local isSelectedCheckbox = i == initialSettingValue;
-			local checkbox = UI.CreateCheckBox(horz2).SetText('').SetIsChecked(isSelectedCheckbox);
-			local checkboxLabel = UI.CreateLabel(horz2).SetText((type(option) == 'string' and option) or option.label);
+			if color then
+				label.SetColor(color);
+			end
+		end
 
-			if option.labelColor then
-				checkboxLabel.SetColor(option.labelColor);
+		function makeLabelFromOption(parent, option)
+			return createLabel(parent, {
+				label = getLabelFromOption(option)
+				labelColor = getLabelColorFromOption(option)
+			});
+		end
+
+		function listAllOptions()
+			if not vert5 then
+				vert5 = UI.CreateVerticalLayoutGroup(vert4);
 			end
 
-			if isSelectedCheckbox then
-				Mod.Settings[setting.name] = i;
-				selectedCheckbox = checkbox;
-			end
+			for a, option in ipairs(setting.controls) do
+				local horz2 = UI.CreateHorizontalLayoutGroup(UI.CreateVerticalLayoutGroup(vert5));
+				local i = a;
+				local isSelectedCheckbox = i == initialSettingValue;
+				local checkbox = UI.CreateCheckBox(horz2)
+					.SetText('')
+					.SetIsChecked(isSelectedCheckbox);
 
-			checkbox.SetOnClick(function()
-				Mod.Settings[setting.name] = i;
+				makeLabelFromOption(horz2, option);
 
-				if selectedCheckbox then
-					selectedCheckbox.SetIsChecked(false);
+				if isSelectedCheckbox then
+					Mod.Settings[setting.name] = i;
+					selectedCheckbox = checkbox;
+
+					if selectedRadioButtonLabel then
+						updateLabelWithOption(selectedRadioButtonLabel, option);
+					end
 				end
 
-				checkbox.SetIsChecked(true);
-				selectedCheckbox = checkbox;
-			end);
+				checkbox.SetOnClick(function()
+					Mod.Settings[setting.name] = i;
+
+					if selectedCheckbox then
+						selectedCheckbox.SetIsChecked(false);
+					end
+
+					checkbox.SetIsChecked(true);
+					selectedCheckbox = checkbox;
+
+					if selectedRadioButtonLabel then
+						updateLabelWithOption(selectedRadioButtonLabel, option);
+					end
+				end);
+			end
+		end
+
+		createLabel(horz, setting);
+		createHelpBtn(horz, UI.CreateVerticalLayoutGroup(vert3), setting);
+
+		if canUseUIElementIsDestroyed then
+			local initialSelectedOption = setting.controls[initialSettingValue];
+
+			selectedRadioButtonLabel = makeLabelFromOption(horz, initialSelectedOption);
+			createExpandCollaseBtn(
+				horz,
+				true,
+				function()
+					-- if theres an error dont allow options to collapse
+
+					return save();
+				end,
+				function()
+					if not UI.IsDestroyed(vert5) then
+						UI.Destroy(vert5);
+						vert5 = nil;
+					end
+				end,
+				listAllOptions
+			);
+		else
+			listAllOptions();
 		end
 	elseif setting.inputType == 'bool' then
+		local vert3 = UI.CreateVerticalLayoutGroup(vert2);
+
+		-- colors dont take affect on checkbox labels
+		-- so use empty checkbox label and make an actual label
+
 		GLOBALS[setting.name] = UI.CreateCheckBox(horz)
 			.SetText('')
 			.SetIsChecked(initialSettingValue);
 
-		-- colors dont take affect on checkbox labels so make an actual label
-		local label = UI.CreateLabel(horz).SetText(setting.label);
-
-		if setting.labelColor then
-			label.SetColor(setting.labelColor);
-		end
-
-		local vert3 = UI.CreateVerticalLayoutGroup(vert2);
-
+		createLabel(horz, setting);
 		createHelpBtn(horz, UI.CreateVerticalLayoutGroup(vert3), setting);
-
-		if setting.subsettings then
-			local expandCollapseBtn = nil;
-			local expandCollapseBtnClicked;
-			local subsettingEnabledOrDisabled;
-			local vert4 = nil;
-
-			expandCollapseBtnClicked = function()
-				-- save - destroying otherwise goes back to default setting values
-
-				if not Client_SaveConfigureUI(UI.Alert) then
-					-- if theres an error dont allow settings to collapse
-					return;
-				end
-
-				if expandCollapseBtn.GetText() == getExpandBtnLabelTxt() then
-					expandCollapseBtn.SetText(getCollapseBtnLabelTxt());
-				else
-					expandCollapseBtn.SetText(getExpandBtnLabelTxt());
-				end
-
-				if (WL and WL.IsVersionOrHigher and WL.IsVersionOrHigher('5.21')) then
-					if not UI.IsDestroyed(vert4) then
-						UI.Destroy(vert4);
-						vert4 = nil;
-					end
-				end
-
-				if expandCollapseBtn.GetText() == getCollapseBtnLabelTxt() then
-					subsettingEnabledOrDisabled();
-				end
-			end
-
-			subsettingEnabledOrDisabled = function()
-				if not (WL and WL.IsVersionOrHigher and WL.IsVersionOrHigher('5.21')) then
-					if not expandCollapseBtn then
-						expandCollapseBtn = UI.CreateButton(horz);
-						expandCollapseBtn.SetColor('#23A0FF')
-						expandCollapseBtn.SetText(getCollapseBtnLabelTxt());
-						expandCollapseBtn.SetOnClick(expandCollapseBtnClicked);
-					end
-
-					if not vert4 then
-						vert4 = UI.CreateVerticalLayoutGroup(vert3);
-						cpc(vert4, setting.subsettings);
-					end
-				elseif GLOBALS[setting.name].GetIsChecked() then
-					if UI.IsDestroyed(expandCollapseBtn) then
-						expandCollapseBtn = UI.CreateButton(horz);
-						expandCollapseBtn.SetColor('#23A0FF')
-						expandCollapseBtn.SetText(getCollapseBtnLabelTxt());
-						expandCollapseBtn.SetOnClick(expandCollapseBtnClicked);
-					end
-
-					vert4 = UI.CreateVerticalLayoutGroup(vert3);
-					cpc(vert4, setting.subsettings);
-				elseif not UI.IsDestroyed(vert4) then
-					UI.Destroy(expandCollapseBtn);
-					UI.Destroy(vert4);
-				end
-			end
-
-			GLOBALS[setting.name].SetOnValueChanged(subsettingEnabledOrDisabled);
-			subsettingEnabledOrDisabled();
-		end
+		cpcDoSettingBoolSubsettings(setting, horz, vert3);
 	else
-		local label = UI.CreateLabel(horz).SetText(setting.label);
-
-		if setting.labelColor then
-			label.SetColor(setting.labelColor);
-		end
-
+		createLabel(horz, setting)
 		createHelpBtn(horz, vert2, setting);
 
 		if setting.inputType == 'text' then
-			GLOBALS[setting.name] = UI.CreateTextInputField(horz).SetText(initialSettingValue);
-
-			if setting.placeholder then
-				GLOBALS[setting.name].SetPlaceholderText(setting.placeholder);
-			end
-
-			if setting.charLimit then
-				GLOBALS[setting.name].SetCharacterLimit(setting.charLimit);
-			end
+			makeTextInput(setting, horz);
 		elseif setting.inputType == 'int' or setting.inputType == 'float' then
-			GLOBALS[setting.name] = UI.CreateNumberInputField(horz);
-
-			if setting.inputType == 'float' then
-				GLOBALS[setting.name].SetWholeNumbers(false);
-			end
-
-			GLOBALS[setting.name]
-				.SetSliderMinValue(setting.minValue)
-				.SetSliderMaxValue(setting.maxValue)
-				.SetValue(initialSettingValue);
+			makeNumberInput(setting, horz);
 		end
 	end
 end
 
-local settingHelpAreas = {};
+function createLabel(parent, options)
+	local label = UI.CreateLabel(parent).SetText(options.label);
+
+	if options.labelColor then
+		label.SetColor(options.labelColor);
+	end
+
+	return label;
+end
 
 function createHelpBtn(btnParent, helpParent, setting)
 	if not setting.help then
 		return;
 	end
 
+	function showHelp()
+		settingHelpAreas[setting.name] = UI.CreateVerticalLayoutGroup(helpParent);
+		setting.help(settingHelpAreas[setting.name]);
+	end
+
+	function hideHelp()
+		UI.Destroy(settingHelpAreas[setting.name]);
+		settingHelpAreas[setting.name] = nil;
+	end
+
 	UI.CreateButton(btnParent).SetText('?').SetColor('#23A0FF').SetOnClick(function()
 		if not (WL and WL.IsVersionOrHigher and WL.IsVersionOrHigher('5.21')) then
 			if not settingHelpAreas[setting.name] then
-				settingHelpAreas[setting.name] = UI.CreateVerticalLayoutGroup(helpParent);
-				setting.help(settingHelpAreas[setting.name]);
+				showHelp();
 			end
 		elseif UI.IsDestroyed(settingHelpAreas[setting.name]) then
-			settingHelpAreas[setting.name] = UI.CreateVerticalLayoutGroup(helpParent);
-			setting.help(settingHelpAreas[setting.name]);
+			showHelp();
 		else
-			UI.Destroy(settingHelpAreas[setting.name]);
-			settingHelpAreas[setting.name] = nil;
+			hideHelp();
 		end
 	end);
+end
+
+function createExpandCollaseBtn(parent, startCollapsed, onBeforeExpandOrCollapse, onCollapse, onExpand)
+	local expandCollapseBtn = UI.CreateButton(parent);
+	local startText = (startCollapsed and getExpandBtnLabelTxt()) or getCollapseBtnLabelTxt();
+
+	expandCollapseBtn.SetColor('#23A0FF')
+	expandCollapseBtn.SetText(startText);
+	expandCollapseBtn.SetOnClick(function()
+		if not onBeforeExpandOrCollapse() then
+			return;
+		end
+
+		if expandCollapseBtn.GetText() == getExpandBtnLabelTxt() then
+			expandCollapseBtn.SetText(getCollapseBtnLabelTxt());
+		else
+			expandCollapseBtn.SetText(getExpandBtnLabelTxt());
+		end
+
+		if canUseUIElementIsDestroyed then
+			onCollapse();
+		end
+
+		if expandCollapseBtn.GetText() == getCollapseBtnLabelTxt() then
+			onExpand();
+		end
+	end);
+
+	return expandCollapseBtn;
+end
+
+function cpcDoSettingGroup(setting, horz, vert)
+	local btn = UI.CreateButton(horz).SetText(setting.btnText);
+
+	if setting.btnColor then
+		btn.SetColor(setting.btnColor);
+	end
+
+	if setting.btnTextColor then
+		btn.SetTextColor(setting.btnTextColor);
+	end
+
+	local vert2 = nil;
+
+	btn.SetOnClick(function()
+		if not vert2 then
+			vert2 = UI.CreateVerticalLayoutGroup(vert);
+			setting.onExpand(btn, UI.CreateVerticalLayoutGroup(vert2));
+			cpc(vert2, setting.subsettings);
+		else
+			if not save() then
+				-- if theres an error dont allow settings to collapse
+				return;
+			end
+
+			if canUseUIElementIsDestroyed then
+				UI.Destroy(vert2);
+				vert2 = nil;
+			end
+		end
+	end);
+end
+
+function cpcDoSettingBoolSubsettings(setting, horz, vert)
+	if not setting.subsettings then
+		return;
+	end
+
+	local expandCollapseBtn = nil;
+	local subsettingEnabledOrDisabled;
+	local vert2 = nil;
+	local makeExpandCollapseBtn = function()
+		expandCollapseBtn = createExpandCollaseBtn(
+			horz,
+			false,
+			function()
+				-- if theres an error dont allow settings to collapse
+
+				return save();
+			end,
+			function()
+				if not UI.IsDestroyed(vert2) then
+					UI.Destroy(vert2);
+					vert2 = nil;
+				end
+			end,
+			subsettingEnabledOrDisabled
+		);
+	end
+
+	subsettingEnabledOrDisabled = function()
+		if not canUseUIElementIsDestroyed then
+			if not expandCollapseBtn then
+				makeExpandCollapseBtn();
+			end
+
+			if not vert2 then
+				vert2 = UI.CreateVerticalLayoutGroup(vert);
+				cpc(vert2, setting.subsettings);
+			end
+		elseif GLOBALS[setting.name].GetIsChecked() then
+			if UI.IsDestroyed(expandCollapseBtn) then
+				makeExpandCollapseBtn();
+			end
+
+			vert2 = UI.CreateVerticalLayoutGroup(vert);
+			cpc(vert2, setting.subsettings);
+		elseif not UI.IsDestroyed(vert2) then
+			UI.Destroy(expandCollapseBtn);
+			UI.Destroy(vert2);
+		end
+	end
+
+	GLOBALS[setting.name].SetOnValueChanged(subsettingEnabledOrDisabled);
+	subsettingEnabledOrDisabled();
+end
+
+function makeTextInput(setting, horz)
+	GLOBALS[setting.name] = UI.CreateTextInputField(horz).SetText(initialSettingValue);
+
+	if setting.placeholder then
+		GLOBALS[setting.name].SetPlaceholderText(setting.placeholder);
+	end
+
+	if setting.charLimit then
+		GLOBALS[setting.name].SetCharacterLimit(setting.charLimit);
+	end
+end
+
+function makeNumberInput(setting, horz)
+	GLOBALS[setting.name] = UI.CreateNumberInputField(horz);
+
+	if setting.inputType == 'float' then
+		GLOBALS[setting.name].SetWholeNumbers(false);
+	end
+
+	GLOBALS[setting.name]
+		.SetSliderMinValue(setting.minValue)
+		.SetSliderMaxValue(setting.maxValue)
+		.SetValue(initialSettingValue);
 end
