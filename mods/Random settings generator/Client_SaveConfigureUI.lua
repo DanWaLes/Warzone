@@ -18,7 +18,6 @@ function Client_SaveConfigureUI(alert)
 
 	local settings = getSettings()
 
-	initaliseSettingValues(settings);
 	csc(settings);
 
 	if modDevMadeError then
@@ -73,13 +72,14 @@ function csc(settings)
 end
 
 function cscDoSetting(setting)
+	if setting.inputType == 'radio' then
+		-- explicitly written to in Client_PresentConfigureUI
+		return;
+	end
+
 	local settingVal;
 
-	if setting.isGroup then
-		csc(setting.subsettings);
-
-		return;
-	elseif setting.inputType == 'bool' then
+	if setting.inputType == 'bool' then
 		settingVal = GLOBALS[setting.name].GetIsChecked();
 	elseif setting.inputType == 'text' then
 		settingVal = GLOBALS[setting.name].GetText();
@@ -153,44 +153,6 @@ function cscDoSetting(setting)
 	if settingVal and setting.inputType == 'bool' and setting.subsettings then
 		csc(setting.subsettings);
 	end
-end
-
-function initaliseSettingValues(settings)
-	-- initialise setting values, might not be initialised because of setting groups
-
-	if Mod.Settings.INITALISED_SETTING_VALUES then
-		return;
-	end
-
-	if type(settings) ~= 'table' then
-		modDevMadeError = true;
-
-		return;
-	end
-
-	for _, setting in ipairs(settings) do
-		if type(setting) == 'table' and setting.isGroup then
-			if type(setting.subsettings) ~= 'table' then
-				modDevMadeError = true;
-
-				return;
-			end
-
-			for _, ss in ipairs(setting.subsettings)
-				if type(ss) == 'table' then
-					if ss.isGroup then
-						initaliseSettingValues(ss.subsettings);
-					elseif type(ss.name) == 'string' then
-						if Mod.Settings[ss.name] == nil then
-							Mod.Settings[ss.name] = ss.defaultValue;
-						end
-					end
-				end
-			end
-		end
-	end
-
-	Mod.Settings.INITALISED_SETTING_VALUES = true;
 end
 
 function round(n, dp)

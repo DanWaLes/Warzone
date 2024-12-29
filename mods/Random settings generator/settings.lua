@@ -42,10 +42,9 @@ function addSetting(name, label, inputType, defaultValue, otherProps)
 
 	local setting = {name = name, label = label, inputType = inputType, defaultValue = defaultValue};
 
-	if inputType ~= 'radio' then
-		if otherProps == nil then
-			return setting;
-		end
+	if otherProps == nil and inputType == 'bool' then
+		-- bool doesnt have any forced props
+		return setting;
 	end
 
 	if type(otherProps) ~= 'table' then
@@ -237,10 +236,10 @@ function addSetting(name, label, inputType, defaultValue, otherProps)
 					return;
 				end
 
-				if not (not value.labelHelp or type(value.labelHelp) == 'function') then
-					print('addSetting error: otherProps.controls[' .. i .. '].labelHelp must be falsey or a function(parent)');
+				if not (not value.help or type(value.help) == 'function') then
+					print('addSetting error: otherProps.controls[' .. i .. '].help must be falsey or a function(parent)');
 					print('name = ' .. name);
-					print('otherProps.controls[' .. i .. '].labelHelp = ' .. tostring(otherProps.controls[i].labelHelp));
+					print('otherProps.controls[' .. i .. '].help = ' .. tostring(otherProps.controls[i].help));
 
 					return;
 				end
@@ -331,7 +330,11 @@ function addSettingTemplate(name, btnText, options, get)
 			return;
 		end
 
-		-- cant do checkbox label color
+		if tmp.labelColor and type(tmp.labelColor) ~= 'nil') then
+			print('addSettingTemplate error: get(n).labelColor must be nil or a string');
+			print('name = ' .. name);
+			print('get(n).labelColor = ' .. tostring(tmp.labelColor));
+		end
 
 		if type(tmp.settings) ~= 'table' then
 			print('addSettingTemplate error: get(n).settings must be a table');
@@ -351,8 +354,6 @@ function addSettingTemplate(name, btnText, options, get)
 
 				return;
 			end
-
-			tmp.settings[i].name = setting.name .. '_' .. n .. '_' .. name;
 		end
 
 		return {
@@ -367,86 +368,12 @@ function addSettingTemplate(name, btnText, options, get)
 	return setting;
 end
 
--- used to keep track of which areas exist in Client_PresentSettingsUI
-local numsSettingGroups = 0;
-
-function addSettingGroup(btnTxt, options, settings)
-	numsSettingGroups = numsSettingGroups + 1;
-
-	if type(btnText) ~= 'string' then
-		print('addSettingGroup error: btnText must be a string');
-		print('btnText = ' .. tostring(btnText));
-
-		return;
-	end
-
-	if options == nil then
-		options = {};
-	end
-
-	if type(options) ~= 'table' then
-		print('addSettingGroup error: options must be a table or nil');
-		print('btnText = ' .. btnText);
-		print('options = ' .. tostring(options));
-
-		return;
-	end
-
-	if options.onExpand == nil then
-		options.onExpand = function() end;
-	end
-
-	if type(options.onExpand) ~= 'function' then
-		print('addSettingGroup error: options.onExpand must be a function(vert) or nil');
-		print('btnText = ' .. btnText);
-		print('options.onExpand = ' .. tostring(options.onExpand));
-
-		return;
-	end
-
-	-- this doesnt need to use options.bkwards
-	return {
-		isGroup = true,
-		btnText = btnText,
-		btnColor = options.btnColor,
-		btnTextColor = options.btnTextColor,
-		onExpand = options.onExpand,
-		subsettings: settings,
-		ID = numsSettingGroups
-	};
-end
-
-function getSetting(name, template)
+function getSetting(name)
 	if type(name) ~= 'string' then
 		print('getSetting error: name must be a string');
 		print('name = ' .. tostring(name));
 
 		return;
-	end
-
-	if template ~= nil then
-		if type(template) ~= 'table' then
-			print('getSetting error: template must be a table or non-existent');
-			print('template = ' .. tostring(template));
-
-			return;
-		end
-
-		if type(template.n) ~= 'number' then
-			print('getSetting error: template.n must be a number');
-			print('template.n = ' .. tostring(template.n));
-
-			return;
-		end
-
-		if type(template.name) ~= 'string' then
-			print('getSetting error: template.name must be a string');
-			print('template.name = ' .. tostring(template.name));
-
-			return;
-		end
-
-		name = name .. '_' .. template.n .. '_' .. template.name;
 	end
 
 	if Mod.Settings[name] == nil then
