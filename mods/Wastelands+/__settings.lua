@@ -79,19 +79,19 @@ function getSettings()
 						controls = {
 							{
 								label = 'Distribution wasteland',
-								labelHelp = function(parent)
+								help = function(parent)
 									Label(parent).SetText('These are only placed at the start of the game');
 								end
 							},
 							{
 								label = 'Runtime wasteland',
-								labelHelp = function(parent)
+								help = function(parent)
 									Label(parent).SetText('These are placed throughout the game, after the game has started');
 								end
 							},
 							{
 								label = 'Distribution and Runtime wasteland',
-								labelHelp = function(parent)
+								help = function(parent)
 									Label(parent).SetText('These are placed both at the start of the game and throught the game');
 								end
 							}

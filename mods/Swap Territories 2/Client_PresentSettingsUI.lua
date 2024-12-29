@@ -26,25 +26,6 @@ end
 function cpsDoSetting(vert, setting)
 	local vert2 = UI.CreateVerticalLayoutGroup(vert);
 	local horz = UI.CreateHorizontalLayoutGroup(vert2);
-
-	if setting.isGroup then
-		local btn = UI.CreateButton(horz).SetText(setting.btnText);
-
-		if setting.btnColor then
-			btn.SetColor(setting.btnColor);
-		end
-
-		if setting.btnTextColor then
-			btn.SetTextColor(setting.btnTextColor);
-		end
-
-		btn.SetOnClick(function()
-			settingGroupBtnClicked(btn, vert2, setting);
-		end);
-
-		return;
-	end
-
 	local settingLabel = UI.CreateLabel(horz).SetText(setting.label .. ': ');
 	local settingValue = Mod.Settings[setting.name];
 
@@ -71,12 +52,12 @@ function cpsDoSetting(vert, setting)
 				settingValueLabel.SetColor(control.labelColor);
 			end
 
-			if control.labelHelp then
+			if control.help then
 				-- make a fake setting to reuse createHelpBtn
 
 				local fakeSetting = {
 					name = setting.name .. tostring(settingValue),
-					help = control.labelHelp
+					help = control.help
 				};
 
 				createHelpBtn(horz, vert2, fakeSetting);
@@ -135,24 +116,5 @@ function expandCollapseSubSettingBtnClicked(btn, detailsParent, setting)
 		UI.Destroy(subsettingsAreas[setting.name]);
 		subsettingsAreas[setting.name] = nil;
 		btn.SetText(getExpandBtnLabelTxt());
-	end
-end
-
-local settingGroupAreas = {};
-
-function settingGroupBtnClicked(btn, detailsParent, setting)
-	if not (WL and WL.IsVersionOrHigher and WL.IsVersionOrHigher('5.21')) then
-		if not settingGroupAreas[setting.ID] then
-			settingGroupAreas[setting.ID] = UI.CreateVerticalLayoutGroup(detailsParent);
-			setting.onExpand(btn, UI.CreateVerticalLayoutGroup(settingGroupAreas[setting.ID]));
-			cps(settingGroupAreas[setting.ID], setting.subsettings);
-		end
-	elseif UI.IsDestroyed(settingGroupAreas[setting.ID]) then
-		settingGroupAreas[setting.ID] = UI.CreateVerticalLayoutGroup(detailsParent);
-		setting.onExpand(UI.CreateVerticalLayoutGroup(settingGroupAreas[setting.ID]));
-		cps(settingGroupAreas[setting.ID], setting.subsettings);
-	else
-		UI.Destroy(settingGroupAreas[setting.ID]);
-		settingGroupAreas[setting.ID] = nil;
 	end
 end
