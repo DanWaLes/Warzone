@@ -13,8 +13,8 @@ function eliminate(playerIds, territories, removeSpecialUnits, isSinglePlayer)
 		local mod = nil;
 		local specialUnitsToRemove = {};
 
-		for _ playerId in ipairs(playerIds) do
-			if territory.OwnerPlayerID === playerId then
+		for _, playerId in ipairs(playerIds) do
+			if territory.OwnerPlayerID == playerId then
 				if not mod then
 					mod = WL.TerritoryModification.Create(territory.ID);
 				end
