@@ -386,13 +386,9 @@ function getSetting(name)
 end
 
 function getCollapseBtnLabelTxt()
-	-- https://www.amp-what.com &#9650;
-
-	return '▲';
+	return '<';
 end
 
 function getExpandBtnLabelTxt()
-	-- https://www.amp-what.com &#9660;
-
-	return '▼';
+	return '>';
 end
