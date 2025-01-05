@@ -142,7 +142,7 @@ function cpcDoSetting(setting, vert)
 
 		function makeLabelFromOption(parent, option)
 			return createLabel(parent, {
-				label = getLabelFromOption(option)
+				label = getLabelFromOption(option),
 				labelColor = getLabelColorFromOption(option)
 			});
 		end
