@@ -133,7 +133,7 @@ function addSetting(name, label, inputType, defaultValue, otherProps)
 		if (setting.minValue > setting.maxValue) or (setting.maxValue < setting.minValue) then
 			print('addSetting error: otherProps.minValue must be lower than otherProps.maxValue and otherProps.maxValue must be higher than otherProps.minValue');
 			print('name = ' .. name);
-			print('minValue = ' .. tostring(setting.minValue);
+			print('minValue = ' .. tostring(setting.minValue));
 			print('maxValue = ' .. tostring(setting.maxValue));
 
 			return;
@@ -330,7 +330,7 @@ function addSettingTemplate(name, btnText, options, get)
 			return;
 		end
 
-		if tmp.labelColor and type(tmp.labelColor) ~= 'nil') then
+		if tmp.labelColor and type(tmp.labelColor) ~= 'nil' then
 			print('addSettingTemplate error: get(n).labelColor must be nil or a string');
 			print('name = ' .. name);
 			print('get(n).labelColor = ' .. tostring(tmp.labelColor));
