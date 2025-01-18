@@ -108,7 +108,7 @@ function Server_AdvanceTurn_Order(Game, order, result, skipThisOrder, addNewOrde
 
 	print('both territories in different bonuses');
 
-	local gameTurnNumber = game.ServerGame.Game.TurnNumber;
+	local gameTurnNumber = game.ServerGame.Game.TurnNumber - 1;
 	local fromIsActiveLockdown = fromInLockedDownRegion and (Mod.PublicGameData.lockedDownRegions[fromInLockedDownRegion] <= gameTurnNumber);
 	local toIsActiveLockdown = toInLockedDownRegion and (Mod.PublicGameData.lockedDownRegions[toInLockedDownRegion] <= gameTurnNumber);
 	local bothInActiveLockdown = fromIsActiveLockdown and toIsActiveLockdown;
