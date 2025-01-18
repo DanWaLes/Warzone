@@ -71,6 +71,8 @@ function Server_AdvanceTurn_Order(Game, order, result, skipThisOrder, addNewOrde
 		return;
 	end
 
+	print('in attack/trasfer or airlift order');
+
 	local movementType = 'attack/transfer';
 	local fromKey = 'From';
 	local toKey = 'To';
@@ -89,23 +91,38 @@ function Server_AdvanceTurn_Order(Game, order, result, skipThisOrder, addNewOrde
 	local toTerr = game.Map.Territories[to];
 	local toInLockedDownRegion = territoryInLockedDownRegion(toTerr.ID);
 
+	print('from', from);
+	print('to', to);
+	print('fromInLockedDownRegion', fromInLockedDownRegion);
+	print('toInLockedDownRegion', toInLockedDownRegion);
+
 	if fromInLockedDownRegion == toInLockedDownRegion then
 		-- if neither or both territories are in the same bonus
 		-- let the army movement happen
 
+		print('neither or both territories in same bonus');
 		return;
 	end
+
+	print('both territories in different bonuses');
 
 	local fromIsActiveLockdown = fromInLockedDownRegion and (Mod.PublicGameData.lockedDownRegions[fromInLockedDownRegion] <= game.ServerGame.Game.TurnNumber);
 	local toIsActiveLockdown = toInLockedDownRegion and (Mod.PublicGameData.lockedDownRegions[toInLockedDownRegion] <= game.ServerGame.Game.TurnNumber);
 	local bothInActiveLockdown = fromIsActiveLockdown and toIsActiveLockdown;
 
+	print('fromIsActiveLockdown', fromIsActiveLockdown);
+	print('toIsActiveLockdown', toIsActiveLockdown);
+	print('bothInActiveLockdown', bothInActiveLockdown);
+
 	if not (fromIsActiveLockdown or toIsActiveLockdown) then
 		-- if neither of the territories are in an active lockdown
 		-- let the army movement happen
 
+		print('neither of the territories are in an active lockdown');
 		return;
 	end
+
+	print('skipped order');
 
 	skipThisOrder(WL.ModOrderControl.SkipAndSupressSkippedMessage);
 
