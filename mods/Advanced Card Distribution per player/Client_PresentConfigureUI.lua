@@ -255,9 +255,9 @@ function cpcDoSetting(setting, vert)
 		createHelpBtn(horz, vert2, setting);
 
 		if setting.inputType == 'text' then
-			makeTextInput(setting, horz);
+			makeTextInput(setting, horz, initialSettingValue);
 		elseif setting.inputType == 'int' or setting.inputType == 'float' then
-			makeNumberInput(setting, horz);
+			makeNumberInput(setting, horz, initialSettingValue);
 		end
 	end
 end
@@ -388,7 +388,7 @@ function cpcDoSettingBoolSubsettings(setting, horz, vert)
 	subsettingEnabledOrDisabled();
 end
 
-function makeTextInput(setting, horz)
+function makeTextInput(setting, horz, initialSettingValue)
 	GLOBALS[setting.name] = UI.CreateTextInputField(horz).SetText(initialSettingValue);
 
 	if setting.placeholder then
@@ -400,7 +400,7 @@ function makeTextInput(setting, horz)
 	end
 end
 
-function makeNumberInput(setting, horz)
+function makeNumberInput(setting, horz, initialSettingValue)
 	GLOBALS[setting.name] = UI.CreateNumberInputField(horz);
 
 	if setting.inputType == 'float' then
