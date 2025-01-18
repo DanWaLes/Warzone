@@ -85,7 +85,7 @@ function makeHostMenu(storage, vert)
 		function selectBonusBtnClicked()
 			selectBonusBtn.SetInteractable(false);
 			selectedBonus = nil;
-			selectBonusBtn.SetText('(selecting)');
+			selectBonusBtn.SetText('(select a bonus on the map)');
 
 			errorLabel.SetText('');
 
@@ -120,7 +120,7 @@ function makeHostMenu(storage, vert)
 				-- for some reason these have to explicitly be done here
 				-- even though it should happen fine in the function
 				selectBonusBtn.SetInteractable(false);
-				selectBonusBtn.SetText('(selecting)');
+				selectBonusBtn.SetText('(select a bonus on the map)');
 			end);
 
 			selectBonusFromListVert = Vert(selectBonusFromListVertContainer);
