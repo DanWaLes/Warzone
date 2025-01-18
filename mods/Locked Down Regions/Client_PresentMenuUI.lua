@@ -104,15 +104,15 @@ function makeHostMenu(storage, vert)
 			selectBonusFromOption = Horz(selectBonusFromOptionContainer);
 			Label(selectBonusFromOption).SetText('or');
 
-			local choseFromListBtn = Btn(selectBonusFromOption).SetText('chose from a list');
+			local chooseFromListBtn = Btn(selectBonusFromOption).SetText('choose from a list');
 
-			choseFromListBtn.SetOnClick(function()
-				choseFromListBtn.SetInteractable(false);
-				makeChoseFromListMenu();
+			chooseFromListBtn.SetOnClick(function()
+				chooseFromListBtn.SetInteractable(false);
+				makeChooseFromListMenu();
 			end);
 		end
 
-		function makeChoseFromListMenu()
+		function makeChooseFromListMenu()
 			UI.Destroy(selectBonusBtn);
 			selectBonusBtn = Btn(selectBonusBtnContainer).SetText('select');
 			selectBonusBtn.SetOnClick(function()
@@ -131,7 +131,7 @@ function makeHostMenu(storage, vert)
 
 			local searchFor = TextInput(searchBar).SetFlexibleWidth(1).SetFlexibleHeight(1).SetPreferredWidth(300);
 
-			Label(selectBonusFromListVert).SetText('Search is case-sensitive. Clear the search to view all.');
+			Label(selectBonusFromListVert).SetText('Search is case-insensitive. Clear the search to view all.');
 
 			local searchBtn = Btn(searchBar).SetText('Go');
 			local results = Vert(selectBonusFromListVert);
