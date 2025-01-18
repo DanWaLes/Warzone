@@ -90,6 +90,9 @@ function Server_AdvanceTurn_Order(Game, order, result, skipThisOrder, addNewOrde
 	local toInLockedDownRegion = territoryInLockedDownRegion(toTerr.ID);
 
 	if fromInLockedDownRegion == toInLockedDownRegion then
+		-- if neither or both territories are in the same bonus
+		-- let the army movement happen
+
 		return;
 	end
 
@@ -98,6 +101,9 @@ function Server_AdvanceTurn_Order(Game, order, result, skipThisOrder, addNewOrde
 	local bothInActiveLockdown = fromIsActiveLockdown and toIsActiveLockdown;
 
 	if not (fromIsActiveLockdown or toIsActiveLockdown) then
+		-- if neither of the territories are in an active lockdown
+		-- let the army movement happen
+
 		return;
 	end
 
