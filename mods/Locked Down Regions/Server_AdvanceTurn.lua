@@ -34,6 +34,8 @@ function Server_AdvanceTurn_Start(game, addNewOrder)
 		end
 	end
 
+	print('Server_AdvanceTurn_Start gameTurnNo', gameTurnNo);
+
 	for bonusId, turnNo in pairs(publicGD.newLockedDownRegions) do
 		local bonus = game.Map.Bonuses[bonusId];
 		local bonusValue = game.Settings.OverriddenBonuses[bonusId] or bonus.Amount;
@@ -106,8 +108,9 @@ function Server_AdvanceTurn_Order(Game, order, result, skipThisOrder, addNewOrde
 
 	print('both territories in different bonuses');
 
-	local fromIsActiveLockdown = fromInLockedDownRegion and (Mod.PublicGameData.lockedDownRegions[fromInLockedDownRegion] <= game.ServerGame.Game.TurnNumber);
-	local toIsActiveLockdown = toInLockedDownRegion and (Mod.PublicGameData.lockedDownRegions[toInLockedDownRegion] <= game.ServerGame.Game.TurnNumber);
+	local gameTurnNumber = game.ServerGame.Game.TurnNumber;
+	local fromIsActiveLockdown = fromInLockedDownRegion and (Mod.PublicGameData.lockedDownRegions[fromInLockedDownRegion] <= gameTurnNumber);
+	local toIsActiveLockdown = toInLockedDownRegion and (Mod.PublicGameData.lockedDownRegions[toInLockedDownRegion] <= gameTurnNumber);
 	local bothInActiveLockdown = fromIsActiveLockdown and toIsActiveLockdown;
 
 	print('fromIsActiveLockdown', fromIsActiveLockdown);
