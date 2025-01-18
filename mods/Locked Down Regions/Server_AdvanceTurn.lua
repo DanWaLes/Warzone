@@ -89,7 +89,7 @@ function Server_AdvanceTurn_Order(Game, order, result, skipThisOrder, addNewOrde
 	local toTerr = game.Map.Territories[to];
 	local toInLockedDownRegion = territoryInLockedDownRegion(toTerr.ID);
 
-	if not (fromInLockedDownRegion or toInLockedDownRegion) then
+	if fromInLockedDownRegion == toInLockedDownRegion then
 		return;
 	end
 
