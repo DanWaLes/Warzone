@@ -92,6 +92,30 @@ function makeHostMenu(storage, vert)
 			game.HighlightTerritories(bonus.Territories);
 		end);
 
+		function bonusSelected(selected)
+			errorLabel.SetText('');
+
+			if selected then
+				highlightBonusBtn.SetText(selected.Name);
+
+				if isValidSelectedBonus(storage, selected.ID) then
+					selectedBonus = selected.ID;
+				else
+					errorLabel.SetText('There is already a region that has some of the same territories of the one you just selected');
+				end
+			else
+				highlightBonusBtn.SetText('(selecting)');
+			end
+
+			highlightBonusBtn.SetInteractable(not not selected);
+
+			if not UI.IsDestroyed(selectBonusFromListVert) then
+				UI.Destroy(selectBonusFromListVert);
+			end
+
+			return WL.CancelClickIntercept;
+		end
+
 		UI.InterceptNextBonusLinkClick(bonusSelected);
 
 		makeChooseFromListMenu();
@@ -158,30 +182,6 @@ function makeHostMenu(storage, vert)
 			end);
 
 			addAllBonuses();
-		end
-
-		function bonusSelected(selected)
-			errorLabel.SetText('');
-
-			if selected then
-				highlightBonusBtn.SetText(selected.Name);
-
-				if isValidSelectedBonus(storage, selected.ID) then
-					selectedBonus = selected.ID;
-				else
-					errorLabel.SetText('There is already a region that has some of the same territories of the one you just selected');
-				end
-			else
-				highlightBonusBtn.SetText('(selecting)');
-			end
-
-			highlightBonusBtn.SetInteractable(not not selected);
-
-			if not UI.IsDestroyed(selectBonusFromListVert) then
-				UI.Destroy(selectBonusFromListVert);
-			end
-
-			return WL.CancelClickIntercept;
 		end
 
 		Label(untilTurnHorz).SetText('Locks down until end of turn:');
