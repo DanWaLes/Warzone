@@ -65,12 +65,12 @@ function makeHostMenu(storage, vert)
 			vert2 = Vert(vert1);
 		end
 
+		Label(vert2).SetText('You can select a bonus on the map or search and select a bonus in the list below.');
+
 		local bonusHorz = Horz(vert2);
 		Label(bonusHorz).SetText('Bonus:');
 		local selectBonusBtnContainer = Horz(bonusHorz);
-		local selectBonusBtn = Btn(selectBonusBtnContainer).SetText('(none)');
-		local selectBonusFromOptionContainer = Horz(bonusHorz);
-		local selectBonusFromOption = nil;
+		local highlightBonusBtn = Btn(selectBonusBtnContainer).SetText('(selecting)');
 		local selectBonusFromListVertContainer = Vert(vert2);
 		local selectBonusFromListVert = nil
 		local untilTurnHorz = Horz(vert2);
@@ -82,46 +82,25 @@ function makeHostMenu(storage, vert)
 			turnNo = 1;
 		end
 
-		function selectBonusBtnClicked()
-			selectBonusBtn.SetInteractable(false);
-			selectedBonus = nil;
-			selectBonusBtn.SetText('(select a bonus on the map)');
-
-			errorLabel.SetText('');
-
-			UI.InterceptNextBonusLinkClick(function(selected)
-				bonusSelected(selected);
-			end)
-
-			if not UI.IsDestroyed(selectBonusFromOption) then
-				UI.Destroy(selectBonusFromOption);
+		highlightBonusBtn.SetInteractable(false);
+		highlightBonusBtn.SetOnClick(function()
+			if not selectedBonus then
+				return;
 			end
 
+			local bonus = game.Map.Bonuses[selectedBonus];
+
+			game.HighlightTerritories(bonus.Territories);
+		end);
+
+		UI.InterceptNextBonusLinkClick(bonusSelected);
+
+		makeChooseFromListMenu();
+
+		function makeChooseFromListMenu()
 			if not UI.IsDestroyed(selectBonusFromListVert) then
 				UI.Destroy(selectBonusFromListVert);
 			end
-
-			selectBonusFromOption = Horz(selectBonusFromOptionContainer);
-			Label(selectBonusFromOption).SetText('or');
-
-			local chooseFromListBtn = Btn(selectBonusFromOption).SetText('choose from a list');
-
-			chooseFromListBtn.SetOnClick(function()
-				chooseFromListBtn.SetInteractable(false);
-				makeChooseFromListMenu();
-			end);
-		end
-
-		function makeChooseFromListMenu()
-			UI.Destroy(selectBonusBtn);
-			selectBonusBtn = Btn(selectBonusBtnContainer).SetText('select');
-			selectBonusBtn.SetOnClick(function()
-				selectBonusBtnClicked();
-				-- for some reason these have to explicitly be done here
-				-- even though it should happen fine in the function
-				selectBonusBtn.SetInteractable(false);
-				selectBonusBtn.SetText('(select a bonus on the map)');
-			end);
 
 			selectBonusFromListVert = Vert(selectBonusFromListVertContainer);
 
@@ -183,34 +162,28 @@ function makeHostMenu(storage, vert)
 		end
 
 		function bonusSelected(selected)
+			errorLabel.SetText('');
+
 			if selected then
-				selectBonusBtn.SetText(selected.Name);
+				highlightBonusBtn.SetText(selected.Name);
 
 				if isValidSelectedBonus(storage, selected.ID) then
 					selectedBonus = selected.ID;
 				else
 					errorLabel.SetText('There is already a region that has some of the same territories of the one you just selected');
-					selectedBonus = nil;
 				end
 			else
-				selectedBonus = nil;
-				selectBonusBtn.SetText('(none)');
+				highlightBonusBtn.SetText('(selecting)');
 			end
 
-			selectBonusBtn.SetInteractable(true);
-
-			if not UI.IsDestroyed(selectBonusFromOption) then
-				UI.Destroy(selectBonusFromOption);
-			end
+			highlightBonusBtn.SetInteractable(not not selected);
 
 			if not UI.IsDestroyed(selectBonusFromListVert) then
 				UI.Destroy(selectBonusFromListVert);
 			end
-		end
 
-		selectBonusBtn.SetOnClick(function()
-			selectBonusBtnClicked();
-		end);
+			return WL.CancelClickIntercept;
+		end
 
 		Label(untilTurnHorz).SetText('Locks down until end of turn:');
 
@@ -231,7 +204,7 @@ function makeHostMenu(storage, vert)
 				local turnValue = turn.GetValue();
 
 				if turnValue < turnNo then
-					errorLabel.SetText('Locks down until end of turn must be at least ' .. turnNo);
+					errorLabel.SetText('"Locks down until end of turn" must be at least ' .. turnNo);
 				elseif selectedBonus then
 					newStorage.newLockedDownRegions[selectedBonus] = turnValue;
 					newStorage.lastUsedLockdownTurnNo = turnValue;
