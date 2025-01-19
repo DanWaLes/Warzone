@@ -244,22 +244,9 @@ function createSelectTerritoryMenu(parent, selectedTerr, newTerrSelectedCallback
 		selectTerritoryBtn.SetText('(Selecting)');
 		selectTerritoryBtn.SetInteractable(false);
 
-		local isCanceled = false;
 		local cancelBtn = Btn(selectTerritoryHorz);
 
-		cancelBtn.SetText('Cancel');
-		cancelBtn.SetOnClick(function()
-			isCanceled = true;
-			UI.Destroy(cancelBtn);
-			selectTerritoryBtn.SetText(selectedTerr and selectedTerr.Name or 'None');
-			selectTerritoryBtn.SetInteractable(true);
-		end);
-
-		UI.InterceptNextTerritoryClick(function(terrDetails)
-			if isCanceled then
-				return WL.CancelClickIntercept;
-			end
-
+		function nextTerritoryClicked(terrDetails)
 			if not UI.IsDestroyed(cancelBtn) then
 				UI.Destroy(cancelBtn);
 			end
@@ -267,8 +254,20 @@ function createSelectTerritoryMenu(parent, selectedTerr, newTerrSelectedCallback
 			label.SetText('Selected: ');
 			selectTerritoryBtn.SetText(terrDetails and terrDetails.Name or 'None');
 			selectTerritoryBtn.SetInteractable(true);
+
+			if not terrDetails then
+				return WL.CancleClickIntercept;
+			end
+
 			newTerrSelectedCallback(terrDetails);
+		end
+
+		cancelBtn.SetText('Cancel');
+		cancelBtn.SetOnClick(function()
+			nextTerritoryClicked();
 		end);
+
+		UI.InterceptNextTerritoryClick(nextTerritoryClicked);
 	end);
 end
 
