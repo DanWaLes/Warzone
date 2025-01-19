@@ -116,10 +116,6 @@ function makeHostMenu(storage, vert)
 			return WL.CancelClickIntercept;
 		end
 
-		UI.InterceptNextBonusLinkClick(bonusSelected);
-
-		makeChooseFromListMenu();
-
 		function makeChooseFromListMenu()
 			if not UI.IsDestroyed(selectBonusFromListVert) then
 				UI.Destroy(selectBonusFromListVert);
@@ -183,6 +179,9 @@ function makeHostMenu(storage, vert)
 
 			addAllBonuses();
 		end
+
+		UI.InterceptNextBonusLinkClick(bonusSelected);
+		makeChooseFromListMenu();
 
 		Label(untilTurnHorz).SetText('Locks down until end of turn:');
 
