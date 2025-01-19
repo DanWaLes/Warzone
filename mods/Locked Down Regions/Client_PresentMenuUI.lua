@@ -69,8 +69,7 @@ function makeHostMenu(storage, vert)
 
 		local bonusHorz = Horz(vert2);
 		Label(bonusHorz).SetText('Bonus:');
-		local selectBonusBtnContainer = Horz(bonusHorz);
-		local highlightBonusBtn = Btn(selectBonusBtnContainer).SetText('(selecting)');
+		local highlightBonusBtn = Btn(bonusHorz).SetText('(selecting)');
 		local selectBonusFromListVertContainer = Vert(vert2);
 		local selectBonusFromListVert = nil
 		local untilTurnHorz = Horz(vert2);
