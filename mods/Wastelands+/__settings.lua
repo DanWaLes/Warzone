@@ -53,7 +53,7 @@ function getSettings()
 				})
 			}
 		}),
-		addSettingTemplate('extraWasteland', 'Add new wasteland group', function(n)
+		addSettingTemplate('extraWasteland', 'Add new wasteland group', nil, function(n)
 			return {
 				label = 'Enable extra wastelands' .. tostring(n),
 				settings = {
