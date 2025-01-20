@@ -36,7 +36,7 @@ function getSettings()
 		addSetting('boolsettingwithsubsettings', 'bool setting with sub settings', 'bool', false, {
 			labelColor = '#00ff00',
 			help = function(parent)
-				UI.CreateLabel('this setting has sub settings. sub settings will be displayed if enabled');
+				UI.CreateLabel('this setting has sub settings. sub settings will be displayed if enabled, defaults to disabled');
 			end,
 			subsettings = {
 				addSetting('boolsettingwithsubsettingsint1', 'int sub setting 1', 'int', 5, {
@@ -68,6 +68,23 @@ function getSettings()
 						})
 					}
 				})
+			}
+		}),
+		addSetting('radioinput', 'Mode', 'radio', 1, {
+			labelColor = '#012345',
+			help = function(parent)
+				UI.CreateLabel(parent).SetText('radio button help: you can only choose one, defaults to easy');
+			end,
+			controls = {
+				'easy',
+				'medium',
+				{
+					label = 'hard',
+					labelColor = '#fedcba',
+					help = function(parent)
+						UI.CreateLabel(parent).SetText('radio button hard help: hard, as opposed to easy');
+					end
+				}
 			}
 		})
 	};
