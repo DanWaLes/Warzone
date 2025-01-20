@@ -86,6 +86,18 @@ function getSettings()
 					end
 				}
 			}
-		})
+		}),
+		addSettingTemplate('extraWasteland', 'Add new wasteland group', nil, function(n)
+			return {
+				label = 'Enable extra wastelands' .. tostring(n),
+				settings = {
+					addSetting('W' .. tostring(n) .. 'Num', 'Number of wastelands', 'int', 5, {
+						minValue = 1,
+						maxValue = 15,
+						absoluteMax = 4000
+					})
+				}
+			};
+		end)
 	};
 end
