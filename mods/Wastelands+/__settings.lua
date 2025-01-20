@@ -52,7 +52,7 @@ function getSettings()
 					end
 				})
 			}
-		})
+		}),
 		addSettingTemplate('extraWasteland', 'Add new wasteland group', function(n)
 			return {
 				label = 'Enable extra wastelands' .. tostring(n),
