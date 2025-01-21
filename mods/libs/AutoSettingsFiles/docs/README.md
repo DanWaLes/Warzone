@@ -61,7 +61,7 @@ Arguments:
 ## addCustomCard
 (this is a proposal, not currently implemented)
 
-For use on (Custom Cards)[https://www.warzone.com/wiki/Mod_API_Reference:Custom_Cards].
+For use on [Custom Cards](https://www.warzone.com/wiki/Mod_API_Reference:Custom_Cards).
 
 Arguments:
 * `name` - string - used to store the CardID from `addCard`. All names must be unique to function correctly
