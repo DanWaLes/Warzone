@@ -67,7 +67,7 @@ Arguments:
 * `name` - string - used to store the CardID from `addCard`. All names must be unique to function correctly
 * `customCardName` - string - name of the card - used for `addCard`
 * `customCardDescription` - string - description of the card - used for `addCard`
-* `customCardImageFileName` - string - image filename - used for `addCard`
+* `customCardImageFilename` - string - image filename - used for `addCard`
 * `cardGameSettingsMap` - table - must have fields `NumPieces`, `MinimumPiecesPerTurn`, `InitialPieces` and `Weight`. If the value of a field is a number, that value will be used as-is. If the value of a field is a string, it must be a setting `name` that is directly accessible in `settings` and the value of the setting will be used - used for `addCard`
 * `settings` - nil or array of `setting` - all card settings, including completly custom settings
 # Accessing setting values
