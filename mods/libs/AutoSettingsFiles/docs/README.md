@@ -1,6 +1,6 @@
 The goal of this is to automatically generate the Client_PresentConfigureUI, Client_SaveConfigureUI and Client_PresentSettingsUI Lua files. All files other than __settings.lua are not meant to be edited. __settings.lua is where to define settings.
 # __settings.lua
-The file must have a `getSetting` function. returns array of `setting`. `setting` is a table which is generated from the `addSetting`, `addSettingTemplate` and `addSettingGroup` functions
+The file must have a `getSetting` function. returns array of `setting`. `setting` is a table which is generated from the `addSetting`, `addSettingTemplate` and `addCustomCard` functions
 ## addSetting
 * `name` - string - name of the setting. all names must be unique to function correctly
 * `label` - string - summery of what the setting does
@@ -29,7 +29,7 @@ Optional keys:
 * `absoluteMin` - number - allows user to enter a lower number than `minValue`
 #### bool
 Optional keys:
-* `subsettings` - table or nil. if table then is an array of `setting`
+* `subsettings` - nil or array of `setting`
 #### text
 Optional keys:
 * `placeholder` - string - the placeholder text
@@ -48,7 +48,7 @@ Forced keys:
 In the event of wanting to have infinite groups of settings, setting templates can be used. The value of the setting is set to the number of template items there are. Template items follow the naming pattern "`name`_`n`" when their values are written to `Mod.Settings`. Any `settings` in template items should use `n` in their `name` to uniquely identify them.
 
 Arguments:
-* `name` - string - name of the setting. all names must be unique to function correctly
+* `name` - string - name of the setting. All names must be unique to function correctly
 * `btnText` - string - text that goes on a button that user presses to add a new group of settings
 * `options` - nil or table with keys:
   * `btnColor` - nil or string - color of the button; nil = #00FF05
@@ -58,6 +58,18 @@ Arguments:
   * `label` - string - description of the setting group
   * `labelColor` - nil or string - color of the label; nil = wz default
   * `settings` - array of `setting`
+## addCustomCard
+(this is a proposal, not currently implemented)
+
+For use on (Custom Cards)[https://www.warzone.com/wiki/Mod_API_Reference:Custom_Cards].
+
+Arguments:
+* `name` - string - used to store the CardID from `addCard`. All names must be unique to function correctly
+* `customCardName` - string - name of the card - used for `addCard`
+* `customCardDescription` - string - description of the card - used for `addCard`
+* `customCardImageFileName` - string - image filename - used for `addCard`
+* `cardGameSettingsMap` - table - must have fields `NumPieces`, `MinimumPiecesPerTurn`, `InitialPieces` and `Weight`. If the value of a field is a number, that value will be used as-is. If the value of a field is a string, it must be a setting `name` that is directly accessible in `settings`. The value of the setting will be used
+* `settings` - array of `setting`
 # Accessing setting values
 Each setting is written to `Mod.Settings[name]`. The `getSetting(name)` function defined in `settings.lua` returns the value stored in `Mod.Settings[name]`. If the value is `nil`, a message will printed. `name` is the same as what is used in `addSetting` or `addSettingTemplate`.
 # Examples
