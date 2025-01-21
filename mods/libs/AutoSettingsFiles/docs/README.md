@@ -71,7 +71,7 @@ Arguments:
 * `cardGameSettingsMap` - table - must have fields `NumPieces`, `MinimumPiecesPerTurn`, `InitialPieces` and `Weight`. If the value of a field is a number, that value will be used as-is. If the value of a field is a string, it must be a setting `name` that is used somewhere in `settings` and the value of the setting will be used - used for `addCard`
 * `settings` - nil or array of `setting` - all card settings, including completly custom settings
 # Accessing setting values
-Each setting is written to `Mod.Settings[name]`. The `getSetting(name)` function defined in `settings.lua` returns the value stored in `Mod.Settings[name]`. If the value is `nil`, a message will printed. `name` is the same as what is used in `addSetting` or `addSettingTemplate`.
+Each setting is written to `Mod.Settings[name]`. The `getSetting(name)` function defined in `settings.lua` returns the value stored in `Mod.Settings[name]`. If the value is `nil`, a message will printed. `name` is the same as what is used in `addSetting`, `addSettingTemplate` or `addCustomCard`.
 # Examples
 * [code/__settings.lua](https://github.com/DanWaLes/Warzone/blob/main/mods/libs/AutoSettingsFiles/code/__settings.lua)
 * [AIs don't attack](https://github.com/DanWaLes/Warzone/tree/main/mymods/AIs%20dont%20attack/__settings.lua)
