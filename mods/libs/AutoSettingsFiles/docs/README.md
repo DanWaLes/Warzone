@@ -74,13 +74,13 @@ Arguments:
 Each setting is written to `Mod.Settings[name]`. The `getSetting(name)` function defined in `settings.lua` returns the value stored in `Mod.Settings[name]`. If the value is `nil`, a message will printed. `name` is the same as what is used in `addSetting`, `addSettingTemplate` or `addCustomCard`.
 # Examples
 * [code/__settings.lua](https://github.com/DanWaLes/Warzone/blob/main/mods/libs/AutoSettingsFiles/code/__settings.lua)
-* [AIs don't attack](https://github.com/DanWaLes/Warzone/tree/main/mymods/AIs%20dont%20attack/__settings.lua)
-* [Advanced Card Distribution (per player)](https://github.com/DanWaLes/Warzone/tree/main/mymods/Advanced%20Card%20Distribution%20per%20player/__settings.lua)
-* [Custom Card Package 2](https://github.com/DanWaLes/Warzone/tree/main/mymods/Custom%20Card%20Package%202/__settings.lua)
-* [Random settings generator](https://github.com/DanWaLes/Warzone/tree/main/mymods/Random%20settings%20generator/__settings.lua)
-* [Surveillance Card+](https://github.com/DanWaLes/Warzone/tree/main/mymods/Surveillance%20Card%2B/__settings.lua)
-* [Swap Territories 2](https://github.com/DanWaLes/Warzone/tree/main/mymods/Swap%20Territories%203/__settings.lua)
-* [Wastelands+](https://github.com/DanWaLes/Warzone/tree/main/mymods/Wastelands%2B)
+* [AIs don't attack](https://github.com/DanWaLes/Warzone/tree/main/mods/AIs%20dont%20attack/__settings.lua)
+* [Advanced Card Distribution (per player)](https://github.com/DanWaLes/Warzone/tree/main/mods/Advanced%20Card%20Distribution%20per%20player/__settings.lua)
+* [Custom Card Package 2](https://github.com/DanWaLes/Warzone/tree/main/mods/Custom%20Card%20Package%202/__settings.lua)
+* [Random settings generator](https://github.com/DanWaLes/Warzone/tree/main/mods/Random%20settings%20generator/__settings.lua)
+* [Surveillance Card+](https://github.com/DanWaLes/Warzone/tree/main/mods/Surveillance%20Card%2B/__settings.lua)
+* [Swap Territories 2](https://github.com/DanWaLes/Warzone/tree/main/mods/Swap%20Territories%203/__settings.lua)
+* [Wastelands+](https://github.com/DanWaLes/Warzone/tree/main/mods/Wastelands%2B)
 ## Screenshots
 ### Client_PresentConfigureUI.lua
 ![Start](imgs/Client_PresentConfigureUI.lua/1_start.png)
