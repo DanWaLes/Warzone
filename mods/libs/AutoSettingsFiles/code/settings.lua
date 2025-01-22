@@ -368,6 +368,31 @@ function addSettingTemplate(name, btnText, options, get)
 	return setting;
 end
 
+function addCustomCard(name, customCardName, customCardDescription, customCardImageFilename, cardGameSettingsMap, settings)
+	local hasError = false;
+
+	function printErrorIfNotOfType(varName, varValue, expectedType)
+		if type(varValue) == expectedType then
+			return;
+		end
+
+		hasError = true;
+
+		print('addCustomCard error: ' .. varName .. ' must be a ' .. expectedType);
+		print(varName .. ' = ' .. tostring(varValue));
+	end
+
+	printErrorIfNotOfType('name', name, 'string');
+	printErrorIfNotOfType('customCardName', customCardName, 'string');
+	printErrorIfNotOfType('customCardDescription', customCardDescription, 'string');
+	printErrorIfNotOfType('customCardImageFilename', customCardImageFilename, 'string');
+	printErrorIfNotOfType('cardGameSettingsMap', cardGameSettingsMap, 'table');
+
+	if hasError then
+		return;
+	end
+end
+
 function getSetting(name)
 	if type(name) ~= 'string' then
 		print('getSetting error: name must be a string');
