@@ -166,7 +166,7 @@ function addSetting(name, label, inputType, defaultValue, otherProps)
 		-- controls is an array
 		-- items in the array should a table (label: <string>, labelColor: <color> or nil) or string (maps to table.label)
 
-		if #settings.controls < 2 then
+		if #setting.controls < 2 then
 			print('addSetting error: otherProps.controls must have at least 2 controls');
 			print('name = ' .. name);
 
@@ -181,7 +181,7 @@ function addSetting(name, label, inputType, defaultValue, otherProps)
 			return;
 		end
 
-		if defaultValue > #settings.controls then
+		if defaultValue > #setting.controls then
 			print('addSetting error: defaultValue for inputType ' .. inputType .. ' must be no larger than the length of the otherProps.controls array');
 			print('name = ' .. name);
 			print('defaultValue = ' .. defaultValue);
@@ -197,7 +197,7 @@ function addSetting(name, label, inputType, defaultValue, otherProps)
 			return;
 		end
 
-		if optionalProps.bkwards and otherProps.bkwards > #settings.controls then
+		if optionalProps.bkwards and otherProps.bkwards > #setting.controls then
 			print('addSetting error: otherProps.bkwards for inputType ' .. inputType .. ' must be no larger than the length of the otherProps.controls array');
 			print('name = ' .. name);
 			print('otherProps.bkwards = ' .. otherProps.bkwards);
