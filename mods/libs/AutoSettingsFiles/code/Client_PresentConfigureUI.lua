@@ -52,7 +52,7 @@ function cpc(parent, settings)
 
 	local vert = UI.CreateVerticalLayoutGroup(parent);
 
-	for settingNum, setting in ipairs(settings) do
+	for _, setting in ipairs(settings) do
 		if type(setting) ~= 'table' then
 			modDevMadeError = true;
 
@@ -60,23 +60,21 @@ function cpc(parent, settings)
 		end
 
 		if setting.isTemplate then
-			cpcDoTemplate(settingsNum, settings, vert);
+			cpcDoTemplate(setting, vert);
 		else
-			cpcDoSetting(settingNum, settings, vert);
+			cpcDoSetting(setting, vert);
 		end
 	end
 end
 
-function cpcDoTemplate(settingNum, settings, vert)
-	local setting = settings[settingNum];
-
+function cpcDoTemplate(setting, vert)
 	GLOBALS[setting.name] = Mod.Settings[setting.name] or 0;
 
 	local vert2 = UI.CreateVerticalLayoutGroup(vert);
 	local i = 1;
 
 	while i < (GLOBALS[setting.name] + 1) do
-		cpcDoSetting(1, {setting.get(i)}, vert2);
+		cpcDoSetting(setting.get(i), vert2);
 		i = i + 1;
 	end
 
@@ -90,13 +88,11 @@ function cpcDoTemplate(settingNum, settings, vert)
 
 	btn.SetOnClick(function()
 		GLOBALS[setting.name] = GLOBALS[setting.name] + 1;
-		cpcDoSetting(1, {setting.get(GLOBALS[setting.name])}, vert2);
+		cpcDoSetting(setting.get(GLOBALS[setting.name]), vert2);
 	end);
 end
 
-function cpcDoSetting(settingNum, settings, vert)
-	local setting = settings[settingNum];
-
+function cpcDoSetting(setting, vert)
 	local horz = UI.CreateHorizontalLayoutGroup(vert);
 	local vert2 = UI.CreateVerticalLayoutGroup(vert);
 	local initialSettingValue = Mod.Settings[setting.name];
