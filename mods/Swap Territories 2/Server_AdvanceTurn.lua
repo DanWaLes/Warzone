@@ -39,7 +39,7 @@ function getFirstPlayer(game)
 end
 
 function main(game, addNewOrder)
-	if game.Settings.SinglePlayer and not canRunMod() then
+	if not serverCanRunMod(game) then
 		return;
 	end
 
