@@ -5,6 +5,7 @@ require('version');
 local satsPayload = 'NoTeaming_ServerAdvanceTurnStart';
 local eliminatedPlayers = nil;
 local canRun = false;
+local host;
 
 function Server_AdvanceTurn_Start(game, addNewOrder)
 	canRun = serverCanRunMod(game);
