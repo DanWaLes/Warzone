@@ -20,7 +20,7 @@ function setup(game)
 	local playerGD = {
 		[hostPlayerId] = {
 			eliminating = {}
-		};
+		}
 	};
 
 	local publicGD = {
