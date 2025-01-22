@@ -7,7 +7,7 @@ function eliminate(playerIds, territories, removeSpecialUnits, isSinglePlayer)
 	-- if special units can be removed
 
 	local mods = {};
-	local canRemoveSpecialUnits = removeSpecialUnits and ((not isSinglePlayer) or (isSinglePlayer and WL and WL.isVersionOrHigher and WL.isVersionOrHigher('5.22')));
+	local canRemoveSpecialUnits = removeSpecialUnits and ((not isSinglePlayer) or (isSinglePlayer and WL and WL.IsVersionOrHigher and WL.IsVersionOrHigher('5.22')));
 
 	for tId, territory in pairs(territories) do
 		local mod = nil;
