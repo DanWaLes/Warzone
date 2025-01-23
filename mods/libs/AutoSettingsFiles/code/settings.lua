@@ -370,6 +370,7 @@ end
 
 function addCustomCard(name, customCardName, customCardDescription, customCardImageFilename, cardGameSettingsMap, settings)
 	local hasError = false;
+	local usesSettings = false;
 
 	function printErrorIfNotOfType(varName, varValue, expectedType)
 		if type(varValue) == expectedType then
@@ -415,6 +416,7 @@ function addCustomCard(name, customCardName, customCardDescription, customCardIm
 			end
 
 			if tpe == 'string' and typeofSettings ~= 'table' then
+				usesSettings = true;
 				hasError = true;
 
 				print('addCustomCard error: type(cardGameSettingsMap.' .. field .. ') is a string but settings is not a table');
@@ -449,6 +451,7 @@ function addCustomCard(name, customCardName, customCardDescription, customCardIm
 
 	return {
 		isCustomCard = true,
+		usesSettings = usesSettings,
 		name = name,
 		customCardName = customCardName,
 		customCardDescription = customCardDescription,
