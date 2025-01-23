@@ -36,51 +36,45 @@ function Client_SaveConfigureUI(alert, addCard)
 		Mod.Settings[settingName] = settingValue;
 	end
 
-	if #customCardSettings > 0 then
-		if not (WL and WL.IsVersionOrHigher and WL.IsVersionOrHigher('5.32.0.1')) then
-			return;
+	for _, setting in ipairs(customCardSettings) do
+		local numPieces = setting.cardGameSettingsMap.NumPieces;
+		local minPiecesPerTurn = setting.CustomCardSettingsMap.MinimumPiecesPerTurn;
+		local initialPieces = setting.CustomCardSettingsMap.InitialPieces;
+		local weight = setting.CustomCardSettingsMap.Weight;
+		local activeOrderDuration = setting.CustomCardSettingsMap.ActiveOrderDuration;
+
+		if type(numPieces) == 'string' then
+			minPiecesPerTurn = Mod.Settings[numPieces];
 		end
 
-		for _, setting in ipairs(customCardSettings) do
-			local numPieces = setting.cardGameSettingsMap.NumPieces;
-			local minPiecesPerTurn = setting.CustomCardSettingsMap.MinimumPiecesPerTurn;
-			local initialPieces = setting.CustomCardSettingsMap.InitialPieces;
-			local weight = setting.CustomCardSettingsMap.Weight;
-			local activeOrderDuration = setting.CustomCardSettingsMap.ActiveOrderDuration;
-
-			if type(numPieces) == 'string' then
-				minPiecesPerTurn = Mod.Settings[numPieces];
-			end
-
-			if type(minPiecesPerTurn) == 'string' then
-				minPiecesPerTurn = Mod.Settings[minPiecesPerTurn];
-			end
-
-			if type(initialPieces) == 'string' then
-				minPiecesPerTurn = Mod.Settings[initialPieces];
-			end
-
-			if type(weight) == 'string' then
-				minPiecesPerTurn = Mod.Settings[weight];
-			end
-
-			if type(activeOrderDuration) == 'string' then
-				minPiecesPerTurn = Mod.Settings[activeOrderDuration];
-			end
-
-			local cardId = addCard(
-				setting.customCardName,
-				setting.customCardDescription,
-				setting.customCardImageFilename,
-				numPieces,
-				minPiecesPerTurn,
-				initialPieces,
-				weight,
-				activeOrderDuration
-			);
-
-			Mod.Settings[setting.name] = cardId;
+		if type(minPiecesPerTurn) == 'string' then
+			minPiecesPerTurn = Mod.Settings[minPiecesPerTurn];
 		end
+
+		if type(initialPieces) == 'string' then
+			minPiecesPerTurn = Mod.Settings[initialPieces];
+		end
+
+		if type(weight) == 'string' then
+			minPiecesPerTurn = Mod.Settings[weight];
+		end
+
+		if type(activeOrderDuration) == 'string' then
+			minPiecesPerTurn = Mod.Settings[activeOrderDuration];
+		end
+
+		local cardId = addCard(
+			setting.customCardName,
+			setting.customCardDescription,
+			setting.customCardImageFilename,
+			numPieces,
+			minPiecesPerTurn,
+			initialPieces,
+			weight,
+			activeOrderDuration
+		);
+
+		Mod.Settings[setting.name] = cardId;
 	end
 
 	return true;
@@ -121,6 +115,10 @@ end
 
 function cscDoSetting(setting)
 	if setting.isCustomCard then
+		if not (WL and WL.IsVersionOrHigher and WL.IsVersionOrHigher('5.32.0.1')) then
+			return;
+		end
+
 		if setting.usesSettings then
 			csc(setting.settings);
 		end
