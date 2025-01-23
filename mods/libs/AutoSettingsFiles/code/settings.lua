@@ -407,8 +407,8 @@ function addCustomCard(name, customCardName, customCardDescription, customCardIm
 	end
 
 	function validateCardGameSettings(arr, types, settings, typeofSettings)
-		for field, value in ipairs(forcedCardGameSettings) do
-			local tpe = printErrorIfNotOneOfTypes(filed, value, {'string', 'number'});
+		for field, value in ipairs(arr) do
+			local tpe = printErrorIfNotOneOfTypes(filed, value, types);
 
 			if hasError then
 				return;
