@@ -382,6 +382,50 @@ function addCustomCard(name, customCardName, customCardDescription, customCardIm
 		print(varName .. ' = ' .. tostring(varValue));
 	end
 
+	function printErrorIfNotOneOfTypes(varName, varValue, expectedTypes)
+		local varValueType = type(varValue);
+		local isOneOfTypes = false;
+
+		for _, tpe in ipairs(expectedTypes) do
+			isOneOfTypes = varValueType == tpe;
+
+			if isOneOfTypes then
+				break;
+			end
+		end
+
+		if isOneOfTypes then
+			return varValueType;
+		end
+
+		hasError = true;
+
+		print('addCustomCard error: type(' .. varName .. ') must be one of ' .. table.concat(expectedTypes, ','));
+		print(varName .. ' = ' .. tostring(varValue));
+
+		return varValueType;
+	end
+
+	function validateCardGameSettings(arr, types, settings, typeofSettings)
+		for field, value in ipairs(forcedCardGameSettings) do
+			local tpe = printErrorIfNotOneOfTypes(filed, value, {'string', 'number'});
+
+			if hasError then
+				return;
+			end
+
+			if tpe == 'string' and typeofSettings ~= 'table' then
+				hasError = true;
+
+				print('addCustomCard error: type(cardGameSettingsMap.' .. field .. ') is a string but settings is not a table');
+				print('cardGameSettingsMap[' .. field .. '] = ' .. value);
+				print('settings = ' .. tostring(settings));
+
+				return;
+			end
+		end
+	end
+
 	printErrorIfNotOfType('name', name, 'string');
 	printErrorIfNotOfType('customCardName', customCardName, 'string');
 	printErrorIfNotOfType('customCardDescription', customCardDescription, 'string');
@@ -391,6 +435,27 @@ function addCustomCard(name, customCardName, customCardDescription, customCardIm
 	if hasError then
 		return;
 	end
+
+	local forcedCardGameSettings = {'NumPieces', 'MinimumPiecesPerTurn', 'InitialPieces', 'Weight'};
+	local optionalCardGameSettings = {'ActiveOrderDuration'};
+	local typeofSettings = type(settings);
+
+	validateCardGameSettings(forcedCardGameSettigns, {'string', 'number', settings, typeofSettings});
+	validateCardGameSettings(optionalCardGameSettings, {'nil', 'string', 'number'}, settings, typeofSettings);
+
+	if hasError then
+		return;
+	end
+
+	return {
+		isCustomCard = true,
+		name = name,
+		customCardName = customCardName,
+		customCardDescription = customCardDescription,
+		customCardImageFilename = customCardImageFilename,
+		cardGameSettingsMap = cardGameSettingsMap,
+		settings = settings
+	};
 end
 
 function getSetting(name)
