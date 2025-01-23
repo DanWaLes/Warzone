@@ -5,11 +5,12 @@ require('__settings');
 local errMsg;
 local settingValues;
 local modDevMadeError = false;
-local customCardSettings = {};
+local customCardSettings;
 
 function Client_SaveConfigureUI(alert, addCard)
 	errMsg = nil;
 	settingValues = {};
+	customCardSettings = {};
 
 	if type(getSettings) ~= 'function' then
 		getSettings = function()
@@ -17,7 +18,7 @@ function Client_SaveConfigureUI(alert, addCard)
 		end;
 	end
 
-	local settings = getSettings()
+	local settings = getSettings();
 
 	csc(settings);
 
