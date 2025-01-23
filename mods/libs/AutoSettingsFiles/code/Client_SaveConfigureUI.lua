@@ -5,8 +5,9 @@ require('__settings');
 local errMsg;
 local settingValues;
 local modDevMadeError = false;
+local customCardSettings = {};
 
-function Client_SaveConfigureUI(alert)
+function Client_SaveConfigureUI(alert, addCard)
 	errMsg = nil;
 	settingValues = {};
 
@@ -33,6 +34,53 @@ function Client_SaveConfigureUI(alert)
 
 	for settingName, settingValue in pairs(settingValues) do
 		Mod.Settings[settingName] = settingValue;
+	end
+
+	if #customCardSettings > 0 then
+		if not (WL and WL.IsVersionOrHigher and WL.IsVersionOrHigher('5.32.0.1')) then
+			return;
+		end
+
+		for _, setting in ipairs(customCardSettings) do
+			local numPieces = setting.cardGameSettingsMap.NumPieces;
+			local minPiecesPerTurn = setting.CustomCardSettingsMap.MinimumPiecesPerTurn;
+			local initialPieces = setting.CustomCardSettingsMap.InitialPieces;
+			local weight = setting.CustomCardSettingsMap.Weight;
+			local activeOrderDuration = setting.CustomCardSettingsMap.ActiveOrderDuration;
+
+			if type(numPieces) == 'string' then
+				minPiecesPerTurn = Mod.Settings[numPieces];
+			end
+
+			if type(minPiecesPerTurn) == 'string' then
+				minPiecesPerTurn = Mod.Settings[minPiecesPerTurn];
+			end
+
+			if type(initialPieces) == 'string' then
+				minPiecesPerTurn = Mod.Settings[initialPieces];
+			end
+
+			if type(weight) == 'string' then
+				minPiecesPerTurn = Mod.Settings[weight];
+			end
+
+			if type(activeOrderDuration) == 'string' then
+				minPiecesPerTurn = Mod.Settings[activeOrderDuration];
+			end
+
+			local cardId = addCard(
+				setting.customCardName,
+				setting.customCardDescription,
+				setting.customCardImageFilename,
+				numPieces,
+				minPiecesPerTurn,
+				initialPieces,
+				weight,
+				activeOrderDuration
+			);
+
+			Mod.Settings[setting.name] = cardId;
+		end
 	end
 
 	return true;
@@ -72,6 +120,15 @@ function csc(settings)
 end
 
 function cscDoSetting(setting)
+	if setting.isCustomCard then
+		if setting.usesSettings then
+			csc(setting.settings);
+		end
+
+		table.insert(customCardSettings, settings);
+		return;
+	end
+
 	if setting.inputType == 'radio' then
 		-- explicitly written to in Client_PresentConfigureUI
 		return;
