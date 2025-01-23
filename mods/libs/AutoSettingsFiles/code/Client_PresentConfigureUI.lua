@@ -93,6 +93,10 @@ function cpcDoTemplate(setting, vert)
 end
 
 function cpcDoSetting(setting, vert)
+	if setting.isCustomCard then
+		return cpc(setting.settings, vert);
+	end
+
 	local horz = UI.CreateHorizontalLayoutGroup(vert);
 	local vert2 = UI.CreateVerticalLayoutGroup(vert);
 	local initialSettingValue = Mod.Settings[setting.name];
