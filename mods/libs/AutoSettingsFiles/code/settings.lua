@@ -440,7 +440,7 @@ function addCustomCard(name, customCardName, customCardDescription, customCardIm
 	local optionalCardGameSettings = {'ActiveOrderDuration'};
 	local typeofSettings = type(settings);
 
-	validateCardGameSettings(forcedCardGameSettigns, {'string', 'number', settings, typeofSettings});
+	validateCardGameSettings(forcedCardGameSettigns, {'string', 'number'}, settings, typeofSettings);
 	validateCardGameSettings(optionalCardGameSettings, {'nil', 'string', 'number'}, settings, typeofSettings);
 
 	if hasError then
