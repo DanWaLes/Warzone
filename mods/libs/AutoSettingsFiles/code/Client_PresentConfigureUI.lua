@@ -94,7 +94,9 @@ end
 
 function cpcDoSetting(setting, vert)
 	if setting.isCustomCard then
-		return cpc(setting.settings, vert);
+		if setting.usesSettings then
+			return cpc(setting.settings, vert);
+		end
 	end
 
 	local horz = UI.CreateHorizontalLayoutGroup(vert);
