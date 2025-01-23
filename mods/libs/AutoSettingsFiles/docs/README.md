@@ -59,9 +59,9 @@ Arguments:
   * `labelColor` - nil or string - color of the label; nil = wz default
   * `settings` - array of `setting`
 ## addCustomCard
-(this is a proposal, not currently implemented)
-
 For use on [Custom Cards](https://www.warzone.com/wiki/Mod_API_Reference:Custom_Cards).
+
+If while configuring or saving mod settings and the game creator's app version does not support custom cards, settings for custom cards will not be configurable or saved. A message in Client_PresentConfigureUI.lua will notify them that their app version does not support custom card and to upgrade app version. The game may still be created.
 
 Arguments:
 * `name` - string - used to store the CardID from `addCard`. All names must be unique to function correctly
