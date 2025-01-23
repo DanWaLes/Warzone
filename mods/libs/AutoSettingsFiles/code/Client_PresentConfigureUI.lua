@@ -94,6 +94,13 @@ end
 
 function cpcDoSetting(setting, vert)
 	if setting.isCustomCard then
+		if not (WL and WL.IsVersionOrHigher and WL.IsVersionOrHigher('5.32.0.1')) then
+			UI.CreateLabel(vert).SetText('This mod uses custom cards.');
+			UI.CreateLabel(Vert).SetText('You must use update your app to at least version 5.32.0.1 to use custom card features in games.');
+
+			return;
+		end
+
 		if setting.usesSettings then
 			cpc(setting.settings, vert);
 		end
