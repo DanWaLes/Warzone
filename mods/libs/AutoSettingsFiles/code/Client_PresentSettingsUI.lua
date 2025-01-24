@@ -24,6 +24,14 @@ function cps(rootParent, settings)
 end
 
 function cpsDoSetting(vert, setting)
+	if setting.isCustomCard then
+		if setting.usesSettings then
+			cps(vert, setting.settings);
+		end
+
+		return;
+	end
+
 	local vert2 = UI.CreateVerticalLayoutGroup(vert);
 	local horz = UI.CreateHorizontalLayoutGroup(vert2);
 	local settingLabel = UI.CreateLabel(horz).SetText(setting.label .. ': ');
