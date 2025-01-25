@@ -77,6 +77,7 @@ Each setting is written to `Mod.Settings[name]`. The `getSetting(name)` function
 * [AIs don't attack](https://github.com/DanWaLes/Warzone/tree/main/mods/AIs%20dont%20attack/__settings.lua)
 * [Advanced Card Distribution (per player)](https://github.com/DanWaLes/Warzone/tree/main/mods/Advanced%20Card%20Distribution%20per%20player/__settings.lua)
 * [Custom Card Package 2](https://github.com/DanWaLes/Warzone/tree/main/mods/Custom%20Card%20Package%202/__settings.lua)
+* [Mystery Card](https://github.com/DanWaLes/Warzone/tree/main/mods/Mystery%20Card/__settings.lua)
 * [Random settings generator](https://github.com/DanWaLes/Warzone/tree/main/mods/Random%20settings%20generator/__settings.lua)
 * [Surveillance Card+](https://github.com/DanWaLes/Warzone/tree/main/mods/Surveillance%20Card%2B/__settings.lua)
 * [Swap Territories 2](https://github.com/DanWaLes/Warzone/tree/main/mods/Swap%20Territories%203/__settings.lua)

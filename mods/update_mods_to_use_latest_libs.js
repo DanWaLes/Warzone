@@ -115,13 +115,14 @@
 
 	const libsWithUpdates = ['AutoSettingsFiles'];
 	const mods = {
-		'Advanced Card Distribution per player': ['AutoSettingsFiles', 'lua_util', 'tblprint', 'ui'],
 		'AIs dont attack': ['AutoSettingsFiles', 'tblprint'],
+		'Advanced Card Distribution per player': ['AutoSettingsFiles', 'lua_util', 'tblprint', 'ui'],
 		'Custom Card Package 2': ['AutoSettingsFiles', 'eliminate', 'lua_util', 'placeOrderInCorrectPosition', 'tblprint', 'ui', 'version'],
 		'Draw Resolver': ['eliminate', 'tblprint', 'ui', 'version'],
 		'Host spies on and can eliminate players': ['eliminate', 'tblprint', 'ui', 'version'],
 		'Locked Down Regions': ['lua_util', 'tblprint', 'ui', 'version'],
 		'Map testing - territory connections': ['tblprint', 'ui', 'version'],
+		'Mystery Card': ['AutoSettingsFiles', 'tblprint', 'ui', 'version'],
 		'Order Notes': ['placeOrderInCorrectPosition', 'tblprint', 'ui', 'version'],
 		'Random settings generator': ['AutoSettingsFiles', 'lua_util', 'tblprint', 'ui'],
 		'Stationary commanders': ['tblprint'],
