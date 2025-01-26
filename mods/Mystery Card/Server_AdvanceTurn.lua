@@ -53,11 +53,11 @@ function Server_AdvanceTurn_Order(game, order, orderResult, skipThisOrder, addNe
 end
 
 function decideRandomCard(game)
-	if not Mod.PublicGameData.cardIds then
+	if not Mod.PublicGameData.cards then
 		getCardIds(game);
 	end
 
-	return game.Settings.Cards[math.random(1, Mod.PublicGameData.cards)];
+	return Mod.PublicGameData.cards[math.random(1, Mod.PublicGameData.cards)];
 end
 
 function getCards(game)
