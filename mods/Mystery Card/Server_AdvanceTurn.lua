@@ -57,7 +57,7 @@ function decideRandomCard(game)
 		getCardIds(game);
 	end
 
-	return Mod.PublicGameData.cards[math.random(1, Mod.PublicGameData.cards)];
+	return Mod.PublicGameData.cards[math.random(1, #Mod.PublicGameData.cards)];
 end
 
 function getCards(game)
