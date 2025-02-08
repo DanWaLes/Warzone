@@ -54,7 +54,7 @@ end
 
 function decideRandomCard(game)
 	if not Mod.PublicGameData.cards then
-		getCardIds(game);
+		getCards(game);
 	end
 
 	return Mod.PublicGameData.cards[math.random(1, #Mod.PublicGameData.cards)];
