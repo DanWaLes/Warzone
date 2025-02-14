@@ -88,5 +88,5 @@ function getCardName(cardGame)
 		return 'Emergency Blockade card';
 	end
 
-	cardGame.proxyType:gsub('^CardGame', ''):gsub('(%l)(%u)', '%1 %2') .. ' card';
+	return cardGame.proxyType:gsub('^CardGame', ''):gsub('(%l)(%u)', '%1 %2') .. ' card';
 end
