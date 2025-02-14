@@ -83,8 +83,8 @@ function getSettings()
 	return {
 		Card(
 			{
-				name: 'Reconnaissance+',
-				desc: 'Like normal Reconnaissance Cards but with a range and lasts for 1 turn.\r\nReconnaissance Cards must be included for the card to work'
+				name = 'Reconnaissance+',
+				desc = 'Like normal Reconnaissance Cards but with a range and lasts for 1 turn.\r\nReconnaissance Cards must be included for the card to work'
 			},
 			{
 				addDurationSetting('Reconnaissance+', 1),
