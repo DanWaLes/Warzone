@@ -44,13 +44,14 @@ function makeMenu(stored, vert)
 		return;
 	end
 
-	-- print('init makeMenu');
+	print('init makeMenu');
 
 	if not stored then
 		stored = Mod.PlayerGameData;
 	end
 
-	-- tblprint(stored);
+	print('stored = ');
+	tblprint(stored);
 
 	if not UI.IsDestroyed(vert) then
 		UI.Destroy(vert);
@@ -82,7 +83,7 @@ function makeMenu(stored, vert)
 end
 
 function makeHostMenu(stored, vert)
-	-- print('init makeHostMenu');
+	print('init makeHostMenu');
 
 	local infoBtn = Btn(vert).SetText('Info');
 	local vert2 = Vert(vert);
@@ -116,8 +117,8 @@ function makeHostMenu(stored, vert)
 end
 
 function displayPlayer(stored, vert, playerId)
-	-- print('init displayPlayer');
-	-- print('playerId = ' .. playerId);
+	print('init displayPlayer');
+	print('playerId = ' .. playerId);
 
 	local player = game.Game.PlayingPlayers[playerId];
 	local horz = Horz(vert);
@@ -126,10 +127,12 @@ function displayPlayer(stored, vert, playerId)
 		.SetIsChecked(not not stored.eliminating[playerId]);
 	checkbox.SetOnValueChanged(function()
 		checkbox.SetInteractable(false);
+		print('about to call game.SendGameCustomMessage');
 		game.SendGameCustomMessage('Updating...', {
 			toEliminate = playerId,
 			shouldEliminate = checkbox.GetIsChecked()
 		}, function(newStorage)
+			print('heard back from GameCustomMessage');
 			makeMenu(newStorage, vert);
 		end);
 	end);
