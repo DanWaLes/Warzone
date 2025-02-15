@@ -1,5 +1,8 @@
 function setup(game)
+	print('in setup(game)');
+
 	if not (game.State == WL.GameState.DistributingTerritories or game.State == WL.GameState.Playing) then
+		print('exit because game state');
 		return;
 	end
 
@@ -8,12 +11,14 @@ function setup(game)
 	local hostPlayerId = game.ServerGame.Settings.StartedBy;
 
 	if not hostPlayerId then
+		print('exit because no hostPlayerId');
 		return;
 	end
 
 	local host = game.ServerGame.Game.Players[hostPlayerId];
 
 	if not host then
+		print('exit because no host');
 		return;
 	end
 
@@ -48,4 +53,8 @@ function setup(game)
 
 	Mod.PlayerGameData = playerGD;
 	Mod.PublicGameData = publicGD;
+
+	print('playerGD', playerGD);
+	print('publicGD', publicGD);
+	print('setup complete');
 end
