@@ -47,6 +47,8 @@ function Server_AdvanceTurn_End(game, addNewOrder)
 		return;
 	end
 
+	print('in Server_AdvanceTurn_End');
+
 	addEndOfTurnCardPieces(game);
 
 	local cardPiecesToAdd = {};
@@ -56,13 +58,16 @@ function Server_AdvanceTurn_End(game, addNewOrder)
 		local cardName = string.sub(cardGame.proxyType, #'CardGame' + 1);
 
 		if getSetting('Enable' .. cardName) then
-			-- print(cardName .. ' is enabled');
+			print(cardName .. ' is enabled');
 
 			if not pgd.cardData[cardId].lastGivenCardPiecesOn or (pgd.cardData[cardId].lastGivenCardPiecesOn + getSetting('Freq' .. cardName) == game.ServerGame.Game.TurnNumber) then
-				-- print('is time to give pieces of ' .. cardName);
+				print('is time to give pieces of ' .. cardName);
+
 				pgd.cardData[cardId].lastGivenCardPiecesOn = game.ServerGame.Game.TurnNumber;
 
 				if getSetting('GetDiff' .. cardName) then
+					print('doing GetDiff');
+
 					for teamType in pairs(pgd.teams) do
 						for teamId in pairs(pgd.teams[teamType]) do
 							local playerId = teamId;
@@ -71,7 +76,17 @@ function Server_AdvanceTurn_End(game, addNewOrder)
 								playerId = pgd.teams[teamType][teamId].members[1];
 							end
 
-							local piecesToAdd = getSetting('Pieces' .. cardName) - pgd.teams[teamType][teamId].rewardedPieces[cardId];
+							print('teamType', teamType);
+							print('teamId', teamId);
+							print('playerId', playerId);
+
+							local piecesSetting = getSetting('Pieces' .. cardName);
+							local rewardedPieces = pgd.teams[teamType][teamId].rewardedPieces[cardId];
+
+							print('piecesSetting', piecesSetting);
+							print('rewardedPieces', rewardedPieces);
+
+							local piecesToAdd = piecesSetting - rewardedPieces;
 
 							if piecesToAdd > 0 then
 								if not cardPiecesToAdd[playerId] then
@@ -86,6 +101,8 @@ function Server_AdvanceTurn_End(game, addNewOrder)
 						end
 					end
 				else
+					print('not doing GetDiff');
+
 					for playerId in pairs(game.ServerGame.Game.PlayingPlayers) do
 						if not cardPiecesToAdd[playerId] then
 							cardPiecesToAdd[playerId] = {};
@@ -95,7 +112,7 @@ function Server_AdvanceTurn_End(game, addNewOrder)
 					end
 				end
 			else
-				-- print('not time to give pieces of ' .. cardName);
+				print('not time to give pieces of ' .. cardName);
 			end
 		end
 	end

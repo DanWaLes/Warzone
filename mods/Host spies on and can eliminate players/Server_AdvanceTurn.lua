@@ -8,28 +8,35 @@ local canRun = false;
 local host;
 
 function Server_AdvanceTurn_Start(game, addNewOrder)
+	print('in Server_AdvanceTurn_Start');
+
 	canRun = serverCanRunMod(game);
 
 	if not canRun then
+		print('exit because cant run');
 		return;
 	end
 
 	host = game.Settings.StartedBy;
 
 	if not host then
+		print('exit because no host');
 		return;
 	end
 
 	local hostPlayer = game.Game.Players[host];
 
 	if not hostPlayer then
+		print('exit because no hostPlayer');
 		return;
 	end
 
 	if not ((hostPlayer.Team == -1) or (hostPlayer.Team ~= -1 and Mod.PublicGameData.teams[hostPlayer.Team] == 1)) then
+		print('exit because hostPlayer is part of a team');
 		return;
 	end
 
+	print('carrying on as normal');
 	addNewOrder(WL.GameOrderCustom.Create(host, '', satsPayload));
 end
 
