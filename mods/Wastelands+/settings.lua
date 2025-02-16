@@ -1,4 +1,4 @@
--- copied from https://github.com/DanWaLes/Warzone/tree/master/mods/libs/AutoSettingsFiles
+-- copied from https://github.com/DanWaLes/Warzone/tree/main/mods/libs/AutoSettingsFiles
 
 function addSetting(name, label, inputType, defaultValue, otherProps)
 	local allowedInputTypes = {
@@ -208,7 +208,7 @@ function addSetting(name, label, inputType, defaultValue, otherProps)
 		local foundDefaultSelectedControl = false;
 		local foundBkwardsSelectedControl = not setting.bkwards;
 
-		for i, value in ipairs(controls) do
+		for i, value in ipairs(setting.controls) do
 			if i == defaultValue then
 				foundDefaultSelectedControl = true;
 			end
