@@ -208,7 +208,7 @@ function addSetting(name, label, inputType, defaultValue, otherProps)
 		local foundDefaultSelectedControl = false;
 		local foundBkwardsSelectedControl = not setting.bkwards;
 
-		for i, value in ipairs(controls) do
+		for i, value in ipairs(setting.controls) do
 			if i == defaultValue then
 				foundDefaultSelectedControl = true;
 			end
