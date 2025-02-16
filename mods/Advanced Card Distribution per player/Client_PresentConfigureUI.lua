@@ -1,4 +1,4 @@
--- copied from https://github.com/DanWaLes/Warzone/tree/master/mods/libs/AutoSettingsFiles
+-- copied from https://github.com/DanWaLes/Warzone/tree/main/mods/libs/AutoSettingsFiles
 
 require('__settings');
 
