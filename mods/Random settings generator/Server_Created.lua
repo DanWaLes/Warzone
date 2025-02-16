@@ -89,8 +89,10 @@ function Server_Created(game, settings)
 	end
 
 	if getSetting('UseRandomKillRates') then
-		settings.OffenseKillRate = math.random(5, 100);
-		settings.DefenseKillRate  = math.random(0, 100);
+		-- kill rates must be between 0 and 1, so divide by 100
+
+		settings.OffenseKillRate = (math.random(5, 100)) / 100;
+		settings.DefenseKillRate  = (math.random(0, 100)) / 100;
 	end
 
 	randomiseCards(settings);
