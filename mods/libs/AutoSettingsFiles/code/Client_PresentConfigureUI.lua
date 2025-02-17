@@ -18,27 +18,19 @@ function Client_PresentConfigureUI(rootParent)
 		return Client_SaveConfigureUI(UI.Alert);
 	end
 
-	local root = UI.CreateVerticalLayoutGroup(rootParent);
-
 	if type(getSettings) ~= 'function' then
 		getSettings = function()
 			return nil;
 		end;
 	end
 
-	cpc(root, getSettings());
+	cpc(rootParent, getSettings());
 
 	if not modDevMadeError then
 		return;
 	end
 
-	GLOBALS = {};
-
-	if canUseUIElementIsDestroyed then
-		UI.Destroy(root);
-	end
-
-	UI.CreateLabel(rootParent).SetText('The mod developer made an error while trying to add settings');
+	UI.CreateLabel(rootParent).SetColor('#FF0000').SetText('The mod developer made an error while trying to add settings');
 end
 
 function cpc(parent, settings)
@@ -253,8 +245,6 @@ function cpcDoSetting(setting, vert)
 			listAllOptions();
 		end
 	elseif setting.inputType == 'bool' then
-		local vert3 = UI.CreateVerticalLayoutGroup(vert2);
-
 		-- colors dont take affect on checkbox labels
 		-- so use empty checkbox label and make an actual label
 
@@ -263,10 +253,13 @@ function cpcDoSetting(setting, vert)
 			.SetIsChecked(initialSettingValue);
 
 		createLabel(horz, setting);
+
+		local vert3 = UI.CreateVerticalLayoutGroup(vert2);
+
 		createHelpBtn(horz, UI.CreateVerticalLayoutGroup(vert3), setting);
 		cpcDoSettingBoolSubsettings(setting, horz, vert3);
 	else
-		createLabel(horz, setting)
+		createLabel(horz, setting);
 		createHelpBtn(horz, vert2, setting);
 
 		if setting.inputType == 'text' then
@@ -324,7 +317,7 @@ function createExpandCollaseBtn(parent, startCollapsed, onBeforeExpandOrCollapse
 	local expandCollapseBtn = UI.CreateButton(parent);
 	local startText = (startCollapsed and getExpandBtnLabelTxt()) or getCollapseBtnLabelTxt();
 
-	expandCollapseBtn.SetColor('#23A0FF')
+	expandCollapseBtn.SetColor('#23A0FF');
 	expandCollapseBtn.SetText(startText);
 	expandCollapseBtn.SetOnClick(function()
 		if not onBeforeExpandOrCollapse() then
