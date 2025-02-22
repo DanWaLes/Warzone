@@ -196,7 +196,7 @@ function cpcDoSetting(setting, vert)
 					end
 				end
 
-				checkbox.SetOnClick(function()
+				checkbox.SetOnValueChanged(function()
 					Mod.Settings[setting.name] = i;
 
 					if selectedCheckbox then
