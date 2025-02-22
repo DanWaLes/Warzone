@@ -155,7 +155,7 @@ function cpcDoSetting(setting, vert)
 		end
 
 		function makeLabelHelpFromOption(btnParent, helpParent, option, fakeSettingNameSuffix)
-			local hasHelp = type('option') == 'table' and option.help;
+			local hasHelp = type(option) == 'table' and option.help;
 
 			if not hasHelp then
 				return;
