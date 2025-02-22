@@ -133,6 +133,20 @@ function cscDoSetting(setting)
 		return;
 	end
 
+	if UI.IsDestroyed(GLOBALS[setting.name]) then
+		if not errMsg then
+			errMsg = '';
+		end
+
+		if errMsg ~= '' then
+			errMsg = errMsg .. '\n';
+		end
+
+		errMsg = errMsg .. 'AutoSettingsFiles internal error: GLOBALS[' .. tostring(setting.name) .. '] is destroyed';
+
+		return;
+	end
+
 	local settingVal;
 
 	if setting.inputType == 'bool' then
