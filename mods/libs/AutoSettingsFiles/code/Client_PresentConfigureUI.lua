@@ -303,20 +303,20 @@ function createHelpBtn(btnParent, helpParent, setting)
 						showHelp(btnParent, helpParent, setting);
 					end
 				elseif UI.IsDestroyed(settingHelpAreas[setting.name]) then
-					showHelp(btnParent, helpParent, setting);
+					showHelp(setting, helpParent);
 				else
-					hideHelp(btnParent, helpParent, setting);
+					hideHelp(setting);
 				end
 			end
 		);
 end
 
-function showHelp(btnParent, helpParent, setting)
+function showHelp(setting, helpParent)
 	settingHelpAreas[setting.name] = UI.CreateVerticalLayoutGroup(helpParent);
 	setting.help(settingHelpAreas[setting.name]);
 end
 
-function hideHelp(btnParent, helpParent, setting)
+function hideHelp(setting)
 	UI.Destroy(settingHelpAreas[setting.name]);
 	settingHelpAreas[setting.name] = nil;
 end
