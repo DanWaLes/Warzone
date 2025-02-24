@@ -114,8 +114,8 @@ function cpcDoSetting(setting, vert)
 		local selectedCheckbox = nil;
 		local selectedRadioButtonLabel = nil;
 		local selectedRadioButtonHelp = nil;
-		local selectedRadioButtonHelpHelpParentParent = nil;
-		local selectedRadioButtonHelpHelpParent = nil;
+-- 		local selectedRadioButtonHelpHelpParentParent = nil;
+-- 		local selectedRadioButtonHelpHelpParent = nil;
 
 		function getLabelFromOption(option)
 			return (type(option) == 'string' and option) or option.label;
@@ -139,11 +139,11 @@ function cpcDoSetting(setting, vert)
 				return;
 			end
 
-			UI.Destroy(selectedRadioButtonHelp);
-			UI.Destroy(selectedRadioButtonHelpHelpParent);
+-- 			UI.Destroy(selectedRadioButtonHelp);
+-- 			UI.Destroy(selectedRadioButtonHelpHelpParent);
 			settingHelpAreas[setting.name .. tostring(-1)] = nil;
-			selectedRadioButtonHelpHelpParent = UI.CreateVerticalLayoutGroup(selectedRadioButtonHelpHelpParentParent);
-			selectedRadioButtonHelp = makeLabelHelpFromOption(horz, selectedRadioButtonHelpHelpParent, option, -1);
+-- 			selectedRadioButtonHelpHelpParent = UI.CreateVerticalLayoutGroup(selectedRadioButtonHelpHelpParentParent);
+-- 			selectedRadioButtonHelp = makeLabelHelpFromOption(horz, selectedRadioButtonHelpHelpParent, option, -1);
 		end
 
 		function makeLabelFromOption(parent, option)
@@ -184,7 +184,7 @@ function cpcDoSetting(setting, vert)
 					.SetIsChecked(isSelectedCheckbox);
 
 				makeLabelFromOption(horz2, option);
-				makeLabelHelpFromOption(horz2, UI.CreateVerticalLayoutGroup(horz2), option, a);
+				makeLabelHelpFromOption(horz2, UI.CreateVerticalLayoutGroup(vert4), option, a);
 
 				if isSelectedCheckbox then
 					Mod.Settings[setting.name] = i;
@@ -222,9 +222,9 @@ function cpcDoSetting(setting, vert)
 
 			selectedRadioButtonLabel = makeLabelFromOption(horz, initialSelectedOption);
 
-			selectedRadioButtonHelpHelpParentParent = UI.CreateVerticalLayoutGroup(horz);
-			selectedRadioButtonHelpHelpParent = UI.CreateVerticalLayoutGroup(selectedRadioButtonHelpHelpParentParent);
-			selectedRadioButtonHelp = makeLabelHelpFromOption(horz, selectedRadioButtonHelpHelpParent, initialSelectedOption, -1);
+-- 			selectedRadioButtonHelpHelpParentParent = UI.CreateVerticalLayoutGroup(horz);
+-- 			selectedRadioButtonHelpHelpParent = UI.CreateVerticalLayoutGroup(selectedRadioButtonHelpHelpParentParent);
+-- 			selectedRadioButtonHelp = makeLabelHelpFromOption(horz, selectedRadioButtonHelpHelpParent, initialSelectedOption, -1);
 
 			createExpandCollaseBtn(
 				horz,
