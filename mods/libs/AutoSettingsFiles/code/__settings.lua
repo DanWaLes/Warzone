@@ -70,14 +70,19 @@ function getSettings()
 				})
 			}
 		}),
-		addSetting('radioinput', 'Mode', 'radio', 1, {
+		addSetting('radioinput', 'Mode', 'radio', 3, {
 			labelColor = '#012345',
 			help = function(parent)
 				UI.CreateLabel(parent).SetText('radio button help: you can only choose one, defaults to easy');
 			end,
 			controls = {
 				'easy',
-				'medium',
+				{
+					label = 'medium',
+					help = function(parent)
+						UI.CreateLabel(parent).SetText('radio button medium help');
+					end
+				},
 				{
 					label = 'hard',
 					labelColor = '#fedcba',
