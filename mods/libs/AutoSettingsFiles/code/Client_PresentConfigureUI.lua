@@ -285,15 +285,8 @@ function createHelpBtn(btnParent, helpParent, setting)
 		return;
 	end
 
-	function showHelp()
-		settingHelpAreas[setting.name] = UI.CreateVerticalLayoutGroup(helpParent);
-		setting.help(settingHelpAreas[setting.name]);
-	end
-
-	function hideHelp()
-		UI.Destroy(settingHelpAreas[setting.name]);
-		settingHelpAreas[setting.name] = nil;
-	end
+	-- not defining showHelp and hideHelp in this function because
+	-- reference to createHelpBtn params needed to make sure that the click is called using correct references	
 
 	return UI.CreateButton(btnParent)
 		.SetText('?')
@@ -302,15 +295,25 @@ function createHelpBtn(btnParent, helpParent, setting)
 			function()
 				if not canUseUIElementIsDestroyed then
 					if not settingHelpAreas[setting.name] then
-						showHelp();
+						showHelp(btnParent, helpParent, setting);
 					end
 				elseif UI.IsDestroyed(settingHelpAreas[setting.name]) then
-					showHelp();
+					showHelp(btnParent, helpParent, setting);
 				else
-					hideHelp();
+					hideHelp(btnParent, helpParent, setting);
 				end
 			end
 		);
+end
+
+function showHelp(btnParent, helpParent, setting)
+	settingHelpAreas[setting.name] = UI.CreateVerticalLayoutGroup(helpParent);
+	setting.help(settingHelpAreas[setting.name]);
+end
+
+function hideHelp(btnParent, helpParent, setting)
+	UI.Destroy(settingHelpAreas[setting.name]);
+	settingHelpAreas[setting.name] = nil;
 end
 
 function createExpandCollaseBtn(parent, startCollapsed, onBeforeExpandOrCollapse, onCollapse, onExpand)
