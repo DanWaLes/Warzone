@@ -94,7 +94,7 @@ function cpcDoSetting(setting, vert)
 		end
 
 		if setting.usesSettings then
-			cpc(setting.settings, vert);
+			cpc(vert, setting.settings);
 		end
 
 		return;
