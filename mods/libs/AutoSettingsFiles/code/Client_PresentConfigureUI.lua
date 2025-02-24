@@ -202,7 +202,6 @@ function cpcDoSetting(setting, vert)
 						selectedCheckbox.SetIsChecked(false);
 					end
 
-					checkbox.SetIsChecked(true);
 					selectedCheckbox = checkbox;
 
 					if selectedRadioButtonLabel then
