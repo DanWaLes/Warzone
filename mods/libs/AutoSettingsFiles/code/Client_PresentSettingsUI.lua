@@ -41,7 +41,7 @@ function cpsDoSetting(vert, setting)
 		settingLabel.SetColor(setting.labelColor);
 	end
 
-	createHelpBtn(horz, vert2, setting);
+	createHelpBtn(horz, UI.CreateVerticalLayoutGroup(vert2), setting);
 
 	if settingValue == nil and setting.bkwrds ~= nil then
 		settingValue = setting.bkwrds;
