@@ -300,7 +300,7 @@ function createHelpBtn(btnParent, helpParent, setting)
 			function()
 				if not canUseUIElementIsDestroyed then
 					if not settingHelpAreas[setting.name] then
-						showHelp(btnParent, helpParent, setting);
+						showHelp(setting, helpParent);
 					end
 				elseif UI.IsDestroyed(settingHelpAreas[setting.name]) then
 					showHelp(setting, helpParent);
