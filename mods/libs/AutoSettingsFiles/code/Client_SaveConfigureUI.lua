@@ -129,7 +129,12 @@ function cscDoSetting(setting)
 	end
 
 	if setting.inputType == 'radio' then
-		-- explicitly written to in Client_PresentConfigureUI
+		-- explicitly written to in Client_PresentConfigureUI if the value has ever been changed from the default
+
+		if not Mod.Settings[setting.name] then
+			Mod.Settings[setting.name] = setting.defaultValue;
+		end
+
 		return;
 	end
 
