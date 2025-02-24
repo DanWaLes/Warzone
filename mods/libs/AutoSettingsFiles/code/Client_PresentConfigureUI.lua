@@ -135,15 +135,17 @@ function cpcDoSetting(setting, vert)
 				selectedRadioButtonLabel.SetColor(color);
 			end
 
-			if not selectedRadioButtonHelp then
-				return;
+			if selectedRadioButtonHelp then
+				UI.Destroy(selectedRadioButtonHelp);
+				UI.Destroy(selectedRadioButtonHelpHelpParent);
+				selectedRadioButtonHelp = nil;
+				settingHelpAreas[setting.name .. tostring(-1)] = nil;
 			end
 
-			UI.Destroy(selectedRadioButtonHelp);
-			UI.Destroy(selectedRadioButtonHelpHelpParent);
-			settingHelpAreas[setting.name .. tostring(-1)] = nil;
-			selectedRadioButtonHelpHelpParent = UI.CreateVerticalLayoutGroup(vert3);
-			selectedRadioButtonHelp = makeLabelHelpFromOption(horz, selectedRadioButtonHelpHelpParent, option, -1);
+			if optionHasHelp(option) then
+				selectedRadioButtonHelpHelpParent = UI.CreateVerticalLayoutGroup(vert3);
+				selectedRadioButtonHelp = makeLabelHelpFromOption(horz, selectedRadioButtonHelpHelpParent, option, -1);
+			end
 		end
 
 		function makeLabelFromOption(parent, option)
@@ -153,10 +155,12 @@ function cpcDoSetting(setting, vert)
 			});
 		end
 
-		function makeLabelHelpFromOption(btnParent, helpParent, option, fakeSettingNameSuffix)
-			local hasHelp = type(option) == 'table' and option.help;
+		function optionHasHelp(option)
+			return type(option) == 'table' and option.help;
+		end
 
-			if not hasHelp then
+		function makeLabelHelpFromOption(btnParent, helpParent, option, fakeSettingNameSuffix)
+			if not optionHasHelp(option) then
 				return;
 			end
 
