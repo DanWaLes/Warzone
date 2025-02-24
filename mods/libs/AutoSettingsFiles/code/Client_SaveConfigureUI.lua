@@ -181,26 +181,24 @@ function cscDoSetting(setting)
 		local isTooHigh = settingVal > absoluteMax;
 		local isTooLow = settingVal < absoluteMin;
 
-		if not (isTooLow or isTooHigh) then
-			return;
-		end
+		if isTooLow or isTooHigh then
+			if errMsg == nil then
+				errMsg = '';
+			end
 
-		if errMsg == nil then
-			errMsg = '';
-		end
+			if errMsg ~= '' then
+				errMsg = errMsg .. '\n';
+			end
 
-		if errMsg ~= '' then
-			errMsg = errMsg .. '\n';
-		end
+			errMsg = errMsg .. setting.label .. ' must be ';
 
-		errMsg = errMsg .. setting.label .. ' must be ';
-
-		if isTooLow and not usingMin then
-			errMsg = errMsg .. 'greater than ' .. tostring(setting.minValue);
-		elseif isTooHigh and not usingMax then
-			errMsg = errMsg .. 'less than ' .. tostring(setting.maxValue);
-		else
-			errMsg = errMsg .. 'between ' .. tostring(absoluteMin) .. ' and ' .. tostring(absoluteMax);
+			if isTooLow and not usingMin then
+				errMsg = errMsg .. 'greater than ' .. tostring(setting.minValue);
+			elseif isTooHigh and not usingMax then
+				errMsg = errMsg .. 'less than ' .. tostring(setting.maxValue);
+			else
+				errMsg = errMsg .. 'between ' .. tostring(absoluteMin) .. ' and ' .. tostring(absoluteMax);
+			end
 		end
 	end
 
