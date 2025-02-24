@@ -129,16 +129,21 @@ function cscDoSetting(setting)
 	end
 
 	if setting.inputType == 'radio' then
-		-- explicitly written to in Client_PresentConfigureUI
+		-- explicitly written to in Client_PresentConfigureUI if the value has ever been changed from the default
+
+		if not Mod.Settings[setting.name] then
+			Mod.Settings[setting.name] = setting.defaultValue;
+		end
+
 		return;
 	end
 
 	local settingVal;
 
 	if setting.inputType == 'bool' then
-		settingVal = GLOBALS[setting.name].GetIsChecked();
+		settingVal = access(setting, 'GetIsChecked');
 	elseif setting.inputType == 'text' then
-		settingVal = GLOBALS[setting.name].GetText();
+		settingVal = access(setting, 'GetText');
 
 		local length = #settingVal;
 		local tooLong = setting.charLimit and (length > setting.charLimit);
@@ -168,7 +173,7 @@ function cscDoSetting(setting)
 			end
 		end
 	else
-		settingVal = GLOBALS[setting.name].GetValue();
+		settingVal = access(setting, 'GetValue');
 
 		if setting.inputType == 'float' then
 			settingVal = round(settingVal, setting.dp);
@@ -181,26 +186,24 @@ function cscDoSetting(setting)
 		local isTooHigh = settingVal > absoluteMax;
 		local isTooLow = settingVal < absoluteMin;
 
-		if not (isTooLow or isTooHigh) then
-			return;
-		end
+		if isTooLow or isTooHigh then
+			if errMsg == nil then
+				errMsg = '';
+			end
 
-		if errMsg == nil then
-			errMsg = '';
-		end
+			if errMsg ~= '' then
+				errMsg = errMsg .. '\n';
+			end
 
-		if errMsg ~= '' then
-			errMsg = errMsg .. '\n';
-		end
+			errMsg = errMsg .. setting.label .. ' must be ';
 
-		errMsg = errMsg .. setting.label .. ' must be ';
-
-		if isTooLow and not usingMin then
-			errMsg = errMsg .. 'greater than ' .. tostring(setting.minValue);
-		elseif isTooHigh and not usingMax then
-			errMsg = errMsg .. 'less than ' .. tostring(setting.maxValue);
-		else
-			errMsg = errMsg .. 'between ' .. tostring(absoluteMin) .. ' and ' .. tostring(absoluteMax);
+			if isTooLow and not usingMin then
+				errMsg = errMsg .. 'greater than ' .. tostring(setting.minValue);
+			elseif isTooHigh and not usingMax then
+				errMsg = errMsg .. 'less than ' .. tostring(setting.maxValue);
+			else
+				errMsg = errMsg .. 'between ' .. tostring(absoluteMin) .. ' and ' .. tostring(absoluteMax);
+			end
 		end
 	end
 
@@ -209,6 +212,40 @@ function cscDoSetting(setting)
 	if settingVal and setting.inputType == 'bool' and setting.subsettings then
 		csc(setting.subsettings);
 	end
+end
+
+function access(setting, fn)
+	-- check if the element for the setting is destroyed before trying to access any of its functions
+
+	-- if destroyed might not be able to access the value
+	-- so use the defaultValue fallback
+
+	local value = Mod.Settings[setting.name];
+
+	if value == nil then
+		value = setting.defaultValue;
+	end
+
+	local el = GLOBALS[setting.name];
+
+	if WL and WL.IsVersionOrHigher and WL.IsVersionOrHigher('5.21') then
+		if not UI.IsDestroyed(el) then
+			value = el[fn]();
+		end	
+	else
+		-- no ui elements are destroyed if checking for destroyed is not an option
+		-- so safe to set the value
+
+		value = el[fn]();
+	end
+
+	if value == nil then
+		print('access(setting, fn) result is nil');
+		print('setting.name = ' .. setting.name);
+		print('fn = ' .. fn);
+	end
+
+	return value;
 end
 
 function round(n, dp)

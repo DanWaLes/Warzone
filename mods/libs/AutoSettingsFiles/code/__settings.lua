@@ -36,7 +36,7 @@ function getSettings()
 		addSetting('boolsettingwithsubsettings', 'bool setting with sub settings', 'bool', false, {
 			labelColor = '#00ff00',
 			help = function(parent)
-				UI.CreateLabel('this setting has sub settings. sub settings will be displayed if enabled, defaults to disabled');
+				UI.CreateLabel(parent).SetText('this setting has sub settings. sub settings will be displayed if enabled, defaults to disabled');
 			end,
 			subsettings = {
 				addSetting('boolsettingwithsubsettingsint1', 'int sub setting 1', 'int', 5, {
@@ -45,7 +45,7 @@ function getSettings()
 					absoluteMin = 0,
 					labelColor = '#0000ff',
 					help = function(parent)
-						UI.CreateLabel('int sub setting 1 help: lowest allowed value is 0')
+						UI.CreateLabel(parent).SetText('int sub setting 1 help: lowest allowed value is 0')
 					end
 				}),
 				addSetting('boolsettingwithsubsettingsint2', 'int sub setting 2', 'int', 10, {
@@ -54,12 +54,12 @@ function getSettings()
 					absoluteMax = 15,
 					labelColor = '#0000ff',
 					help = function(parent)
-						UI.CreateLabel('int sub setting 2 help: highest allowed value is 15');
+						UI.CreateLabel(parent).SetText('int sub setting 2 help: highest allowed value is 15');
 					end
 				}),
 				addSetting('boolsettingwithsubsettingsbool', 'bool sub setting', 'bool', true, {
 					help = function(parent)
-						UI.CreateLabel('bool sub setting help: this should automatically be enabled and show its sub settings');
+						UI.CreateLabel(parent).SetText('bool sub setting help: this should automatically be enabled and show its sub settings');
 					end,
 					subsettings = {
 						addSetting('sssInt', 'bool sub setting int', 'int', 6, {
@@ -70,14 +70,19 @@ function getSettings()
 				})
 			}
 		}),
-		addSetting('radioinput', 'Mode', 'radio', 1, {
+		addSetting('radioinput', 'Mode', 'radio', 3, {
 			labelColor = '#012345',
 			help = function(parent)
 				UI.CreateLabel(parent).SetText('radio button help: you can only choose one, defaults to easy');
 			end,
 			controls = {
 				'easy',
-				'medium',
+				{
+					label = 'medium',
+					help = function(parent)
+						UI.CreateLabel(parent).SetText('radio button medium help');
+					end
+				},
 				{
 					label = 'hard',
 					labelColor = '#fedcba',
