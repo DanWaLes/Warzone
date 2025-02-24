@@ -109,9 +109,8 @@ function cpcDoSetting(setting, vert)
 	end
 
 	if setting.inputType == 'radio' then
-		local vert3 = UI.CreateVerticalLayoutGroup(vert2);
-		local vert4 = UI.CreateVerticalLayoutGroup(vert3);
-		local vert5 = nil;
+		local vert3 = nil;
+		local vert4 = nil;
 		local selectedCheckbox = nil;
 		local selectedRadioButtonLabel = nil;
 		local selectedRadioButtonHelp = nil;
@@ -172,12 +171,12 @@ function cpcDoSetting(setting, vert)
 		end
 
 		function listAllOptions()
-			if not vert5 then
-				vert5 = UI.CreateVerticalLayoutGroup(vert4);
+			if not vert4 then
+				vert4 = UI.CreateVerticalLayoutGroup(vert3);
 			end
 
 			for a, option in ipairs(setting.controls) do
-				local horz2 = UI.CreateHorizontalLayoutGroup(UI.CreateVerticalLayoutGroup(vert5));
+				local horz2 = UI.CreateHorizontalLayoutGroup(UI.CreateVerticalLayoutGroup(vert4));
 				local i = a;
 				local isSelectedCheckbox = i == initialSettingValue;
 				local checkbox = UI.CreateCheckBox(horz2)
@@ -214,7 +213,9 @@ function cpcDoSetting(setting, vert)
 		end
 
 		createLabel(horz, setting);
-		createHelpBtn(horz, UI.CreateVerticalLayoutGroup(vert3), setting);
+		createHelpBtn(horz, UI.CreateVerticalLayoutGroup(vert2), setting);
+
+		vert3 = UI.CreateVerticalLayoutGroup(vert2);
 
 		if canUseUIElementIsDestroyed then
 			local initialSelectedOption = setting.controls[initialSettingValue];
@@ -234,9 +235,9 @@ function cpcDoSetting(setting, vert)
 					return save();
 				end,
 				function()
-					if not UI.IsDestroyed(vert5) then
-						UI.Destroy(vert5);
-						vert5 = nil;
+					if not UI.IsDestroyed(vert4) then
+						UI.Destroy(vert4);
+						vert4 = nil;
 					end
 				end,
 				listAllOptions
