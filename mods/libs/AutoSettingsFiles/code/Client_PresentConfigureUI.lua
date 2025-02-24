@@ -109,6 +109,7 @@ function cpcDoSetting(setting, vert)
 	end
 
 	if setting.inputType == 'radio' then
+		local horz1 = UI.CreateHorizontalLayoutGroup(horz);
 		local vert3 = nil;
 		local vert4 = nil;
 		local vert5 = nil;
@@ -144,7 +145,7 @@ function cpcDoSetting(setting, vert)
 
 			if optionHasHelp(option) then
 				selectedRadioButtonHelpHelpParent = UI.CreateVerticalLayoutGroup(vert3);
-				selectedRadioButtonHelp = makeLabelHelpFromOption(horz, selectedRadioButtonHelpHelpParent, option, -1);
+				selectedRadioButtonHelp = makeLabelHelpFromOption(horz1, selectedRadioButtonHelpHelpParent, option, -1);
 			end
 		end
 
@@ -215,8 +216,8 @@ function cpcDoSetting(setting, vert)
 			end
 		end
 
-		createLabel(horz, setting);
-		createHelpBtn(horz, UI.CreateVerticalLayoutGroup(vert2), setting);
+		createLabel(horz1, setting);
+		createHelpBtn(horz1, UI.CreateVerticalLayoutGroup(vert2), setting);
 
 		vert3 = UI.CreateVerticalLayoutGroup(vert2);
 		vert4 = UI.CreateVerticalLayoutGroup(vert2);
@@ -224,10 +225,10 @@ function cpcDoSetting(setting, vert)
 		if canUseUIElementIsDestroyed then
 			local initialSelectedOption = setting.controls[initialSettingValue];
 
-			selectedRadioButtonLabel = makeLabelFromOption(horz, initialSelectedOption);
+			selectedRadioButtonLabel = makeLabelFromOption(horz1, initialSelectedOption);
 
 			selectedRadioButtonHelpHelpParent = UI.CreateVerticalLayoutGroup(vert3);
-			selectedRadioButtonHelp = makeLabelHelpFromOption(horz, selectedRadioButtonHelpHelpParent, initialSelectedOption, -1);
+			selectedRadioButtonHelp = makeLabelHelpFromOption(horz1, selectedRadioButtonHelpHelpParent, initialSelectedOption, -1);
 
 			createExpandCollaseBtn(
 				horz,
