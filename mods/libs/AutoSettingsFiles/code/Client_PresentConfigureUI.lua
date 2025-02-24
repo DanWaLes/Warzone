@@ -111,11 +111,11 @@ function cpcDoSetting(setting, vert)
 	if setting.inputType == 'radio' then
 		local vert3 = nil;
 		local vert4 = nil;
+		local vert5 = nil;
 		local selectedCheckbox = nil;
 		local selectedRadioButtonLabel = nil;
 		local selectedRadioButtonHelp = nil;
--- 		local selectedRadioButtonHelpHelpParentParent = nil;
--- 		local selectedRadioButtonHelpHelpParent = nil;
+		local selectedRadioButtonHelpHelpParent = nil;
 
 		function getLabelFromOption(option)
 			return (type(option) == 'string' and option) or option.label;
@@ -139,11 +139,11 @@ function cpcDoSetting(setting, vert)
 				return;
 			end
 
--- 			UI.Destroy(selectedRadioButtonHelp);
--- 			UI.Destroy(selectedRadioButtonHelpHelpParent);
+			UI.Destroy(selectedRadioButtonHelp);
+			UI.Destroy(selectedRadioButtonHelpHelpParent);
 			settingHelpAreas[setting.name .. tostring(-1)] = nil;
--- 			selectedRadioButtonHelpHelpParent = UI.CreateVerticalLayoutGroup(selectedRadioButtonHelpHelpParentParent);
--- 			selectedRadioButtonHelp = makeLabelHelpFromOption(horz, selectedRadioButtonHelpHelpParent, option, -1);
+			selectedRadioButtonHelpHelpParent = UI.CreateVerticalLayoutGroup(vert3);
+			selectedRadioButtonHelp = makeLabelHelpFromOption(horz, selectedRadioButtonHelpHelpParent, option, -1);
 		end
 
 		function makeLabelFromOption(parent, option)
@@ -171,12 +171,12 @@ function cpcDoSetting(setting, vert)
 		end
 
 		function listAllOptions()
-			if not vert4 then
-				vert4 = UI.CreateVerticalLayoutGroup(vert3);
+			if not vert5 then
+				vert5 = UI.CreateVerticalLayoutGroup(vert4);
 			end
 
 			for a, option in ipairs(setting.controls) do
-				local horz2 = UI.CreateHorizontalLayoutGroup(UI.CreateVerticalLayoutGroup(vert4));
+				local horz2 = UI.CreateHorizontalLayoutGroup(UI.CreateVerticalLayoutGroup(vert5));
 				local i = a;
 				local isSelectedCheckbox = i == initialSettingValue;
 				local checkbox = UI.CreateCheckBox(horz2)
@@ -184,7 +184,7 @@ function cpcDoSetting(setting, vert)
 					.SetIsChecked(isSelectedCheckbox);
 
 				makeLabelFromOption(horz2, option);
-				makeLabelHelpFromOption(horz2, UI.CreateVerticalLayoutGroup(vert4), option, a);
+				makeLabelHelpFromOption(horz2, UI.CreateVerticalLayoutGroup(vert5), option, a);
 
 				if isSelectedCheckbox then
 					Mod.Settings[setting.name] = i;
@@ -216,15 +216,15 @@ function cpcDoSetting(setting, vert)
 		createHelpBtn(horz, UI.CreateVerticalLayoutGroup(vert2), setting);
 
 		vert3 = UI.CreateVerticalLayoutGroup(vert2);
+		vert4 = UI.CreateVerticalLayoutGroup(vert2);
 
 		if canUseUIElementIsDestroyed then
 			local initialSelectedOption = setting.controls[initialSettingValue];
 
 			selectedRadioButtonLabel = makeLabelFromOption(horz, initialSelectedOption);
 
--- 			selectedRadioButtonHelpHelpParentParent = UI.CreateVerticalLayoutGroup(horz);
--- 			selectedRadioButtonHelpHelpParent = UI.CreateVerticalLayoutGroup(selectedRadioButtonHelpHelpParentParent);
--- 			selectedRadioButtonHelp = makeLabelHelpFromOption(horz, selectedRadioButtonHelpHelpParent, initialSelectedOption, -1);
+			selectedRadioButtonHelpHelpParent = UI.CreateVerticalLayoutGroup(vert3);
+			selectedRadioButtonHelp = makeLabelHelpFromOption(horz, selectedRadioButtonHelpHelpParent, initialSelectedOption, -1);
 
 			createExpandCollaseBtn(
 				horz,
@@ -235,9 +235,9 @@ function cpcDoSetting(setting, vert)
 					return save();
 				end,
 				function()
-					if not UI.IsDestroyed(vert4) then
-						UI.Destroy(vert4);
-						vert4 = nil;
+					if not UI.IsDestroyed(vert5) then
+						UI.Destroy(vert5);
+						vert5 = nil;
 					end
 				end,
 				listAllOptions
