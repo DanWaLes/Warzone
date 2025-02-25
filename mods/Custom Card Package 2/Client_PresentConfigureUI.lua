@@ -6,7 +6,7 @@ GLOBALS = {};
 
 local modDevMadeError = false;
 local settingHelpAreas = {};
-local canUseUIElementIsDestroyed = false;
+local canUseUIElementIsDestroyed;
 local save = nil;
 
 function Client_PresentConfigureUI(rootParent)
@@ -324,6 +324,7 @@ end
 function createExpandCollaseBtn(parent, startCollapsed, onBeforeExpandOrCollapse, onCollapse, onExpand)
 	local expandCollapseBtn = UI.CreateButton(parent);
 	local startText = (startCollapsed and getExpandBtnLabelTxt()) or getCollapseBtnLabelTxt();
+	local isCollapsed = startCollapsed;
 
 	expandCollapseBtn.SetColor('#23A0FF');
 	expandCollapseBtn.SetText(startText);
@@ -332,19 +333,23 @@ function createExpandCollaseBtn(parent, startCollapsed, onBeforeExpandOrCollapse
 			return;
 		end
 
-		if expandCollapseBtn.GetText() == getExpandBtnLabelTxt() then
-			expandCollapseBtn.SetText(getCollapseBtnLabelTxt());
-		else
-			expandCollapseBtn.SetText(getExpandBtnLabelTxt());
-		end
-
 		if canUseUIElementIsDestroyed then
+			if isCollapsed then
+				expandCollapseBtn.SetText(getCollapseBtnLabelTxt());
+			else
+				expandCollapseBtn.SetText(getExpandBtnLabelTxt());
+			end
+
 			onCollapse();
+		else
+			expandCollapseBtn.SetText(getCollapseBtnLabelTxt());
 		end
 
-		if expandCollapseBtn.GetText() == getCollapseBtnLabelTxt() then
+		if isCollapsed then
 			onExpand();
 		end
+
+		isCollapsed = not isCollapsed;
 	end);
 
 	return expandCollapseBtn;
@@ -401,7 +406,18 @@ function cpcDoSettingBoolSubsettings(setting, horz, vert)
 	end
 
 	GLOBALS[setting.name].SetOnValueChanged(subsettingEnabledOrDisabled);
-	subsettingEnabledOrDisabled();
+
+	if (
+		canUseUIElementIsDestroyed or (
+			not canUseUIElementIsDestroyed and (
+				(GLOBALS[setting.name] and GLOBALS[setting.name].GetIsChecked()) or
+				Mod.Settings[setting.name] == true or
+				setting.defaultValue
+			)
+		)
+	) then
+		subsettingEnabledOrDisabled();
+	end
 end
 
 function makeTextInput(setting, horz, initialSettingValue)
