@@ -6,7 +6,7 @@ GLOBALS = {};
 
 local modDevMadeError = false;
 local settingHelpAreas = {};
-local canUseUIElementIsDestroyed = false;
+local canUseUIElementIsDestroyed;
 local save = nil;
 
 function Client_PresentConfigureUI(rootParent)
@@ -324,6 +324,7 @@ end
 function createExpandCollaseBtn(parent, startCollapsed, onBeforeExpandOrCollapse, onCollapse, onExpand)
 	local expandCollapseBtn = UI.CreateButton(parent);
 	local startText = (startCollapsed and getExpandBtnLabelTxt()) or getCollapseBtnLabelTxt();
+	local isCollapsed = startCollapsed;
 
 	expandCollapseBtn.SetColor('#23A0FF');
 	expandCollapseBtn.SetText(startText);
@@ -332,7 +333,7 @@ function createExpandCollaseBtn(parent, startCollapsed, onBeforeExpandOrCollapse
 			return;
 		end
 
-		if expandCollapseBtn.GetText() == getExpandBtnLabelTxt() then
+		if isCollapsed then
 			expandCollapseBtn.SetText(getCollapseBtnLabelTxt());
 		else
 			expandCollapseBtn.SetText(getExpandBtnLabelTxt());
@@ -342,9 +343,11 @@ function createExpandCollaseBtn(parent, startCollapsed, onBeforeExpandOrCollapse
 			onCollapse();
 		end
 
-		if expandCollapseBtn.GetText() == getCollapseBtnLabelTxt() then
+		if isCollapsed then
 			onExpand();
 		end
+
+		isCollapsed = not isCollapsed;
 	end);
 
 	return expandCollapseBtn;
