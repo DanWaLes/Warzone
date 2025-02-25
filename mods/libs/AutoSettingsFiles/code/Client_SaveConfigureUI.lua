@@ -233,10 +233,12 @@ function access(setting, fn)
 			value = el[fn]();
 		end	
 	else
-		-- no ui elements are destroyed if checking for destroyed is not an option
-		-- so safe to set the value
+		-- no ui elements are destroyed if UI.IsDestroyed is not an option
+		-- so safe to set the value as long as the element exists
 
-		value = el[fn]();
+		if el then
+			value = el[fn]();
+		end
 	end
 
 	if value == nil then
