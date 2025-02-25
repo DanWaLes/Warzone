@@ -325,6 +325,7 @@ function createExpandCollaseBtn(parent, startCollapsed, onBeforeExpandOrCollapse
 	local expandCollapseBtn = UI.CreateButton(parent);
 	local startText = (startCollapsed and getExpandBtnLabelTxt()) or getCollapseBtnLabelTxt();
 	local isCollapsed = startCollapsed;
+	local stateChanged = false;
 
 	expandCollapseBtn.SetColor('#23A0FF');
 	expandCollapseBtn.SetText(startText);
@@ -333,10 +334,12 @@ function createExpandCollaseBtn(parent, startCollapsed, onBeforeExpandOrCollapse
 			return;
 		end
 
+		expandCollapseBtn.SetText(getExpandBtnLabelTxt());
+
 		if isCollapsed then
-			expandCollapseBtn.SetText(getCollapseBtnLabelTxt());
-		else
-			expandCollapseBtn.SetText(getExpandBtnLabelTxt());
+			if canUseUIElementIsDestroyed or (not canUseUIElementIsDestroyed and not stateChanged) then
+				expandCollapseBtn.SetText(getCollapseBtnLabelTxt());
+			end
 		end
 
 		if canUseUIElementIsDestroyed then
@@ -348,6 +351,7 @@ function createExpandCollaseBtn(parent, startCollapsed, onBeforeExpandOrCollapse
 		end
 
 		isCollapsed = not isCollapsed;
+		stateChanged = true;
 	end);
 
 	return expandCollapseBtn;
