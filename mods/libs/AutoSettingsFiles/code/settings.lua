@@ -407,7 +407,7 @@ function addCustomCard(name, customCardName, customCardDescription, customCardIm
 		return varValueType;
 	end
 
-	function validateCardGameSettings(arr, types, settings)
+	function validateCardGameSettings(arr, types)
 		for field, value in ipairs(arr) do
 			local tpe = printErrorIfNotOneOfTypes(filed, value, types);
 
@@ -441,8 +441,8 @@ function addCustomCard(name, customCardName, customCardDescription, customCardIm
 	local forcedCardGameSettings = {'NumPieces', 'MinimumPiecesPerTurn', 'InitialPieces', 'Weight'};
 	local optionalCardGameSettings = {'ActiveOrderDuration'};
 
-	validateCardGameSettings(forcedCardGameSettings, {'string', 'number'}, settings);
-	validateCardGameSettings(optionalCardGameSettings, {'nil', 'string', 'number'}, settings);
+	validateCardGameSettings(forcedCardGameSettings, {'string', 'number'});
+	validateCardGameSettings(optionalCardGameSettings, {'nil', 'string', 'number'});
 
 	if hasError then
 		return;
