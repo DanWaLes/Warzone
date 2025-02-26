@@ -416,11 +416,11 @@ function addCustomCard(name, customCardName, customCardDescription, customCardIm
 				return;
 			end
 
-			if tpe == 'string' and not usesSettings then
+			if arr[1] ~= 'nil' and tpe == 'string' and not usesSettings then
 				hasError = true;
 
 				print('addCustomCard error: type(cardGameSettingsMap.' .. field .. ') is a string and settings is not a table');
-				print('cardGameSettingsMap.' .. field .. ' = ' .. value);
+				print('cardGameSettingsMap.' .. field .. ' = ' .. tostring(value));
 				print('settings = ' .. tostring(settings));
 
 				return;
