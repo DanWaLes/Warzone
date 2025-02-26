@@ -428,14 +428,6 @@ function addCustomCard(name, customCardName, customCardDescription, customCardIm
 				print('settings = ' .. tostring(settings));
 
 				return;
-			elseif tpe == 'number' and typeofSettings == 'table' then
-				hasError = true;
-
-				print('addCustomCard error: type(cardGameSettingsMap.' .. field .. ') is a number and settings is a table');
-				print('cardGameSettingsMap[' .. field .. '] = ' .. value);
-				print('settings = ' .. tostring(settings));
-
-				return;
 			end
 		end
 	end
