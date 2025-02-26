@@ -420,7 +420,7 @@ function addCustomCard(name, customCardName, customCardDescription, customCardIm
 				hasError = true;
 
 				print('addCustomCard error: type(cardGameSettingsMap.' .. field .. ') is a string and settings is not a table');
-				print('cardGameSettingsMap[' .. field .. '] = ' .. value);
+				print('cardGameSettingsMap.' .. field .. ' = ' .. value);
 				print('settings = ' .. tostring(settings));
 
 				return;
