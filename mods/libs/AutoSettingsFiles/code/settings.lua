@@ -408,7 +408,7 @@ function addCustomCard(name, customCardName, customCardDescription, customCardIm
 	end
 
 	function validateCardGameSettings(arr, types)
-		for field in ipairs(arr) do
+		for _, field in ipairs(arr) do
 			local value = cardGameSettingsMap[field];
 			local tpe = printErrorIfNotOneOfTypes('cardGameSettingsMap.' .. field, value, types);
 
