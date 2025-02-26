@@ -432,7 +432,7 @@ function addCustomCard(name, customCardName, customCardDescription, customCardIm
 	printErrorIfNotOfType('customCardDescription', customCardDescription, 'string');
 	printErrorIfNotOfType('customCardImageFilename', customCardImageFilename, 'string');
 	printErrorIfNotOfType('cardGameSettingsMap', cardGameSettingsMap, 'table');
-	printErrorIfNotOneOfTypes('settings', settings, {'nil', 'table'});
+	printErrorIfNotOneOfTypes('settings', settings, {'table', 'nil'});
 
 	if hasError then
 		return;
