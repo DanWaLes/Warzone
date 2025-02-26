@@ -43,13 +43,13 @@ function Client_SaveConfigureUI(alert, addCard)
 
 	for _, setting in ipairs(customCardSettings) do
 		local numPieces = setting.cardGameSettingsMap.NumPieces;
-		local minPiecesPerTurn = setting.CustomCardSettingsMap.MinimumPiecesPerTurn;
-		local initialPieces = setting.CustomCardSettingsMap.InitialPieces;
-		local weight = setting.CustomCardSettingsMap.Weight;
-		local activeOrderDuration = setting.CustomCardSettingsMap.ActiveOrderDuration;
+		local minPiecesPerTurn = setting.cardGameSettingsMap.MinimumPiecesPerTurn;
+		local initialPieces = setting.cardGameSettingsMap.InitialPieces;
+		local weight = setting.cardGameSettingsMap.Weight;
+		local activeOrderDuration = setting.cardGameSettingsMap.ActiveOrderDuration;
 
 		if type(numPieces) == 'string' then
-			minPiecesPerTurn = Mod.Settings[numPieces];
+			numPieces = Mod.Settings[numPieces];
 		end
 
 		if type(minPiecesPerTurn) == 'string' then
@@ -57,15 +57,15 @@ function Client_SaveConfigureUI(alert, addCard)
 		end
 
 		if type(initialPieces) == 'string' then
-			minPiecesPerTurn = Mod.Settings[initialPieces];
+			initialPieces = Mod.Settings[initialPieces];
 		end
 
 		if type(weight) == 'string' then
-			minPiecesPerTurn = Mod.Settings[weight];
+			weight = Mod.Settings[weight];
 		end
 
 		if type(activeOrderDuration) == 'string' then
-			minPiecesPerTurn = Mod.Settings[activeOrderDuration];
+			activeOrderDuration = Mod.Settings[activeOrderDuration];
 		end
 
 		local cardId = addCard(
@@ -128,7 +128,7 @@ function cscDoSetting(setting)
 			csc(setting.settings);
 		end
 
-		table.insert(customCardSettings, settings);
+		table.insert(customCardSettings, setting);
 		return;
 	end
 
