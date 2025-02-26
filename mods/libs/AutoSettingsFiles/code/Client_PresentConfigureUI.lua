@@ -7,10 +7,12 @@ GLOBALS = {};
 local modDevMadeError = false;
 local settingHelpAreas = {};
 local canUseUIElementIsDestroyed;
+local canUseCustomCards;
 local save = nil;
 
 function Client_PresentConfigureUI(rootParent)
 	canUseUIElementIsDestroyed = WL and WL.IsVersionOrHigher and WL.IsVersionOrHigher('5.21');
+	canUseCustomCards = WL and WL.IsVersionOrHigher and WL.IsVersionOrHigher('5.32.0.1');
 	save = function()
 		-- save because destroying otherwise goes back to default setting values
 		-- returns true if there isnt a error, false if there is an error
