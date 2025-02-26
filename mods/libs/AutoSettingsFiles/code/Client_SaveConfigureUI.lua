@@ -6,11 +6,15 @@ local errMsg;
 local settingValues;
 local modDevMadeError = false;
 local customCardSettings;
+local canUseUIElementIsDestroyed;
+local canUseCustomCards;
 
 function Client_SaveConfigureUI(alert, addCard)
 	errMsg = nil;
 	settingValues = {};
 	customCardSettings = {};
+	canUseUIElementIsDestroyed = WL and WL.IsVersionOrHigher and WL.IsVersionOrHigher('5.21');
+	canUseCustomCards = WL and WL.IsVersionOrHigher and WL.IsVersionOrHigher('5.32.0.1');
 
 	if type(getSettings) ~= 'function' then
 		getSettings = function()
@@ -228,7 +232,7 @@ function access(setting, fn)
 
 	local el = GLOBALS[setting.name];
 
-	if WL and WL.IsVersionOrHigher and WL.IsVersionOrHigher('5.21') then
+	if canUseUIElementIsDestroyed then
 		if not UI.IsDestroyed(el) then
 			value = el[fn]();
 		end	
