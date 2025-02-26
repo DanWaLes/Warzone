@@ -120,7 +120,7 @@ end
 
 function cscDoSetting(setting)
 	if setting.isCustomCard then
-		if not (WL and WL.IsVersionOrHigher and WL.IsVersionOrHigher('5.32.0.1')) then
+		if not canUseCustomCards then
 			return;
 		end
 
