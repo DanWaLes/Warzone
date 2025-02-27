@@ -86,8 +86,8 @@ function getCardName(cardGame)
 	if cardGame.proxyType == 'CardGameAbandon' then
 		-- Abandon card was the original name of the Emergency Blockade card
 
-		return 'Emergency Blockade card';
+		return 'Emergency Blockade Card';
 	end
 
-	return cardGame.proxyType:gsub('^CardGame', ''):gsub('(%l)(%u)', '%1 %2') .. ' card';
+	return cardGame.proxyType:gsub('^CardGame', ''):gsub('(%l)(%u)', '%1 %2') .. ' Card';
 end
