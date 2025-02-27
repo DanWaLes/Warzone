@@ -68,7 +68,7 @@ Arguments:
 * `customCardName` - string - name of the card - used for `addCard`
 * `customCardDescription` - string - description of the card - used for `addCard`
 * `customCardImageFilename` - string - image filename - used for `addCard`
-* `cardGameSettingsMap` - table - must have fields `NumPieces`, `MinimumPiecesPerTurn`, `InitialPieces` and `Weight`. Has optional field `ActiveOrderDuration` - an undocumented, untested function parameter for `addCard`. If the value of a field is a number, that value will be used as-is. If the value of a field is a string, it must be a setting `name` and the value of `Mod.Settings[name]` will be used. `cardGameSettingsMap` is applied after settings have been written to `Mod.Settings`.  - used for `addCard`
+* `cardGameSettingsMap` - table - must have fields `NumPieces`, `MinimumPiecesPerTurn`, `InitialPieces` and `Weight`. Has optional field `ActiveOrderDuration` - an undocumented, untested function parameter for `addCard`. If the value of a field is a number, that value will be used as-is. If the value of a field is a string, it must be a setting `name` and the value of `Mod.Settings[name]` will be used. `cardGameSettingsMap` is applied after all settings have been written to `Mod.Settings`.  - used for `addCard`
 * `settings` - nil or array of `setting` - all card settings, including completely custom settings
 # Accessing setting values
 Each setting is written to `Mod.Settings[name]`. The `getSetting(name)` function defined in `settings.lua` returns the value stored in `Mod.Settings[name]`. If the value is `nil`, a message will printed. `name` is the same as what is used in `addSetting`, `addSettingTemplate` or `addCustomCard`.
