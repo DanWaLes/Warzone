@@ -41,42 +41,26 @@ function Client_SaveConfigureUI(alert, addCard)
 		Mod.Settings[settingName] = settingValue;
 	end
 
+	function getCardGameSetting(setting, key)
+		local value = setting.cardGameSettingsMap[key];
+
+		if type(value) == 'string' then
+			value = Mod.Settings[value];
+		end
+
+		return value;
+	end
+
 	for _, setting in ipairs(customCardSettings) do
-		local numPieces = setting.cardGameSettingsMap.NumPieces;
-		local minPiecesPerTurn = setting.cardGameSettingsMap.MinimumPiecesPerTurn;
-		local initialPieces = setting.cardGameSettingsMap.InitialPieces;
-		local weight = setting.cardGameSettingsMap.Weight;
-		local activeOrderDuration = setting.cardGameSettingsMap.ActiveOrderDuration;
-
-		if type(numPieces) == 'string' then
-			numPieces = Mod.Settings[numPieces];
-		end
-
-		if type(minPiecesPerTurn) == 'string' then
-			minPiecesPerTurn = Mod.Settings[minPiecesPerTurn];
-		end
-
-		if type(initialPieces) == 'string' then
-			initialPieces = Mod.Settings[initialPieces];
-		end
-
-		if type(weight) == 'string' then
-			weight = Mod.Settings[weight];
-		end
-
-		if type(activeOrderDuration) == 'string' then
-			activeOrderDuration = Mod.Settings[activeOrderDuration];
-		end
-
 		local cardId = addCard(
 			setting.customCardName,
 			setting.customCardDescription,
 			setting.customCardImageFilename,
-			numPieces,
-			minPiecesPerTurn,
-			initialPieces,
-			weight,
-			activeOrderDuration
+			getCardGameSetting(setting, 'NumPieces'),
+			getCardGameSetting(setting, 'MinimumPiecesPerTurn'),
+			getCardGameSetting(setting, 'InitialPieces'),
+			getCardGameSetting(setting, 'Weight'),
+			getCardGameSetting(setting, 'ActiveOrderDuration')
 		);
 
 		Mod.Settings[setting.name] = cardId;
