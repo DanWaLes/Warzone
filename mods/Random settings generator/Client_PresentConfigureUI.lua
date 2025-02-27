@@ -7,10 +7,12 @@ GLOBALS = {};
 local modDevMadeError = false;
 local settingHelpAreas = {};
 local canUseUIElementIsDestroyed;
+local canUseCustomCards;
 local save = nil;
 
 function Client_PresentConfigureUI(rootParent)
 	canUseUIElementIsDestroyed = WL and WL.IsVersionOrHigher and WL.IsVersionOrHigher('5.21');
+	canUseCustomCards = WL and WL.IsVersionOrHigher and WL.IsVersionOrHigher('5.32.0.1');
 	save = function()
 		-- save because destroying otherwise goes back to default setting values
 		-- returns true if there isnt a error, false if there is an error
@@ -86,9 +88,9 @@ end
 
 function cpcDoSetting(setting, vert)
 	if setting.isCustomCard then
-		if not (WL and WL.IsVersionOrHigher and WL.IsVersionOrHigher('5.32.0.1')) then
+		if not canUseCustomCards then
 			UI.CreateLabel(vert).SetText('This mod uses custom cards.');
-			UI.CreateLabel(Vert).SetText('You must use update your app to at least version 5.32.0.1 to use custom card features in games.');
+			UI.CreateLabel(vert).SetText('You must use update your app to at least version 5.32.0.1 to use custom card features in games.');
 
 			return;
 		end
