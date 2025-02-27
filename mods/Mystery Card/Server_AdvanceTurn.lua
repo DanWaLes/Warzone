@@ -25,7 +25,7 @@ function Server_AdvanceTurn_Order(game, order, orderResult, skipThisOrder, addNe
 		return;
 	end
 
-	local player = game.ServerGame.Players[playerId];
+	local player = game.ServerGame.Game.Players[playerId];
 
 	if not player then
 		addNewOrder(WL.GameOrderEvent.Create(playerId, 'Tried to play a Mystery Card even though they are not in the game'), true);
