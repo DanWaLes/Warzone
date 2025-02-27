@@ -68,11 +68,12 @@ function getCards(game)
 		if cardId ~= Mod.Settings.MysteryCardID then
 			-- exclude Mystery Card
 
-			table.insert({id = cardId, name = getCardName(cardGame)});
+			table.insert(cards, {id = cardId, name = getCardName(cardGame)});
 		end
 	end
 
-	Mod.PublicGameData.cards = cards;
+	pgd.cards = cards;
+	Mod.PublicGameData = pgd;
 end
 
 function getCardName(cardGame)
