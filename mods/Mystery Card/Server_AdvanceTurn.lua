@@ -78,9 +78,7 @@ end
 
 function getCardName(cardGame)
 	if cardGame.proxyType == 'CardGameCustom' then
-		-- currently no standard way to get custom card name
-
-		return 'card';
+		return cardGame.Name;
 	end
 
 	if cardGame.proxyType == 'CardGameAbandon' then
