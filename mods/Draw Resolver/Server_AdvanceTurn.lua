@@ -4,6 +4,8 @@ require('version');
 
 local satsPayload = 'DrawResolver_ServerAdvanceTurnStart';
 local canRun = false;
+local winnerId;
+local votes;
 
 function Server_AdvanceTurn_Start(game, addNewOrder)
 	canRun = serverCanRunMod(game);
