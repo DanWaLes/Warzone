@@ -31,7 +31,7 @@ function getSettings()
 						Label(parent).SetText('How common the card is');
 					end
 				}),
-				addSetting('MinimumPiecesPerTurn', 'Minimum pieces awarded per turn', 'int', 8, {
+				addSetting('MinimumPiecesPerTurn', 'Minimum pieces awarded per turn', 'int', 1, {
 					minValue = 0,
 					maxValue = 5,
 					absoluteMax = 1000

@@ -25,7 +25,7 @@ function Server_AdvanceTurn_Order(game, order, orderResult, skipThisOrder, addNe
 		return;
 	end
 
-	local player = game.ServerGame.Players[playerId];
+	local player = game.ServerGame.Game.Players[playerId];
 
 	if not player then
 		addNewOrder(WL.GameOrderEvent.Create(playerId, 'Tried to play a Mystery Card even though they are not in the game'), true);
@@ -48,7 +48,7 @@ function Server_AdvanceTurn_Order(game, order, orderResult, skipThisOrder, addNe
 	local event = WL.GameOrderEvent.Create(playerId, 'Receive a full ' .. randomCard.name .. ' from playing a Mystery Card', {});
 	local piecesInRandomCard = game.Settings.Cards[randomCard.id].NumPieces;
 
-	event.addAddCardPiecesOpt = {[playerId] = {[randomCardId] = piecesInRandomCard}};
+	event.AddCardPiecesOpt = {[playerId] = {[randomCard.id] = piecesInRandomCard}};
 	addNewOrder(event, true);
 end
 
@@ -68,25 +68,24 @@ function getCards(game)
 		if cardId ~= Mod.Settings.MysteryCardID then
 			-- exclude Mystery Card
 
-			table.insert({id = cardId, name = getCardName(cardGame)});
+			table.insert(cards, {id = cardId, name = getCardName(cardGame)});
 		end
 	end
 
-	Mod.PublicGameData.cards = cards;
+	pgd.cards = cards;
+	Mod.PublicGameData = pgd;
 end
 
 function getCardName(cardGame)
 	if cardGame.proxyType == 'CardGameCustom' then
-		-- currently no standard way to get custom card name
-
-		return 'card';
+		return cardGame.Name;
 	end
 
 	if cardGame.proxyType == 'CardGameAbandon' then
 		-- Abandon card was the original name of the Emergency Blockade card
 
-		return 'Emergency Blockade card';
+		return 'Emergency Blockade Card';
 	end
 
-	return cardGame.proxyType:gsub('^CardGame', ''):gsub('(%l)(%u)', '%1 %2') .. ' card';
+	return cardGame.proxyType:gsub('^CardGame', ''):gsub('(%l)(%u)', '%1 %2') .. ' Card';
 end

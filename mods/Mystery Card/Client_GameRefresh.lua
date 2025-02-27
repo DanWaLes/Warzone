@@ -30,7 +30,7 @@ function createDialog(game)
 	local dialog = {};
 
 	game.CreateDialog(function(rootParent, setMaxSize, setScrollable, clientGame, close)
-		setMaxSize(200, 200);
+		setMaxSize(350, 200);
 		setScrollable(false, true);
 
 		local vert = Vert(rootParent);
