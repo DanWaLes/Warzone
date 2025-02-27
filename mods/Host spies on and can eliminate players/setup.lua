@@ -1,12 +1,21 @@
 function setup(game)
 	print('in setup(game)');
 
-	if not (game.State == WL.GameState.DistributingTerritories or game.State == WL.GameState.Playing) then
-		print('exit because game state');
-		return;
-	end
+-- 	print('game.State', game.State);
 
-	-- can't be in server created
+-- 	for key, value in pairs(WL.GameState) do
+-- 		if key ~= 'ToString' then
+-- 			print('game.State == WL.GameState.' .. key, game.State == WL.GameState[key]);
+-- 		end
+-- 	end
+
+	-- game.State is nil on single player (possibly multiplayer as well) when using Server_StartDistribution and Server_StartGame in app version 5.33
+	-- so disable this check
+
+-- 	if not (game.State == WL.GameState.DistributingTerritories or game.State == WL.GameState.Playing) then
+-- 		print('exit because game state');
+-- 		return;
+-- 	end
 
 	local hostPlayerId = game.ServerGame.Settings.StartedBy;
 
