@@ -23,25 +23,19 @@ function getSettings()
 			end
 		}),
 		addSetting('AllowHeavierFogs', 'Allow use of heavier fogs', 'bool', false, {
-			bkwrds = true,
 			help = function(parent)
 				Label(parent).SetText('By default, fog is randomly decided to be no fog, light fog or normal fog');
 				Label(parent).SetText('Enabling allows dense fog, heavy fog and complete fog to be included');
 			end,
 			subsettings = {
 				addSetting('ForceHeavierFogCards', 'Force inclusion of Reconnaissance, Surveillance and or Spy cards', 'bool', true, {
-					bkwrds = false,
 					help = function(parent)
 						Label(parent).SetText('These cards will only be included by force if the fog level is higher than normal fog');
 					end
 				})
 			}
 		}),
-		addSetting('RandomiseCardsHeldVisibility', 'Randomize cards held and received visibility', 'bool', false, {
-			bkwrds = false
-		}),
-		addSetting('RandomiseCardsPlayedVisibility', 'Randomize played visibility', 'bool', false, {
-			bkwrds = false
-		})
+		addSetting('RandomiseCardsHeldVisibility', 'Randomize cards held and received visibility', 'bool', false),
+		addSetting('RandomiseCardsPlayedVisibility', 'Randomize card playing visibility', 'bool', false)
 	};
 end
