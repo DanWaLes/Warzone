@@ -2,24 +2,86 @@ require('settings');
 require('number_util');
 require('tblprint');
 
+-- https://www.warzone.com/wiki/Levels
+local us;
+local posibleLockedSettings = {
+	Diplomacy = 8,
+	Abandon = 10,
+	Airlift = 14,
+	Sanctions = 17,
+	BonusArmyPer = 19,
+	['KillRates'] = 20,
+	Spy = 23,
+	Surveillance = 23,
+	Reconnaissance = 23,
+	['Wastelands'] = 25,
+	AllowAttackOnly = 26,
+	AllowTransferOnly = 26,
+	Blockade = 28,
+	LocalDeployments = 31,
+	['HeavierFogs'] = 34,
+	Gift = 35,
+	MultiAttack = 37,
+	AllowPercentageAttacks = 37,
+	Commanders = 38,
+	NoSplit = 40,
+	OrderPriority = 41,
+	OrderDelay = 41,
+	Bomb = 'M'
+};
+
+function canUseSetting(settingName)
+	local s = posibleLockedSettings[settingName];
+
+	if s == nil then
+		return true;
+	end
+
+	if type(s) == 'number' then
+		return us.HasMegaStrategyPack or us.Level >= s;
+	else
+		return us.IsMember;
+	end
+end
+
 function Server_Created(game, settings)
-	settings.AllowAttackOnly = randomBool();
-	settings.AllowPercentageAttacks = randomBool();
-	settings.AllowTransferOnly = randomBool();
+	us = {
+		IsMember = getSetting('CreatorIsMember'),
+		Level = getSetting('CreatorLevel'),
+		HasMegaStrategyPack = getSetting('CreatorHasMegaStrategyPack')
+	};
 
-	if randomBool() then
-		settings.ArmyCap = math.random(1, 40);
-	else
-		settings.ArmyCap = nil;
+	if canUseSetting('AllowAttackOnly') then
+		settings.AllowAttackOnly = randomBool();
 	end
 
-	if randomBool() then
-		settings.BonusArmyPer = math.random(1, 15);
-	else
-		settings.BonusArmyPer = 0;
+	if canUseSetting('AllowPercentageAttacks') then
+		settings.AllowPercentageAttacks = randomBool();
 	end
 
-	settings.Commanders = randomBool();
+	if canUseSetting('AllowTransferOnly') then
+		settings.AllowTransferOnly = randomBool();
+	end
+
+	if canUseSetting('ArmyCap') then
+		if randomBool() then
+			settings.ArmyCap = math.random(1, 40);
+		else
+			settings.ArmyCap = nil;
+		end
+	end
+
+	if canUseSetting('BonusArmyPer') then
+		if randomBool() then
+			settings.BonusArmyPer = math.random(1, 15);
+		else
+			settings.BonusArmyPer = 0;
+		end
+	end
+
+	if canUseSetting('Commanders') then
+		settings.Commanders = randomBool();
+	end
 
 	if getSetting('UseRandomCommerce') then
 		settings.CommerceArmyCostMultiplier = math.random(0, 15);
@@ -41,11 +103,13 @@ function Server_Created(game, settings)
 		settings.InitialPlayerArmiesPerTerritory = math.random(settings.OneArmyMustStandGuardOneOrZero, 15);
 		settings.LimitDistributionTerritories = math.random(0, 15);-- 0 means no limit
 
-		if randomBool() then
-			settings.NumberOfWastelands = math.random(1, 15);
-			settings.WastelandSize = math.random(0, 100);
-		else
-			settings.NumberOfWastelands = 0;
+		if canUseSetting('Wastelands') then
+			if randomBool() then
+				settings.NumberOfWastelands = math.random(1, 15);
+				settings.WastelandSize = math.random(0, 100);
+			else
+				settings.NumberOfWastelands = 0;
+			end
 		end
 	end
 
@@ -56,7 +120,7 @@ function Server_Created(game, settings)
 		'Foggy'
 	};
 
-	if getSetting('AllowHeavierFogs') then
+	if canUseSetting('HeavierFogs') and getSetting('AllowHeavierFogs') then
 		table.insert(fogLevels, 'ModerateFog');
 		table.insert(fogLevels, 'VeryFoggy');
 		table.insert(fogLevels, 'ExtremeFog');
@@ -65,7 +129,10 @@ function Server_Created(game, settings)
 	settings.FogLevel = WL.GameFogLevel[fogLevels[math.random(1, #fogLevels)]];
 
 	settings.RoundingMode = WL.RoundingModeEnum[(math.random(1, 2) == 1 and 'StraightRound' or 'WeightedRandom')];
-	settings.LocalDeployments = randomBool();
+
+	if canUseSetting('LocalDeployments') then
+		settings.LocalDeployments = randomBool();
+	end
 
 	if getSetting('UseRandomLuckMod') then
 		local randLuckMod = nil;
@@ -80,15 +147,22 @@ function Server_Created(game, settings)
 	end
 
 	settings.MinimumArmyBonus = math.random(1, 15);-- 1 to be on the safe side
+
 	settings.MoveOrder = WL.MoveOrderEnum[(math.random(1, 2) == 1 and 'Cycle' or 'Random')];
-	settings.MultiAttack = randomBool();
-	settings.NoSplit = randomBool();
+
+	if canUseSetting('MultiAttack') then
+		settings.MultiAttack = randomBool();
+	end
+
+	if canUseSetting('NoSplit') then
+		settings.NoSplit = randomBool();
+	end
 
 	if getSetting('RandomiseArmiesStandGuard') then
 		settings.OneArmyStandsGuard = randomBool();
 	end
 
-	if getSetting('UseRandomKillRates') then
+	if canUseSetting('KillRates') and getSetting('UseRandomKillRates') then
 		-- kill rates must be between 0 and 1, so divide by 100
 
 		settings.OffenseKillRate = (math.random(5, 100)) / 100;
@@ -156,19 +230,21 @@ function randomiseCards(settings)
 		atLeast1Enabeled = false
 	};
 
-	if (
-		getSetting('AllowHeavierFogs') and
-		getSetting('ForceHeavierFogCards') and
-		(
-			settings.FogLevel == WL.GameFogLevel.ModerateFog or
-			settings.FogLevel == WL.GameFogLevel.VeryFoggy or
-			settings.FogLevel == WL.GameFogLevel.ExtremeFog
-		)
-	) then
-		mustForceEnabelAtleastOneOf.forcing = true;
-		mustForceEnabelAtleastOneOf.Reconnaissance = true;
-		mustForceEnabelAtleastOneOf.Surveillance = true;
-		mustForceEnabelAtleastOneOf.Spy = true;
+	if canUseSetting('HeavierFogs') then
+		if (
+			getSetting('AllowHeavierFogs') and
+			getSetting('ForceHeavierFogCards') and
+			(
+				settings.FogLevel == WL.GameFogLevel.ModerateFog or
+				settings.FogLevel == WL.GameFogLevel.VeryFoggy or
+				settings.FogLevel == WL.GameFogLevel.ExtremeFog
+			)
+		) then
+			mustForceEnabelAtleastOneOf.forcing = true;
+			mustForceEnabelAtleastOneOf.Reconnaissance = true;
+			mustForceEnabelAtleastOneOf.Surveillance = true;
+			mustForceEnabelAtleastOneOf.Spy = true;
+		end
 	end
 
 	local cards = {};
@@ -180,7 +256,7 @@ function randomiseCards(settings)
 		end
 
 		if (
-			randomBool() or
+			canUseSetting(cardName) and randomBool() or
 			(
 				mustForceEnabelAtleastOneOf.forcing and
 				not mustForceEnabelAtleastOneOf.atLeast1Enabeled

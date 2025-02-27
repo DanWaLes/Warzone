@@ -5,6 +5,29 @@ require('ui');
 
 function getSettings()
 	return {
+		addSetting('CreatorIsMember', 'I have a Membership', 'bool', false, {
+			help = function(parent)
+				Label(parent).SetText('Some settings require membership to be used');
+				Label(parent).SetText('The game will not be able to be created if member-only features are randomly enabled');
+			end
+		}),
+		addSetting('CreatorHasMegaStrategyPack', 'I have bought the Mega Strategy Pack', 'bool', false, {
+			help = function(parent)
+				Label(parent).SetText('The Mega Stategy Pack unlocks settings that are normally locked behind levelling up');
+				Label(parent).SetText('If you have bought the pack, enable this setting');
+			end
+		}),
+		addSetting('CreatorLevel', 'My Level', 'int', 54, {
+			minValue = 0,
+			maxValue = 54,
+			absoluteMax = 1000,
+			help = function(parent)
+				Label(parent).SetText('Some settings require leveling up to unlocked');
+				Label(parent).SetText('Settings which are not unlocked may be randomly enabled');
+				Label(parent).SetText('The game will not be able to be created if locked settings are enabled');
+				Label(parent).SetText('If your level is above 54, you have already unlocked all features that can be unlocked by leveling up');
+			end
+		}),
 		addSetting('UseRandomLuckMod', 'Randomize luck modifier', 'bool', false, {
 			subsettings = {
 				addSetting('LuckStrat', 'Use strategic luck modifier (0 or 16%)', 'bool', true, {
