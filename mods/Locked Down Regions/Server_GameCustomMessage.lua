@@ -19,7 +19,7 @@ function Server_GameCustomMessage(game, playerId, payload, setReturn)
 		publicGD[key] = value;
 	end
 
-	Mod.PublicGameData = payload;
+	Mod.PublicGameData = publicGD;
 
-	setReturn(Mod.PublicGameData);
+	setReturn(publicGD);
 end
