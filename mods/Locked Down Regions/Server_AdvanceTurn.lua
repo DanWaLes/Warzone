@@ -34,8 +34,6 @@ function Server_AdvanceTurn_Start(game, addNewOrder)
 		end
 	end
 
-	print('Server_AdvanceTurn_Start gameTurnNo', gameTurnNo);
-
 	for bonusId, turnNo in pairs(publicGD.newLockedDownRegions) do
 		local bonus = game.Map.Bonuses[bonusId];
 		local bonusValue = game.Settings.OverriddenBonuses[bonusId] or bonus.Amount;
@@ -51,6 +49,12 @@ end
 
 function Server_AdvanceTurn_Order(Game, order, result, skipThisOrder, addNewOrder)
 	game = Game;
+
+	-- skip orders by ai for easier debugging
+-- 	if order.PlayerID ~= WL.PlayerID.Neutral and game.ServerGame.Game.Players[order.PlayerID].IsAIOrHumanTurnedIntoAI then
+-- 		skipThisOrder(WL.ModOrderControl.SkipAndSupressSkippedMessage);
+-- 		return;
+-- 	end
 
 	local host = game.Settings.StartedBy;
 
@@ -73,7 +77,7 @@ function Server_AdvanceTurn_Order(Game, order, result, skipThisOrder, addNewOrde
 		return;
 	end
 
-	print('in attack/trasfer or airlift order');
+-- 	print('in attack/transfer or airlift order');
 
 	local movementType = 'attack/transfer';
 	local fromKey = 'From';
@@ -93,10 +97,10 @@ function Server_AdvanceTurn_Order(Game, order, result, skipThisOrder, addNewOrde
 	local toTerr = game.Map.Territories[to];
 	local toInLockedDownRegion = territoryInLockedDownRegion(toTerr.ID);
 
-	print('from', from);
-	print('to', to);
-	print('fromInLockedDownRegion', fromInLockedDownRegion);
-	print('toInLockedDownRegion', toInLockedDownRegion);
+-- 	print('fromTerr.Name = ' .. fromTerr.Name);
+-- 	print('toTerr.Name = ' .. toTerr.Name);
+-- 	print('fromInLockedDownRegion = ' .. tostring(fromInLockedDownRegion));
+-- 	print('toInLockedDownRegion = ' .. tostring(toInLockedDownRegion));
 
 	if fromInLockedDownRegion == toInLockedDownRegion then
 		-- if neither or both territories are in the same bonus
@@ -106,26 +110,28 @@ function Server_AdvanceTurn_Order(Game, order, result, skipThisOrder, addNewOrde
 		return;
 	end
 
-	print('both territories in different bonuses');
+-- 	print('both territories in different bonuses');
 
 	local gameTurnNumber = game.ServerGame.Game.TurnNumber - 1;
-	local fromIsActiveLockdown = fromInLockedDownRegion and (Mod.PublicGameData.lockedDownRegions[fromInLockedDownRegion] <= gameTurnNumber);
-	local toIsActiveLockdown = toInLockedDownRegion and (Mod.PublicGameData.lockedDownRegions[toInLockedDownRegion] <= gameTurnNumber);
+	local fromIsActiveLockdown = fromInLockedDownRegion and (gameTurnNumber <= Mod.PublicGameData.lockedDownRegions[fromInLockedDownRegion]);
+	local toIsActiveLockdown = toInLockedDownRegion and (gameTurnNumber <= Mod.PublicGameData.lockedDownRegions[toInLockedDownRegion]);
 	local bothInActiveLockdown = fromIsActiveLockdown and toIsActiveLockdown;
 
-	print('fromIsActiveLockdown', fromIsActiveLockdown);
-	print('toIsActiveLockdown', toIsActiveLockdown);
-	print('bothInActiveLockdown', bothInActiveLockdown);
+-- 	print('gameTurnNumber', gameTurnNumber);
+-- 	print(fromInLockedDownRegion and (Mod.PublicGameData.lockedDownRegions[fromInLockedDownRegion]));
+-- 	print(toInLockedDownRegion and (Mod.PublicGameData.lockedDownRegions[toInLockedDownRegion]));
+-- 	print('fromIsActiveLockdown', fromIsActiveLockdown);
+-- 	print('toIsActiveLockdown', toIsActiveLockdown);
 
 	if not (fromIsActiveLockdown or toIsActiveLockdown) then
 		-- if neither of the territories are in an active lockdown
 		-- let the army movement happen
 
-		print('neither of the territories are in an active lockdown');
+-- 		print('neither of the territories are in an active lockdown');
 		return;
 	end
 
-	print('skipped order');
+-- 	print('one or both territories are in an active lockdown');
 
 	skipThisOrder(WL.ModOrderControl.SkipAndSupressSkippedMessage);
 
@@ -172,13 +178,19 @@ function Server_AdvanceTurn_Order(Game, order, result, skipThisOrder, addNewOrde
 end
 
 function territoryInBonus(terrId, bonusId)
+-- 	print('in territoryInBonus');
+
 	local terr = game.Map.Territories[terrId];
+	local bonusName = game.Map.Bonuses[bonusId].Name;
 
 	for _, terrBonusId in pairs(terr.PartOfBonuses) do
 		if terrBonusId == bonusId then
+-- 			print(terr.Name .. ' is part of bonus ' .. bonusName);
 			return bonusId;
 		end
 	end
+
+-- 	print(terr.Name .. ' is not part of bonus ' .. bonusName);
 
 	return nil;
 end
