@@ -2,7 +2,6 @@ require('tblprint');
 require('version');
 
 local canRun;
-local mysteryCardCardId;
 
 function Server_AdvanceTurn_Start(game)
 	canRun = serverCanRunMod(game);
