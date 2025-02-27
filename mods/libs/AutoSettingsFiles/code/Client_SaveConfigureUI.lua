@@ -6,11 +6,15 @@ local errMsg;
 local settingValues;
 local modDevMadeError = false;
 local customCardSettings;
+local canUseUIElementIsDestroyed;
+local canUseCustomCards;
 
 function Client_SaveConfigureUI(alert, addCard)
 	errMsg = nil;
 	settingValues = {};
 	customCardSettings = {};
+	canUseUIElementIsDestroyed = WL and WL.IsVersionOrHigher and WL.IsVersionOrHigher('5.21');
+	canUseCustomCards = WL and WL.IsVersionOrHigher and WL.IsVersionOrHigher('5.32.0.1');
 
 	if type(getSettings) ~= 'function' then
 		getSettings = function()
@@ -37,42 +41,26 @@ function Client_SaveConfigureUI(alert, addCard)
 		Mod.Settings[settingName] = settingValue;
 	end
 
+	function getCardGameSetting(setting, key)
+		local value = setting.cardGameSettingsMap[key];
+
+		if type(value) == 'string' then
+			value = Mod.Settings[value];
+		end
+
+		return value;
+	end
+
 	for _, setting in ipairs(customCardSettings) do
-		local numPieces = setting.cardGameSettingsMap.NumPieces;
-		local minPiecesPerTurn = setting.CustomCardSettingsMap.MinimumPiecesPerTurn;
-		local initialPieces = setting.CustomCardSettingsMap.InitialPieces;
-		local weight = setting.CustomCardSettingsMap.Weight;
-		local activeOrderDuration = setting.CustomCardSettingsMap.ActiveOrderDuration;
-
-		if type(numPieces) == 'string' then
-			minPiecesPerTurn = Mod.Settings[numPieces];
-		end
-
-		if type(minPiecesPerTurn) == 'string' then
-			minPiecesPerTurn = Mod.Settings[minPiecesPerTurn];
-		end
-
-		if type(initialPieces) == 'string' then
-			minPiecesPerTurn = Mod.Settings[initialPieces];
-		end
-
-		if type(weight) == 'string' then
-			minPiecesPerTurn = Mod.Settings[weight];
-		end
-
-		if type(activeOrderDuration) == 'string' then
-			minPiecesPerTurn = Mod.Settings[activeOrderDuration];
-		end
-
 		local cardId = addCard(
 			setting.customCardName,
 			setting.customCardDescription,
 			setting.customCardImageFilename,
-			numPieces,
-			minPiecesPerTurn,
-			initialPieces,
-			weight,
-			activeOrderDuration
+			getCardGameSetting(setting, 'NumPieces'),
+			getCardGameSetting(setting, 'MinimumPiecesPerTurn'),
+			getCardGameSetting(setting, 'InitialPieces'),
+			getCardGameSetting(setting, 'Weight'),
+			getCardGameSetting(setting, 'ActiveOrderDuration')
 		);
 
 		Mod.Settings[setting.name] = cardId;
@@ -116,7 +104,7 @@ end
 
 function cscDoSetting(setting)
 	if setting.isCustomCard then
-		if not (WL and WL.IsVersionOrHigher and WL.IsVersionOrHigher('5.32.0.1')) then
+		if not canUseCustomCards then
 			return;
 		end
 
@@ -124,7 +112,7 @@ function cscDoSetting(setting)
 			csc(setting.settings);
 		end
 
-		table.insert(customCardSettings, settings);
+		table.insert(customCardSettings, setting);
 		return;
 	end
 
@@ -228,7 +216,7 @@ function access(setting, fn)
 
 	local el = GLOBALS[setting.name];
 
-	if WL and WL.IsVersionOrHigher and WL.IsVersionOrHigher('5.21') then
+	if canUseUIElementIsDestroyed then
 		if not UI.IsDestroyed(el) then
 			value = el[fn]();
 		end	
