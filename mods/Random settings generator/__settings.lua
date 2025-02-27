@@ -8,7 +8,7 @@ function getSettings()
 		addSetting('CreatorIsMember', 'I have a Membership', 'bool', true, {
 			help = function(parent)
 				Label(parent).SetText('Some settings require membership to be used');
-				Label(parent).SetText('The game will not be able to be created if member-only features are randomly enabled');
+				Label(parent).SetText('The game may not be able to be created if member-only features are randomly enabled');
 			end
 		}),
 		addSetting('CreatorHasMegaStrategyPack', 'I have bought the Mega Strategy Pack', 'bool', false, {
