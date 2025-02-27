@@ -48,7 +48,7 @@ function Server_AdvanceTurn_Order(game, order, orderResult, skipThisOrder, addNe
 	local event = WL.GameOrderEvent.Create(playerId, 'Receive a full ' .. randomCard.name .. ' from playing a Mystery Card', {});
 	local piecesInRandomCard = game.Settings.Cards[randomCard.id].NumPieces;
 
-	event.addAddCardPiecesOpt = {[playerId] = {[randomCardId] = piecesInRandomCard}};
+	event.AddCardPiecesOpt = {[playerId] = {[randomCard.id] = piecesInRandomCard}};
 	addNewOrder(event, true);
 end
 
