@@ -5,7 +5,7 @@ require('ui');
 
 function getSettings()
 	return {
-		addSetting('CreatorIsMember', 'I have a Membership', 'bool', false, {
+		addSetting('CreatorIsMember', 'I have a Membership', 'bool', true, {
 			help = function(parent)
 				Label(parent).SetText('Some settings require membership to be used');
 				Label(parent).SetText('The game will not be able to be created if member-only features are randomly enabled');
