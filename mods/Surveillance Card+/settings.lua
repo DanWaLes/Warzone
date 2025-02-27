@@ -370,8 +370,7 @@ end
 
 function addCustomCard(name, customCardName, customCardDescription, customCardImageFilename, cardGameSettingsMap, settings)
 	local hasError = false;
-	local usesSettings = false;
-	local typeofSettings = type(settings);
+	local usesSettings = type(settings) == 'table';
 
 	function printErrorIfNotOfType(varName, varValue, expectedType)
 		if type(varValue) == expectedType then
@@ -408,31 +407,20 @@ function addCustomCard(name, customCardName, customCardDescription, customCardIm
 		return varValueType;
 	end
 
-	function validateCardGameSettings(arr, types, settings)
-		for field, value in ipairs(arr) do
-			local tpe = printErrorIfNotOneOfTypes(filed, value, types);
+	function validateCardGameSettings(arr, types)
+		for _, field in ipairs(arr) do
+			local value = cardGameSettingsMap[field];
+			local tpe = printErrorIfNotOneOfTypes('cardGameSettingsMap.' .. field, value, types);
 
 			if hasError then
 				return;
 			end
 
-			if tpe == 'string' and typeofSettings == 'table' then
-				usesSettings = true;
-			end
-
-			if tpe == 'string' and typeofSettings ~= 'table' then
+			if arr[1] ~= 'nil' and tpe == 'string' and not usesSettings then
 				hasError = true;
 
 				print('addCustomCard error: type(cardGameSettingsMap.' .. field .. ') is a string and settings is not a table');
-				print('cardGameSettingsMap[' .. field .. '] = ' .. value);
-				print('settings = ' .. tostring(settings));
-
-				return;
-			elseif tpe == 'number' and typeofSettings == 'table' then
-				hasError = true;
-
-				print('addCustomCard error: type(cardGameSettingsMap.' .. field .. ') is a number and settings is a table');
-				print('cardGameSettingsMap[' .. field .. '] = ' .. value);
+				print('cardGameSettingsMap.' .. field .. ' = ' .. tostring(value));
 				print('settings = ' .. tostring(settings));
 
 				return;
@@ -445,7 +433,7 @@ function addCustomCard(name, customCardName, customCardDescription, customCardIm
 	printErrorIfNotOfType('customCardDescription', customCardDescription, 'string');
 	printErrorIfNotOfType('customCardImageFilename', customCardImageFilename, 'string');
 	printErrorIfNotOfType('cardGameSettingsMap', cardGameSettingsMap, 'table');
-	printErrorIfNotOneOfTypes('settings', typeofSettings, {'string', 'number'});
+	printErrorIfNotOneOfTypes('settings', settings, {'table', 'nil'});
 
 	if hasError then
 		return;
@@ -454,8 +442,8 @@ function addCustomCard(name, customCardName, customCardDescription, customCardIm
 	local forcedCardGameSettings = {'NumPieces', 'MinimumPiecesPerTurn', 'InitialPieces', 'Weight'};
 	local optionalCardGameSettings = {'ActiveOrderDuration'};
 
-	validateCardGameSettings(forcedCardGameSettings, {'string', 'number'}, settings);
-	validateCardGameSettings(optionalCardGameSettings, {'nil', 'string', 'number'}, settings);
+	validateCardGameSettings(forcedCardGameSettings, {'string', 'number'});
+	validateCardGameSettings(optionalCardGameSettings, {'nil', 'string', 'number'});
 
 	if hasError then
 		return;
