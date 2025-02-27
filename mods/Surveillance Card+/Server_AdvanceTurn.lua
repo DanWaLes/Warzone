@@ -6,26 +6,9 @@ function Server_AdvanceTurn_Order(game, order, result, skipThisOrder, addNewOrde
 		return;
 	end
 
-	print('order.TargetBonus', order.TargetBonus);
-
 	local bonus = game.Map.Bonuses[order.TargetBonus];
 
-	print('type(bonus)', type(bonus));
-	print('tblprint(bonus) = ');
-	tblprint(bonus);
-
-	local numTerrsInBonus = nil;
-
-	if type(bonus) == 'table' then
-		numTerrsInBonus = #bonus.Territories;
-	end
-
-	local maxTerrs = getSetting('MaxTerrs');
-
-	print('numTerrsInBonus', numTerrsInBonus);
-	print('maxTerrs', maxTerrs)
-
-	if numTerrsInBonus > maxTerrs then
+	if #bonus.Territories > getSetting('MaxTerrs') then
 		skipThisOrder(WL.ModOrderControl.SkipAndSupressSkippedMessage);
 
 		local visibleTo = game.Settings.CardPlayingsFogged and {} or nil;
