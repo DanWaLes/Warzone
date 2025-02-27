@@ -63,7 +63,5 @@ function setup(game)
 	Mod.PlayerGameData = playerGD;
 	Mod.PublicGameData = publicGD;
 
-	print('playerGD', playerGD);
-	print('publicGD', publicGD);
 	print('setup complete');
 end
