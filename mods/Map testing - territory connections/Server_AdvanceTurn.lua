@@ -78,7 +78,7 @@ function makeDeployments(game, addNewOrder)
 		n = n + 1;
 	end
 
-	addNewOrder(WL.GameOrderEvent.Create(WL.PlayerID.Neutral, 'Made deployments', nil, mods));
+	addNewOrder(WL.GameOrderEvent.Create(WL.PlayerID.Neutral, 'Deployments', nil, mods));
 end
 
 function numConnectionsWithPlayers(game, attackFromN)
