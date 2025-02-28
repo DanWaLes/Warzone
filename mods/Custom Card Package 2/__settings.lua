@@ -20,7 +20,7 @@ local function Card(customCard, settings)
 				maxValue = 10,
 				absoluteMax = 1000
 			}),
-			addSetting('Weight', 'Weight', 'float', 1, {
+			addSetting(customCard.name .. 'Weight', 'Weight', 'float', 1, {
 				dp = 10,
 				minValue = 0,
 				maxValue = 5,
