@@ -5,9 +5,17 @@ require('ui');
 require('string_util');
 
 local function Card(customCard, settings)
+	if not customCard.NumPieces then
+		customCard.NumPieces = 5
+	end
+
+	if not customCard.Cost then
+		customCard.Cost = 5;
+	end
+		
 	local card = addSetting('Enable' .. customCard.name, 'Enable ' .. customCard.name .. ' cards', 'bool', false, {
 		subsettings = {
-			addSetting(customCard.name .. 'PiecesInCard', 'Number of pieces to divide the card into', 'int', 5, {
+			addSetting(customCard.name .. 'NumPieces', 'Number of pieces to divide the card into', 'int', customCard.NumPieces, {
 				minValue = 1,
 				maxValue = 10,
 				absoluteMax = 1000
@@ -21,12 +29,12 @@ local function Card(customCard, settings)
 					Label(parent).SetText('How common the card is');
 				end
 			}),
-			addSetting(customCard.name .. 'PiecesPerTurn', 'Minimum pieces awarded per turn', 'int', 1, {
+			addSetting(customCard.name .. 'MinimumPiecesPerTurn', 'Minimum pieces awarded per turn', 'int', 1, {
 				minValue = 0,
 				maxValue = 10,
 				absoluteMax = 100
 			}),
-			addSetting(customCard.name .. 'StartPieces', 'Pieces given to each player at the start', 'int', 0, {
+			addSetting(customCard.name .. 'InitialPieces', 'Pieces given to each player at the start', 'int', 0, {
 				minValue = 0,
 				maxValue = 10,
 				absoluteMax = 100
@@ -36,7 +44,7 @@ local function Card(customCard, settings)
 					Label(parent).SetText('Must be a Commerce game to be bought');
 				end,
 				subsettings = {
-					addSetting(customCard.name .. 'Cost', 'Cost (gold)', 'int', 5, {
+					addSetting(customCard.name .. 'Cost', 'Cost (gold)', 'int', customCard.Cost, {
 						minValue = 1,
 						maxValue = 20,
 						absoluteMax = 10000
