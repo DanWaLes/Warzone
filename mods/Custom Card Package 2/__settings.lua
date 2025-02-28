@@ -13,44 +13,73 @@ local function Card(customCard, settings)
 		customCard.Cost = 5;
 	end
 
+	if not settings then
+		settings = {};
+	end
+
+	local numPiecesName = customCard.name .. 'NumPieces';
+	local weightName = customCard.name .. 'Weight';
+	local piecesPerTurnName = customCard.name .. 'MinimumPiecesPerTurn';
+	local initialPiecesName = customCard.name .. 'InitialPieces';
+
+	local allCardSettings = {
+		addSetting(numPiecesName, 'Number of pieces to divide the card into', 'int', customCard.NumPieces, {
+			minValue = 1,
+			maxValue = 10,
+			absoluteMax = 1000
+		}),
+		addSetting(weightName, 'Weight', 'float', 1, {
+			dp = 10,
+			minValue = 0,
+			maxValue = 5,
+			absoluteMax = 1000,
+			help = function(parent)
+				Label(parent).SetText('How common the card is');
+			end
+		}),
+		addSetting(piecesPerTurnName, 'Minimum pieces awarded per turn', 'int', 1, {
+			minValue = 0,
+			maxValue = 10,
+			absoluteMax = 100
+		}),
+		addSetting(initialPiecesName, 'Pieces given to each player at the start', 'int', 0, {
+			minValue = 0,
+			maxValue = 10,
+			absoluteMax = 100
+		}),
+		addSetting(customCard.name .. 'IsBuyable', 'Can be bought', 'bool', false, {
+			help = function(parent)
+				Label(parent).SetText('Must be a Commerce game to be bought');
+			end,
+			subsettings = {
+				addSetting(customCard.name .. 'Cost', 'Cost (gold)', 'int', customCard.Cost, {
+					minValue = 1,
+					maxValue = 20,
+					absoluteMax = 10000
+				})
+			}
+		})
+	};
+
+	for _, subsetting in ipairs(settings) do
+		table.insert(allCardSettings, subsetting);
+	end
+
 	local card = addSetting('Enable' .. customCard.name, 'Enable ' .. customCard.name .. ' cards', 'bool', false, {
 		subsettings = {
-			addSetting(customCard.name .. 'NumPieces', 'Number of pieces to divide the card into', 'int', customCard.NumPieces, {
-				minValue = 1,
-				maxValue = 10,
-				absoluteMax = 1000
-			}),
-			addSetting(customCard.name .. 'Weight', 'Weight', 'float', 1, {
-				dp = 10,
-				minValue = 0,
-				maxValue = 5,
-				absoluteMax = 1000,
-				help = function(parent)
-					Label(parent).SetText('How common the card is');
-				end
-			}),
-			addSetting(customCard.name .. 'MinimumPiecesPerTurn', 'Minimum pieces awarded per turn', 'int', 1, {
-				minValue = 0,
-				maxValue = 10,
-				absoluteMax = 100
-			}),
-			addSetting(customCard.name .. 'InitialPieces', 'Pieces given to each player at the start', 'int', 0, {
-				minValue = 0,
-				maxValue = 10,
-				absoluteMax = 100
-			}),
-			addSetting(customCard.name .. 'IsBuyable', 'Can be bought', 'bool', false, {
-				help = function(parent)
-					Label(parent).SetText('Must be a Commerce game to be bought');
-				end,
-				subsettings = {
-					addSetting(customCard.name .. 'Cost', 'Cost (gold)', 'int', customCard.Cost, {
-						minValue = 1,
-						maxValue = 20,
-						absoluteMax = 10000
-					})
-				}
-			})
+			addCustomCard(
+				customCard.name .. 'ID',
+				customCard.name,
+				customCard.desc,
+				customCard.name .. '.png',
+				{
+					NumPieces = numPiecesName,
+					Weight = weightName,
+					MinimumPiecesPerTurn = piecesPerTurnName,
+					InitialPieces = initialPiecesName
+				},
+				allCardSettings
+			)
 		}
 	});
 
@@ -59,10 +88,6 @@ local function Card(customCard, settings)
 	end;
 
 	card.bkwards = false;
-
-	for _, subsetting in ipairs(settings) do
-		table.insert(card.subsettings, subsetting);
-	end
 
 	return card;
 end
