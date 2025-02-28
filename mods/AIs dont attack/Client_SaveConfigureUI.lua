@@ -51,19 +51,21 @@ function Client_SaveConfigureUI(alert, addCard)
 		return value;
 	end
 
-	for _, setting in ipairs(customCardSettings) do
-		local cardId = addCard(
-			setting.customCardName,
-			setting.customCardDescription,
-			setting.customCardImageFilename,
-			getCardGameSetting(setting, 'NumPieces'),
-			getCardGameSetting(setting, 'MinimumPiecesPerTurn'),
-			getCardGameSetting(setting, 'InitialPieces'),
-			getCardGameSetting(setting, 'Weight'),
-			getCardGameSetting(setting, 'ActiveOrderDuration')
-		);
+	if type(addCard) == 'function' then
+		for _, setting in ipairs(customCardSettings) do
+			local cardId = addCard(
+				setting.customCardName,
+				setting.customCardDescription,
+				setting.customCardImageFilename,
+				getCardGameSetting(setting, 'NumPieces'),
+				getCardGameSetting(setting, 'MinimumPiecesPerTurn'),
+				getCardGameSetting(setting, 'InitialPieces'),
+				getCardGameSetting(setting, 'Weight'),
+				getCardGameSetting(setting, 'ActiveOrderDuration')
+			);
 
-		Mod.Settings[setting.name] = cardId;
+			Mod.Settings[setting.name] = cardId;
+		end
 	end
 
 	return true;
