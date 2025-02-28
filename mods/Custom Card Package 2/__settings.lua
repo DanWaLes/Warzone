@@ -71,7 +71,7 @@ local function Card(customCard, settings)
 				customCard.name .. 'ID',
 				customCard.name,
 				customCard.desc,
-				customCard.name .. '.png',
+				customCard.name:gsub('%s', '') .. 'Card.png',
 				{
 					NumPieces = numPiecesName,
 					Weight = weightName,
