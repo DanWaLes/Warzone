@@ -5,12 +5,16 @@ local canRun = nil;
 local doneSkippingTurn1 = false;
 local debug = false;
 
-function Server_AdvanceTurn_Order(game, order, result, skipThisOrder)
+function CanRun(game)
 	if canRun == nil then
 		canRun = serverCanRunMod(game);
 	end
 
-	if not canRun then
+	return canRun;
+end
+
+function Server_AdvanceTurn_Order(game, order, result, skipThisOrder)
+	if not CanRun(game) then
 		return;
 	end
 
@@ -27,7 +31,7 @@ function Server_AdvanceTurn_Order(game, order, result, skipThisOrder)
 end
 
 function Server_AdvanceTurn_End(game, addNewOrder)
-	if not canRun then
+	if not CanRun(game) then
 		return;
 	end
 
