@@ -1,9 +1,13 @@
 require('tblprint');
 require('version');
 
+local debug = false;
+
 function Server_Created(game, settings)
 	if not settings.MapTestingGame then
-		return;
+		if not debug then
+			return;
+		end
 	end
 
 	if not serverCanRunMod(game) then
@@ -61,5 +65,8 @@ function listTerritoryNamesAlphabetically(game)
 		return a.name < b.name;
 	end);
 
-	Mod.PublicGameData = {terrNames = names};
+	local pgd = Mod.PublicGameData;
+
+	pgd.terrNames = names;
+	Mod.PublicGameData = pgd;
 end

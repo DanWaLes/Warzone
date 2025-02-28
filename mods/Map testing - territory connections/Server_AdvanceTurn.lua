@@ -3,14 +3,25 @@ require('version');
 
 local canRun = nil;
 local doneSkippingTurn1 = false;
+local debug = false;
 
-function Server_AdvanceTurn_Order(game, order, result, skipThisOrder)
+function CanRun(game)
 	if canRun == nil then
 		canRun = serverCanRunMod(game);
 	end
 
-	if not game.Settings.MapTestingGame or not canRun then
+	return canRun;
+end
+
+function Server_AdvanceTurn_Order(game, order, result, skipThisOrder)
+	if not CanRun(game) then
 		return;
+	end
+
+	if not game.Settings.MapTestingGame then
+		if not debug then
+			return;
+		end
 	end
 
 	if game.ServerGame.Game.TurnNumber == 1 and not doneSkippingTurn1 then
@@ -20,8 +31,14 @@ function Server_AdvanceTurn_Order(game, order, result, skipThisOrder)
 end
 
 function Server_AdvanceTurn_End(game, addNewOrder)
-	if not game.Settings.MapTestingGame or not canRun then
+	if not CanRun(game) then
 		return;
+	end
+
+	if not game.Settings.MapTestingGame then
+		if not debug then
+			return;
+		end
 	end
 
 	if game.ServerGame.Game.TurnNumber == 1 then
@@ -61,7 +78,7 @@ function makeDeployments(game, addNewOrder)
 		n = n + 1;
 	end
 
-	addNewOrder(WL.GameOrderEvent.Create(WL.PlayerID.Neutral, 'Made deployments', nil, mods));
+	addNewOrder(WL.GameOrderEvent.Create(WL.PlayerID.Neutral, 'Deployments', nil, mods));
 end
 
 function numConnectionsWithPlayers(game, attackFromN)

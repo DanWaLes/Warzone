@@ -1,9 +1,13 @@
 require('tblprint');
 require('version');
 
+local debug = false;
+
 function Server_StartGame(game, standing)
-	if not game.Settings.MapTestingGame then
-		return;
+	if game.Settings.MapTestingGame then
+		if not debug then
+			return;
+		end
 	end
 
 	if not serverCanRunMod(game) then
