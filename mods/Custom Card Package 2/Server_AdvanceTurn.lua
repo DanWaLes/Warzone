@@ -32,8 +32,6 @@ function visibleToTeammates(assignedPlayer, players)
 	return visTo;
 end
 
-local playersWithSuccessfulAttacks = {};
-
 function Server_AdvanceTurn_Start(game, addNewOrder)
 	if not serverCanRunMod(game) then
 		return;
@@ -47,28 +45,7 @@ function Server_AdvanceTurn_Start(game, addNewOrder)
 		playersWithSuccessfulAttacks[playerId] = false;
 	end
 
-	local reconPlus = 'Reconnaissance+';
-
-	if getSetting('Enable' .. reconPlus) and getSetting(reconPlus .. 'RandomAutoplay') then
-		for teamType in pairs(Mod.PublicGameData.cardPieces) do
-			for teamId in pairs(Mod.PublicGameData.cardPieces[teamType]) do
-				local teamLeader = tonumber(teamType == 'teammed' and Mod.PublicGameData.teams[teamId].members[1] or teamId);
-				local numPieces = Mod.PublicGameData.cardPieces[teamType][teamId].currentPieces[reconPlus] or 0;
-				local wholeCards = math.floor(numPieces / getSetting(reconPlus .. 'PiecesInCard'));
-
-				while wholeCards > 0 do
-					local randomTerrId = Mod.PublicGameData.terrsArray[math.random(1, #Mod.PublicGameData.terrsArray)];
-					local randomTerr = game.Map.Territories[randomTerrId];
-					local msg = 'Play ' .. reconPlus .. ' Card on ' .. randomTerr.Name;
-					local payload = 'CCP2_playedCard_' .. teamLeader .. '_<' .. reconPlus .. '=[' .. randomTerr.ID .. ']>';
-					local order = WL.GameOrderCustom.Create(teamLeader, msg, payload);
-
-					addNewOrder(order);
-					wholeCards = wholeCards - 1;
-				end
-			end
-		end
-	end
+	-- todo reimplement reconPlus RandomAutoplay
 
 	if not Mod.PublicGameData.activeCards then
 		return;
@@ -102,126 +79,6 @@ function Server_AdvanceTurn_Order(game, order, result, skipThisOrder, addNewOrde
 			if enabled then
 				_G['processOrder' .. cardNameToFnName(cardName)](wz, cardName);
 			end
-		end
-	end
-
-	processGameOrderAttackTransfer(wz);
-end
-
-function Server_AdvanceTurn_End(game, addNewOrder)
-	if not serverCanRunMod(game) then
-		return;
-	end
-
-	-- automatically discard cards if cards held is above the limit
-	if getSetting('LimitMaxCards') then
-		local msgPrefix = 'Automatically removing card pieces from ';
-		local msgSuffix = ' due to holding too many full cards';
-		local limit = getSetting('MaxCardsLimit');
-
-		for teamType in pairs(Mod.PublicGameData.cardPieces) do
-			for teamId in pairs(Mod.PublicGameData.cardPieces[teamType]) do
-				local unusedFullCards = 0;
-				local sentAutoDiscardMsg = false;
-				local teamLeader = tonumber(teamType == 'teammed' and Mod.PublicGameData.teams[teamId].members[1] or teamId);
-				local player = game.ServerGame.Game.Players[teamLeader];
-				local playerOrTeamName = player.Team == -1 and player.DisplayName(nil, false) or teamIdToTeamName(player.Team);
-				local msg = msgPrefix .. playerOrTeamName .. msgSuffix;
-
-				for cardName, pieces in pairs(Mod.PublicGameData.cardPieces[teamType][teamId].currentPieces) do
-					local piecesInCard = getSetting(cardName .. 'PiecesInCard');
-					local wholeCards = math.floor(pieces / piecesInCard);
-
-					if (unusedFullCards + wholeCards) > limit then
-						if not sentAutoDiscardMsg then
-							addNewOrder(WL.GameOrderEvent.Create(WL.PlayerID.Neutral, msg, visibleToTeammates(teamLeader, game.ServerGame.Game.Players)));
-							sentAutoDiscardMsg = true;
-						end
-
-						local piecesToAdd;
-						local remaining = limit - unusedFullCards;
-
-						if remaining > 0 then
-							unusedFullCards = limit;
-							piecesToAdd = wholeCards - remaining;
-						else
-							piecesToAdd = wholeCards;
-						end
-
-						piecesToAdd = -piecesToAdd * piecesInCard;
-						addNewOrder(WL.GameOrderCustom.Create(teamLeader, msg, 'CCP2_addCardPieces_' .. teamLeader .. '_<' .. cardName .. '=[' .. piecesToAdd .. ']>'));
-					else
-						unusedFullCards = unusedFullCards + wholeCards;
-					end
-				end
-			end
-		end
-	end
-
-	-- add earned pieces
-	local earnedPieces = {};
-
-	function addEarnedPieces(playerId, cardName, minNumPieces, maxNumPieces, chance)
-		if not earnedPieces[playerId] then
-			earnedPieces[playerId] = {};
-		end
-
-		local numPieces = minNumPieces;
-		local i = maxNumPieces - minNumPieces;
-
-		while i > 0 do
-			if math.random(1, 100) < chance then
-				numPieces = numPieces + 1
-			end
-
-			i = i - 1;
-		end
-
-		earnedPieces[playerId][cardName] = numPieces;
-	end
-
-	for _, cardName in pairs(Mod.PublicGameData.cardNames) do
-		local enabled = getSetting('Enable' .. cardName);
-		local minNumPieces = enabled and getSetting(cardName .. 'PiecesPerTurn') or 0;
-		local wonByChance = enabled and getSetting(cardName .. 'WonByChance') or false;
-		local maxNumPieces = enabled and getSetting(cardName .. 'PiecesPerTurnMaxLimit') or minNumPieces;
-		local chance = enabled and getSetting(cardName .. 'WonByChancePercent') or 100;
-		local needsAttack = enabled and getSetting(cardName .. 'NeedsSuccessfulAttackToEarnPiece');
-
-		if maxNumPieces < minNumPieces then
-			maxNumPieces = minNumPieces;
-		end
-
-		if enabled and (minNumPieces or wonByChance) then
-			if needsAttack then
-				for playerId, hadSuccessfulAttack in pairs(playersWithSuccessfulAttacks) do
-					local player = game.ServerGame.Game.Players[playerId];
-
-					if player.State == WL.GamePlayerState.Playing and hadSuccessfulAttack then
-						addEarnedPieces(playerId, cardName, minNumPieces, maxNumPieces, chance);
-					end
-				end
-			else
-				for playerId in pairs(game.ServerGame.Game.PlayingPlayers) do
-					addEarnedPieces(playerId, cardName, minNumPieces, maxNumPieces, chance);
-				end
-			end
-		end
-	end
-
-	for playerId in pairs(earnedPieces) do
-		local msg = game.ServerGame.Game.PlayingPlayers[playerId].DisplayName(nil, false) .. ' earned card pieces';
-
-		addNewOrder(WL.GameOrderEvent.Create(playerId, msg, visibleToTeammates(playerId, game.ServerGame.Game.Players)));
-
-		local payloadPrefix = 'CCP2_addCardPieces_' .. playerId .. '_<';
-
-		for cardName, numPieces in pairs(earnedPieces[playerId]) do
-			local payload = payloadPrefix .. cardName .. '=[' .. numPieces .. ']>';
-			-- message here doesnt matter because payload gets processed and order is skipped
-			local order = WL.GameOrderCustom.Create(playerId, '', payload);
-
-			addNewOrder(order);
 		end
 	end
 end
@@ -278,101 +135,6 @@ function parseGameOrderCustom(wz)
 			_G[command](wz, player, cardName, param);
 		end
 	end
-end
-
-local function simulateAddCardPieces(wz, player, cardName, numPieces)
-	numPieces = tonumber(numPieces);
-
-	if numPieces == 0 then
-		return 0;
-	end
-
-	local teamType = player.Team == -1 and 'noTeam' or 'teammed';
-	local teamId = player.Team == -1 and player.ID or player.Team;
-	local amountToAdd = numPieces;
-	local currentPieces = Mod.PublicGameData.cardPieces[teamType][teamId].currentPieces[cardName];
-
-	if (currentPieces + amountToAdd) < 0 then
-		amountToAdd = -currentPieces;
-	end
-
-	return amountToAdd;
-end
-
-local function applyAddCardPieces(wz, player, cardName, numPieces)
-	local amountAdded = simulateAddCardPieces(wz, player, cardName, numPieces);
-
-	if amountAdded == 0 then
-		return amountAdded;
-	end
-
-	-- remove the pieces
-	local publicGD = Mod.PublicGameData;
-	local teamType = player.Team == -1 and 'noTeam' or 'teammed';
-	local teamId = player.Team == -1 and player.ID or player.Team;
-	local currentPieces = publicGD.cardPieces[teamType][teamId].currentPieces[cardName];
-	local resulting = currentPieces + amountAdded;
-
-	publicGD.cardPieces[teamType][teamId].currentPieces[cardName] = resulting;
-	Mod.PublicGameData = publicGD;
-
-	-- check if there's any full cards
-	local playerGD = Mod.PlayerGameData;
-	local members = player.Team == -1 and {teamId} or publicGD.teams[teamId].members;
-	local shownReceivedCardsMsg = resulting < getSetting(cardName .. 'PiecesInCard');
-
-	for _, playerId in pairs(members) do
-		playerGD[playerId].shownReceivedCardsMsg = shownReceivedCardsMsg;
-	end
-
-	Mod.PlayerGameData = playerGD;
-
-	return amountAdded;
-end
-
-function addCardPieces(wz, player, cardName, param)
-	local amountAdded = applyAddCardPieces(wz, player, cardName, param);
-
-	if amountAdded == 0 then
-		return;
-	end
-
-	local numPieces = math.abs(amountAdded);
-	local piecesInCard = getSetting(cardName .. 'PiecesInCard');
-	local fullCards = math.floor(numPieces / piecesInCard);
-	local pieces = numPieces % piecesInCard;
-	local msg = player.DisplayName(nil, false) .. ' ' .. (amountAdded > 0 and 'received' or 'lost');
-
-	if fullCards > 0 then
-		msg = msg .. ' ' .. fullCards .. ' full ' .. cardName .. ' Card' .. (fullCards == 1 and '' or 's');
-	end
-
-	if fullCards > 0 and pieces > 0 then
-		msg = msg .. ' and';
-	end
-
-	if pieces > 0 then
-		msg = msg .. ' ' .. pieces .. ' piece' .. (pieces == 1 and '' or 's');
-
-		if fullCards == 0 then
-			msg = msg .. ' of a ' .. cardName .. ' Card';
-		end
-	end
-
-	wz.addNewOrder(WL.GameOrderEvent.Create(player.ID, msg, visibleToTeammates(player.ID, wz.game.ServerGame.Game.Players)));
-end
-
-function discardCard(wz, player, cardName)
-	local amountAdded = applyAddCardPieces(wz, player, cardName, -getSetting(cardName .. 'PiecesInCard'));
-
-	if amountAdded == 0 then
-		return;
-	end
-
-	local msg = player.DisplayName(nil, false) .. ' discarded a ' .. cardName .. ' Card';
-	local visTo = visibleToTeammates(player.ID, wz.game.ServerGame.Game.Players);
-
-	wz.addNewOrder(WL.GameOrderEvent.Create(player.ID, msg, visTo));
 end
 
 function playedCard(wz, player, cardName, param)
@@ -467,28 +229,6 @@ function buyCard(wz, player, cardName)
 		}
 	};
 	wz.addNewOrder(order);
-
-	local piecesInCard = getSetting(cardName .. 'PiecesInCard');
-	local publicGD = Mod.PublicGameData;
-	local teamType = player.Team == -1 and 'noTeam' or 'teammed';
-	local teamId = player.Team == -1 and player.ID or player.Team;
-
-	publicGD.cardPieces[teamType][teamId].currentPieces[cardName] = publicGD.cardPieces[teamType][teamId].currentPieces[cardName] + piecesInCard;
-	Mod.PublicGameData = publicGD;
-end
-
-function processGameOrderAttackTransfer(wz)
-	if not wz.order or not wz.result then
-		return;
-	end
-
-	if wz.order.proxyType ~= 'GameOrderAttackTransfer' or wz.order.PlayerID == WL.PlayerID.Neutral or playersWithSuccessfulAttacks[wz.order.PlayerID] then
-		return;
-	end
-
-	if wz.result.IsAttack and wz.result.IsSuccessful then
-		playersWithSuccessfulAttacks[wz.order.PlayerID] = true;
-	end
 end
 
 function removeActiveCardInstance(cardName, i)
