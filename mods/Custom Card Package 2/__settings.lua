@@ -12,7 +12,7 @@ local function Card(customCard, settings)
 	if not customCard.Cost then
 		customCard.Cost = 5;
 	end
-		
+
 	local card = addSetting('Enable' .. customCard.name, 'Enable ' .. customCard.name .. ' cards', 'bool', false, {
 		subsettings = {
 			addSetting(customCard.name .. 'NumPieces', 'Number of pieces to divide the card into', 'int', customCard.NumPieces, {
