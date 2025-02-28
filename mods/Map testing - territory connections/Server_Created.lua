@@ -4,6 +4,8 @@ require('version');
 local debug = false;
 
 function Server_Created(game, settings)
+	settings.RankedGame = false;
+
 	if not settings.MapTestingGame then
 		if not debug then
 			return;
@@ -14,7 +16,6 @@ function Server_Created(game, settings)
 		return;
 	end
 
-	settings.RankedGame = false;
 	settings.BootedPlayersTurnIntoAIs = true;
 	settings.SurrenderedPlayersTurnIntoAIs = true;
 	settings.TimesCanComeBackFromAI = 0;
