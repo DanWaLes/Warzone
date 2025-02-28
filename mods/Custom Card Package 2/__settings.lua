@@ -10,26 +10,16 @@ local function Card(customCard, settings)
 			addSetting(customCard.name .. 'PiecesInCard', 'Number of pieces to divide the card into', 'int', 5, {
 				minValue = 1,
 				maxValue = 10,
-				absoluteMax = 100
+				absoluteMax = 1000
 			}),
-			addSetting(customCard.name .. 'WonByChance', 'Award pieces based on random chance', 'bool', false, {
+			addSetting('Weight', 'Weight', 'float', 1, {
+				dp = 10,
+				minValue = 0,
+				maxValue = 5,
+				absoluteMax = 1000,
 				help = function(parent)
-					Label(parent).SetText('If enabled, all pieces from "Minimum pieces awarded per turn" are given first then chance applies to the upper limit of number of card pieces to award on piece by piece basis');
-				end,
-				subsettings = {
-					addSetting(customCard.name .. 'PiecesPerTurnMaxLimit', 'Maximum pieces awarded per turn', 'int', 1, {
-						minValue = 1,
-						maxValue = 10,
-						absoluteMax = 100,
-						help = function(parent)
-							Label(parent).SetText('If "Minimum pieces awarded per turn" is higher than this setting, then the value for that setting is used for this setting');
-						end
-					}),
-					addSetting(customCard.name .. 'WonByChancePercent', 'Chance of a piece being awarded (%)', 'int', 10, {
-						minValue = 0,
-						maxValue = 100
-					}),
-				}
+					Label(parent).SetText('How common the card is');
+				end
 			}),
 			addSetting(customCard.name .. 'PiecesPerTurn', 'Minimum pieces awarded per turn', 'int', 1, {
 				minValue = 0,
@@ -52,8 +42,7 @@ local function Card(customCard, settings)
 						absoluteMax = 10000
 					})
 				}
-			}),
-			addSetting(customCard.name .. 'NeedsSuccessfulAttackToEarnPiece', 'Needs successful attack to award pieces', 'bool', true)
+			})
 		}
 	});
 
@@ -159,15 +148,6 @@ function getSettings()
 					maxValue = 8
 				})
 			}
-		),
-		addSetting('LimitMaxCards', 'Limit maximum cards each player or team can hold', 'bool', true, {
-			subsettings = {
-				addSetting('MaxCardsLimit', 'Limit', 'int', 3, {
-					minValue = 0,
-					maxValue = 15,
-					absoluteMax = 600
-				})
-			}
-		})
+		)
 	};
 end
