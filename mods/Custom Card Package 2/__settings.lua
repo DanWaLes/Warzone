@@ -6,7 +6,7 @@ require('string_util');
 
 local function Card(customCard, settings)
 	if not customCard.NumPieces then
-		customCard.NumPieces = 5
+		customCard.NumPieces = 5;
 	end
 
 	if not customCard.Cost then
