@@ -8,10 +8,12 @@ function Client_PresentMenuUI(rootParent, setMaxSize, setScrollable, game, close
 
 	local vert = Vert(rootParent);
 
-	if not debug and not game.Settings.MapTestingGame then
-		Label(vert).SetText('This mod can only be used in map testing games');
+	if not game.Settings.MapTestingGame then
+		if not debug then
+			Label(vert).SetText('This mod can only be used in map testing games');
 
-		return;
+			return;
+		end
 	end
 
 	local numTerrs = #Mod.PublicGameData.terrNames;

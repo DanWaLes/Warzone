@@ -10,8 +10,14 @@ function Server_AdvanceTurn_Order(game, order, result, skipThisOrder)
 		canRun = serverCanRunMod(game);
 	end
 
-	if (not debug and not game.Settings.MapTestingGame) or not canRun then
+	if not canRun then
 		return;
+	end
+
+	if not game.Settings.MapTestingGame then
+		if not debug then
+			return;
+		end
 	end
 
 	if game.ServerGame.Game.TurnNumber == 1 and not doneSkippingTurn1 then
@@ -21,8 +27,14 @@ function Server_AdvanceTurn_Order(game, order, result, skipThisOrder)
 end
 
 function Server_AdvanceTurn_End(game, addNewOrder)
-	if (not debug and not game.Settings.MapTestingGame) or not canRun then
+	if not canRun then
 		return;
+	end
+
+	if not game.Settings.MapTestingGame then
+		if not debug then
+			return;
+		end
 	end
 
 	if game.ServerGame.Game.TurnNumber == 1 then
