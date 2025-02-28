@@ -63,5 +63,8 @@ function listTerritoryNamesAlphabetically(game)
 		return a.name < b.name;
 	end);
 
-	Mod.PublicGameData = {terrNames = names};
+	local pgd = Mod.PublicGameData;
+
+	pgd.terrNames = names;
+	Mod.PublicGameData = pgd;
 end
