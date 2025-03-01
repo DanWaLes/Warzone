@@ -3,7 +3,6 @@ require('version');
 
 local canRun = nil;
 local doneSkippingTurn1 = false;
-local debug = true;
 
 function CanRun(game)
 	if canRun == nil then
@@ -19,9 +18,7 @@ function Server_AdvanceTurn_Order(game, order, result, skipThisOrder)
 	end
 
 	if not game.Settings.MapTestingGame then
-		if not debug then
-			return;
-		end
+		return;
 	end
 
 	if game.ServerGame.Game.TurnNumber == 1 and not doneSkippingTurn1 then
@@ -36,9 +33,7 @@ function Server_AdvanceTurn_End(game, addNewOrder)
 	end
 
 	if not game.Settings.MapTestingGame then
-		if not debug then
-			return;
-		end
+		return;
 	end
 
 	if game.ServerGame.Game.TurnNumber == 1 then

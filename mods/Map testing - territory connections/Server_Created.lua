@@ -1,15 +1,11 @@
 require('tblprint');
 require('version');
 
-local debug = true;
-
 function Server_Created(game, settings)
 	settings.RankedGame = false;
 
 	if not settings.MapTestingGame then
-		if not debug then
-			return;
-		end
+		return;
 	end
 
 	if not serverCanRunMod(game) then

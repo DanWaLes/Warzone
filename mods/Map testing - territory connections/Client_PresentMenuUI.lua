@@ -1,19 +1,15 @@
 require('tblprint');
 require('ui');
 
-local debug = true;
-
 function Client_PresentMenuUI(rootParent, setMaxSize, setScrollable, game, close)
 	setMaxSize(400, 200);
 
 	local vert = Vert(rootParent);
 
 	if not game.Settings.MapTestingGame then
-		if not debug then
-			Label(vert).SetText('This mod can only be used in map testing games');
+		Label(vert).SetText('This mod can only be used in map testing games');
 
-			return;
-		end
+		return;
 	end
 
 	local numTerrs = #Mod.PublicGameData.terrNames;
