@@ -1,7 +1,7 @@
 require('tblprint');
 require('ui');
 
-local debug = false;
+local debug = true;
 
 function Client_PresentMenuUI(rootParent, setMaxSize, setScrollable, game, close)
 	setMaxSize(400, 200);
