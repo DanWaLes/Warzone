@@ -3,17 +3,32 @@ require('version');
 require('setup');
 
 function Server_StartGame(game, standing)
+	print('in Server_StartGame');
+	print('type(tblprint)', type(tblprint));
+	print('type(serverCanRunMod)', type(serverCanRunMod));
+	print('type(setup)', type(setup));
+
 	if not serverCanRunMod(game) then
+		print('exit Server_StartGame because server cannot run mod');
 		return;
 	end
 
+	print('still in Server_StartGame');
+
 	isAutoDist = game.ServerGame.Settings.AutomaticTerritoryDistribution;
 
+	print('isAutoDist', isAutoDist);
+
 	if isAutoDist then
+		print('entered isAutoDist, about to call setup');
 		setup(game);
 	end
 
+	print('about to call makeHostOnlyHaveOneTerritory');
+
 	makeHostOnlyHaveOneTerritory(game, standing);
+
+	print('exited Server_StartGame');
 end
 
 function makeHostOnlyHaveOneTerritory(game, standing)
