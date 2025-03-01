@@ -3,7 +3,7 @@ require('version');
 
 local canRun = nil;
 local doneSkippingTurn1 = false;
-local debug = false;
+local debug = true;
 
 function CanRun(game)
 	if canRun == nil then
