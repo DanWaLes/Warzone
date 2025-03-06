@@ -146,7 +146,7 @@ function getSettings()
 		Card({
 			name = 'Double Tap',
 			desc = 'Allows you to make a second attack/transfer from a territory that you already issued an attack/transfer from\r\nIf one of your attacks fails but you played a Double Tap Card, a new order will be created using all armies and any special units that are on the territory at the time the card is played\r\nIf using multi-attack and the double tap attack is successful, the multi-attack chain will only continue if it was played before the next attack of the chain'
-		}),
+		}, {}),
 		Card(
 			{
 				name = 'Rushed Blockade',
