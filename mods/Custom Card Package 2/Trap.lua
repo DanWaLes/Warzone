@@ -1,6 +1,7 @@
 function playCardTrap(game, tabData, cardName, btn, vert, vert2, data)
 	if not data.phase then
-		data.phase = WL.TurnPhase.Attacks - 1;
+		-- use deploys as thats before any type of attack happens
+		data.phase = WL.TurnPhase.Deploys;
 	end
 
 	if not data.validateTerrSelection then
