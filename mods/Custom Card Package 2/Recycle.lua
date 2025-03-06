@@ -63,7 +63,6 @@ function playedCardRecycle(wz, player, cardName, param)
 					unitValue = unit.DamageToKill;
 				end
 
-				unitValue = unitValue + math.max(unit.AttackPower * unit.AttackPowerPercentage, unit.DefensePower * unit.DefensePowerPercentage);
 				unitValuesStr = unitValuesStr .. unit.Name;
 			else
 				if unit.proxyType == 'Commander' then
@@ -73,12 +72,10 @@ function playedCardRecycle(wz, player, cardName, param)
 					end
 
 					unitValue = 7;
-				elseif unit.proxyType == 'Boss1' then
+				elseif unit.proxyType == 'Boss1' or unit.proxyType == 'Boss4' then
 					unitValue = unit.Health;
 				elseif unit.proxyType == 'Boss2' or unit.proxyType == 'Boss3' then
 					unitValue = unit.Power;
-				elseif unit.proxyType == 'Boss4' then
-					unitValue = unit.Power + unit.Health;
 				end
 
 				unitValuesStr = unitValuesStr .. unit.proxyType;
