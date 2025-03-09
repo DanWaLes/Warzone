@@ -120,7 +120,7 @@
 		'Custom Card Package 2': ['AutoSettingsFiles', 'eliminate', 'lua_util', 'placeOrderInCorrectPosition', 'tblprint', 'ui', 'version'],
 		'Draw Resolver': ['eliminate', 'tblprint', 'ui', 'version'],
 		'Host spies on and can eliminate players': ['eliminate', 'tblprint', 'ui', 'version'],
-		'Locked Down Regions': ['lua_util', 'tblprint', 'ui', 'version'],
+		'Locked Down Regions': ['TerritoryOrBonusSelectionMenu', 'lua_util', 'tblprint', 'ui', 'version'],
 		'Map testing - territory connections': ['tblprint', 'ui', 'version'],
 		'Mystery Card': ['AutoSettingsFiles', 'tblprint', 'ui', 'version'],
 		'Order Notes': ['placeOrderInCorrectPosition', 'tblprint', 'ui', 'version'],
