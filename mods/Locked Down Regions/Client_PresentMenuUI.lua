@@ -1,4 +1,4 @@
-require('string_util');
+require('TerritoryOrBonusSelectionMenu');
 require('tblprint');
 require('ui');
 require('version');
@@ -53,7 +53,7 @@ function makeHostMenu(storage, vert)
 
 		return updateStorage();
 	end
-	
+
 	local vert1 = Vert(vert);
 	local vert2;
 	local addLockedDownRegionBtn = Btn(vert1).SetText('Add locked down region');
@@ -65,154 +65,65 @@ function makeHostMenu(storage, vert)
 			vert2 = Vert(vert1);
 		end
 
-		Label(vert2).SetText('You can select a bonus on the map or search and select a bonus in the list below.');
-
-		local bonusHorz = Horz(vert2);
-		Label(bonusHorz).SetText('Bonus:');
-		local highlightBonusBtn = Btn(bonusHorz).SetText('(selecting)');
-		local selectBonusFromListVertContainer = Vert(vert2);
-		local selectBonusFromListVert = nil
-		local untilTurnHorz = Horz(vert2);
-		local errorLabel = Label(vert2).SetColor('#FF0000').SetText('');
-		local selectedBonus = nil;
 		local turnNo = game.Game.TurnNumber;
 
 		if turnNo < 1 then
 			turnNo = 1;
 		end
 
-		highlightBonusBtn.SetInteractable(false);
-		highlightBonusBtn.SetOnClick(function()
-			if not selectedBonus then
-				return;
-			end
-
-			local bonus = game.Map.Bonuses[selectedBonus];
-
-			game.HighlightTerritories(bonus.Territories);
-		end);
-
-		function bonusSelected(selected)
-			errorLabel.SetText('');
-
-			if selected then
-				highlightBonusBtn.SetText(selected.Name);
-
-				if isValidSelectedBonus(storage, selected.ID) then
-					selectedBonus = selected.ID;
-				else
-					errorLabel.SetText('There is already a region that has some of the same territories of the one you just selected');
-				end
-			else
-				highlightBonusBtn.SetText('(selecting)');
-			end
-
-			highlightBonusBtn.SetInteractable(not not selected);
-
-			if not UI.IsDestroyed(selectBonusFromListVert) then
-				UI.Destroy(selectBonusFromListVert);
-			end
-
-			return WL.CancelClickIntercept;
-		end
-
-		function makeChooseFromListMenu()
-			if not UI.IsDestroyed(selectBonusFromListVert) then
-				UI.Destroy(selectBonusFromListVert);
-			end
-
-			selectBonusFromListVert = Vert(selectBonusFromListVertContainer);
-
-			local searchBar = Horz(selectBonusFromListVert);
-
-			Label(searchBar).SetText('Search:');
-
-			local searchFor = TextInput(searchBar).SetFlexibleWidth(1).SetFlexibleHeight(1).SetPreferredWidth(300);
-
-			Label(selectBonusFromListVert).SetText('Search is case-insensitive. Clear the search to view all.');
-
-			local searchBtn = Btn(searchBar).SetText('Go');
-			local results = Vert(selectBonusFromListVert);
-
-			function addAllBonuses()
-				for _, bonusId in pairs(storage.bonuses) do
-					addBonus(bonusId);
-				end
-			end
-
-			function addBonus(bonusId)
-				local bonus = game.Map.Bonuses[bonusId];
-				local horz = Horz(results);
-				local bonusBtn = Btn(horz).SetText(bonus.Name);
-				local viewBonusBtn = Btn(horz).SetText('View').SetOnClick(function()
-					game.HighlightTerritories(bonus.Territories);
-				end);
-
-				bonusBtn.SetOnClick(function()
-					bonusBtn.SetInteractable(false);
-					bonusSelected(game.Map.Bonuses[bonusId]);
-				end);
-			end
-
-			searchBtn.SetOnClick(function()
-				searchBtn.SetInteractable(false);
-				UI.Destroy(results);
-				results = Vert(selectBonusFromListVert);
-
-				local searchingFor = toCaseInsensitivePattern(escapePattern(searchFor.GetText()));
-				-- print('searchingFor = ' .. searchingFor);
-
-				if searchingFor == '' then
-					searchingFor = '.';
-				end
-
-				for _, bonusId in pairs(storage.bonuses) do
-					local bonus = game.Map.Bonuses[bonusId];
-
-					if string.find(bonus.Name, searchingFor) then
-						addBonus(bonus.ID);
-					end
-				end
-
-				searchBtn.SetInteractable(true);
-			end);
-
-			addAllBonuses();
-		end
-
-		UI.InterceptNextBonusLinkClick(bonusSelected);
-		makeChooseFromListMenu();
-
-		Label(untilTurnHorz).SetText('Locks down until end of turn:');
-
-		local initalValue = newStorage.lastUsedLockdownTurnNo or 0;
-
-		if initalValue < turnNo then
-			initalValue = turnNo;
-		end
-
-		local turn = NumInput(untilTurnHorz)
-			.SetSliderMinValue(turnNo)
-			.SetSliderMaxValue(turnNo + 100)
-			.SetValue(initalValue);
-
-		Btn(vert2)
-			.SetText('Done')
-			.SetOnClick(function()	
-				local turnValue = turn.GetValue();
-
-				if turnValue < turnNo then
-					errorLabel.SetText('"Locks down until end of turn" must be at least ' .. turnNo);
-				elseif selectedBonus then
-					newStorage.newLockedDownRegions[selectedBonus] = turnValue;
-					newStorage.lastUsedLockdownTurnNo = turnValue;
-
-					updateStorage();
-				else
+		BonusSelectionMenu(
+			vert2,
+			{
+				displayBonusSelectionWarning = function(wz, parent)
+					Label(parent).SetColor('#FF7D00').SetText('Regions must not contain territories of current locked down regions');
+				end,
+				isValidBonus = function(bonusDetails, wz)
+					return isValidSelectedBonus(storage, bonusDetails);
+				end,
+				onValidBonus = function(bonusDetails, wz)
 					UI.Destroy(vert2);
-					addLockedDownRegionBtn.SetInteractable(true);
+
+					local untilTurnHorz = Horz(vert1);
+
+					HighlightBonusBtn(game, bonusDetails.ID, untilTurnHorz);
+
+					Label(untilTurnHorz).SetText('Locks down until end of turn:');
+
+					local initalValue = newStorage.lastUsedLockdownTurnNo or 0;
+
+					if initalValue < turnNo then
+						initalValue = turnNo;
+					end
+
+					local turn = NumInput(untilTurnHorz)
+						.SetSliderMinValue(turnNo)
+						.SetSliderMaxValue(turnNo + 100)
+						.SetValue(initalValue);
+
+					Btn(vert1)
+						.SetText('Done')
+						.SetOnClick(function()	
+							local turnValue = turn.GetValue();
+
+							if turnValue < turnNo then
+								errorLabel.SetText('"Locks down until end of turn" must be at least ' .. turnNo);
+							else
+								newStorage.newLockedDownRegions[bonusDetails.ID] = turnValue;
+								newStorage.lastUsedLockdownTurnNo = turnValue;
+
+								updateStorage();
+							end
+						end);
+				end,
+				onInvalidBonus = function(bonusDetails, wz, parent)
+					local horz = Horz(parent);
+
+					HighlightBonusBtn(game, bonusDetails.ID, horz);
+					Label(horz).SetColor('#FF0000').SetText('contains territories of current locked down regions!');
 				end
-			end);
+			},
+			{game = game}
+		);
 	end);
 
 	Label(vert).SetText('Locked down regions:');
@@ -223,10 +134,7 @@ function makeHostMenu(storage, vert)
 				local bonus = game.Map.Bonuses[bonusId];
 				local horz = Horz(vert);
 
-				Btn(horz).SetText(bonus.Name).SetOnClick(function()
-					game.HighlightTerritories(bonus.Territories);
-				end);
-
+				HighlightBonusBtn(game, bonusId, horz)
 				Label(horz).SetText('until end of turn ' .. lockedDownUntilTurn);
 
 				Btn(horz).SetText('Remove').SetOnClick(function()
@@ -252,13 +160,9 @@ function makeNormalMenu(storage, vert)
 	for bonusId, lockedDownUntilTurn in pairs(storage.lockedDownRegions) do
 		if lockedDownUntilTurn + 1 > game.Game.TurnNumber then
 			hasLockedDownRegions = true;
-			local bonus = game.Map.Bonuses[bonusId];
 			local horz = Horz(vert);
 
-			Btn(horz).SetText(bonus.Name).SetOnClick(function()
-				game.HighlightTerritories(bonus.Territories);
-			end);
-
+			HighlightBonusBtn(game, bonusId, horz);
 			Label(horz).SetText('until end of turn ' .. lockedDownUntilTurn);
 		end
 	end
@@ -286,18 +190,12 @@ function bonusContainsBonus(bonus1, bonus2)
 	return false;
 end
 
-function isValidSelectedBonus(storage, selectedId)
-	if not selectedId then
-		return false;
-	end
-
-	local selectedBonus = game.Map.Bonuses[selectedId];
-
+function isValidSelectedBonus(storage, bonusDetails)
 	for bonusId, lockedDownUntilTurn in pairs(storage.lockedDownRegions) do
 		if lockedDownUntilTurn + 1 > game.Game.TurnNumber then
 			local existingBonus = game.Map.Bonuses[bonusId];
 
-			if bonusContainsBonus(selectedBonus, existingBonus) then
+			if bonusContainsBonus(bonusDetails, existingBonus) then
 				return false;
 			end
 		end
