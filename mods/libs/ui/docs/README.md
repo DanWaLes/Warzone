@@ -22,3 +22,22 @@ Defines global shorthand function names for [UI elements](https://www.warzone.co
     * `tabBtns` - table - indexed by `tabLabel` - refers to the tab button for that tab label
     * `selectedTab` - nil or string - a `tabLabel`, no default
     * `tabContents` - UI element - set to `Vert(container)`. `container` is `parent` or `Horz(parent)` if `dir` is `Vert`
+* `HighlightTerrBtn(game, terrId, parent)`
+  * Note: this function requires the use of [version 5.21 or later](https://www.warzone.com/wiki/Mod_API_Reference#Newer_API_features) to function correctly
+  * Arguments:
+    * `game` - ClientGame
+    * `terrId` - TerritoryID - ID of the territory to highlight
+    * `parent` - UI element - the parent element
+* `HighlightBonusBtn(game, bonusId, parent)`
+  * Note: this function requires the use of [version 5.21 or later](https://www.warzone.com/wiki/Mod_API_Reference#Newer_API_features) to function correctly
+  * Arguments:
+    * `game` - ClientGame
+    * `bonusId` - BonusID - ID of the bonus to highlight
+    * `parent` - UI element - the parent element
+* `CustomCardHelpButton(card, btnParent, helpContentParent)`
+  * Makes a label with text `card`.Name and a ? help button (on the same line) that, when clicked, shows the custom card description beneath the label and help button
+  * Note: this function requires the use of [version 5.32.0.1 or later](https://www.warzone.com/wiki/Mod_API_Reference#Newer_API_features) to function correctly
+  * Arguments:
+    `card` - CardGameCustom
+    `btnParent` - UI element
+    `helpContentParent` - UI element
