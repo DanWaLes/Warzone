@@ -1,4 +1,4 @@
--- copied from https://github.com/DanWaLes/Warzone/tree/master/mods/libs/ui
+-- copied from https://github.com/DanWaLes/Warzone/tree/main/mods/libs/ui
 
 -- shorthand function names
 
@@ -33,8 +33,6 @@ end
 function NumInput(parent)
 	return UI.CreateNumberInputField(parent);
 end
-
--- useful structures
 
 function Tabs(parent, dir, tabLabels, tabsClicked)
 	local container = parent;
@@ -85,4 +83,52 @@ function Tabs(parent, dir, tabLabels, tabsClicked)
 	end
 
 	return tabData;
+end
+
+local function HighlightTerrOrBonusBtn(game, id, parent, isBonus)
+	local mode = (isBonus and 'Bonuses') or 'Territories';
+	local details = game.Map[mode];
+	local btn = Btn(parent).SetText(details.Name);
+	local terrs = (isBonus and details.Territories) or {details.ID};
+
+	btn.SetOnClick(function()
+		btn.SetInteractable(false);
+		game.HighlightTerritories(terrs);
+		btn.SetInteractable(true);
+	end);
+
+	return btn;
+end
+
+function HighlightTerrBtn(game, terrId, parent)
+	return HighlightTerrOrBonusBtn(game, terrId, parent);
+end
+
+function HighlightBonusBtn(game, bonusId, parent)
+	return HighlightTerrOrBonusBtn(game, bonusId, parent, true);
+end
+
+function CustomCardHelpButton(card, btnParent, helpContentParent)
+	-- card CardGameCustom
+
+	local horz = Horz(btnParent);
+
+	Label(horz).SetText(card.Name);
+
+	local btn = Btn(horz).SetText('?').SetColor('#23A0FF');
+	local vert = Vert(helpContentParent);
+	local vert2;
+
+	btn.SetOnClick(
+		function()
+			if UI.IsDestroyed(vert2) then
+				vert2 = Vert(vert);
+				Label(vert2).SetText(card.CustomCardDescription);
+			else
+				UI.Destroy(vert2);
+			end
+		end
+	);
+
+	return btn;
 end
