@@ -1,7 +1,5 @@
 -- copied from https://github.com/DanWaLes/Warzone/tree/main/mods/libs/ui
 
--- shorthand function names
-
 function Empty(parent)
 	return UI.CreateEmpty(parent);
 end
@@ -87,7 +85,7 @@ end
 
 local function HighlightTerrOrBonusBtn(game, id, parent, isBonus)
 	local mode = (isBonus and 'Bonuses') or 'Territories';
-	local details = game.Map[mode];
+	local details = game.Map[mode][id];
 	local btn = Btn(parent).SetText(details.Name);
 	local terrs = (isBonus and details.Territories) or {details.ID};
 
@@ -109,8 +107,6 @@ function HighlightBonusBtn(game, bonusId, parent)
 end
 
 function CustomCardHelpButton(card, btnParent, helpContentParent)
-	-- card CardGameCustom
-
 	local horz = Horz(btnParent);
 
 	Label(horz).SetText(card.Name);
