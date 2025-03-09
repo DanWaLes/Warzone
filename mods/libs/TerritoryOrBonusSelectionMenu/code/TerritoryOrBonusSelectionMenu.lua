@@ -1,3 +1,5 @@
+-- copied from https://github.com/DanWaLes/Warzone/tree/main/mods/libs/TerritoryOrBonusSelectionMenu
+
 local function levenshtein(s, t)
 	-- generated from Brave Search using
 	-- search query: lua fuzzy match
