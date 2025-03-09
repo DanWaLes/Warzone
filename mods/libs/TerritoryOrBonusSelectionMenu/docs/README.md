@@ -45,12 +45,12 @@ Allows mods to easily to guide players to select territories or bonuses. Players
           * `bonusDetails` - [BonusDetails](https://www.warzone.com/wiki/Mod_API_Reference:BonusDetails) - the bonus that was selected
           * `wz` - same as `wz` in `BonusSelectionMenu`
         * Returns - any - truthy values means the bonus can be chosen
-      * `onValidTerr` - `function(bonusDetails, wz)`
+      * `onValidBonus` - `function(bonusDetails, wz)`
         * Adds a way for doing something when a valid bonus is selected
         * Arguments:
           * `bonusDetails` - [BonusDetails](https://www.warzone.com/wiki/Mod_API_Reference:BonusDetails) - the bonus that was selected
           * `wz` - same as `wz` in `BonusSelectionMenu`
-      * `onInvalidTerr` - `function(bonusDetails, wz, parent)`
+      * `onInvalidBonus` - `function(bonusDetails, wz, parent)`
         * Adds a way for displaying an error message when an invalid bonus is selected
         * Displayed underneath the warning message
         * Arguments:
