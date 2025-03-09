@@ -1,4 +1,4 @@
--- copied from https://github.com/DanWaLes/Warzone/tree/master/mods/libs/lua_util
+-- copied from https://github.com/DanWaLes/Warzone/tree/main/mods/libs/lua_util
 
 function startsWith(str, sub)
 	return string.sub(str, 1, string.len(sub)) == sub;
@@ -20,18 +20,16 @@ function split(str, separator)
 	return t;
 end
 
-function escapePattern(str)
-	-- https://www.lua.org/pil/20.2.html
-	-- https://www.lua.org/pil/20.3.html
-	-- https://stackoverflow.com/questions/9790688/escaping-strings-for-gsub
+function aAn(str, join)
+	local ret = 'a';
 
-	return string.gsub(str, '([%(%)%.%%%+%-%*%?%[%]%^%$])', '%%%1');
-end
+	if str:find('^[AEIOUaeiou]') then
+		ret = ret .. 'n';
+	end
 
-function toCaseInsensitivePattern(str)
-	-- https://www.lua.org/pil/20.4.html
+	if join then
+		ret = ret .. ' ' .. str;
+	end
 
-    return string.gsub(str, "%a", function(c)
-		return string.format("[%s%s]", string.lower(c), string.upper(c));
-	end);
+	return ret;
 end
