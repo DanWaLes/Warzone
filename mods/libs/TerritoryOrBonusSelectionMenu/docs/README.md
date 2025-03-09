@@ -1,0 +1,1 @@
+Allows mods to easily to guide players to select territories or bonuses. Players can click on the map and click on listed options. Each listed option has a view territory/bonus button. Players can search in the list. Searching uses a case-insensitive 'fuzzy match' (Levenshtein distance).
