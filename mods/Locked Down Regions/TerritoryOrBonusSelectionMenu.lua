@@ -40,7 +40,7 @@ end
 local function TerritoryOrBonusSelectionMenu(vert, validation, wz, isBonus)
 	local tpe = (isBonus and 'bonus') or 'territory';
 	local tpePlural = (isBonus and tpe .. 'es') or tpe:gsub('%l$', 'ies');
-	local Tpe = tpe:gsub("^%l", string.upper);
+	local interceptType = tpe:gsub("^%l", string.upper) .. ((isBonus and 'Link') or '');
 	local TpePlural = tpePlural:gsub('^%l', string.upper);
 
 	local vert2;
@@ -83,7 +83,7 @@ local function TerritoryOrBonusSelectionMenu(vert, validation, wz, isBonus)
 	local searchResults;
 
 	function interceptNextTerritoryOrBonusClick()
-		UI['InterceptNext' .. Tpe .. 'Click'](
+		UI['InterceptNext' .. interceptType .. 'Click'](
 			function(details)
 				if selectedTerrOrBonus then
 					-- print('already selected using option buttons but click intercepted anyway');
