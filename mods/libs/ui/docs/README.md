@@ -6,6 +6,11 @@ Defines global shorthand function names for [UI elements](https://www.warzone.co
 * `Label(parent)` - returns `UI.CreateLabel(parent)`
 * `Btn(parent)` - returns `UI.CreateButton(parent)`
 * `Checkbox(parent)` - returns `UI.CreateCheckBox(parent)`
+* `RadioBtn(parent, group)` - returns `UI.CreateRadioButton(parent).SetGroup(group)`
+  * Note: this function requires the use of [version 5.34 or later](https://www.warzone.com/wiki/Mod_API_Reference#Newer_API_features) to function correctly
+  * If `group` is falsey, `.SetGroup(group)` will not be called
+* `RadioBtnGroup(parent)` - returns `UI.CreateRadioButtonGroup(parent)`
+  * Note: this function requires the use of [version 5.34 or later](https://www.warzone.com/wiki/Mod_API_Reference#Newer_API_features) to function correctly
 * `TextInput(parent)` - returns `UI.CreateTextInputField(parent)`
 * `NumInput(parent)` - returns `UI.CreateNumberInputField(parent)`
 # Utility Functions

@@ -24,6 +24,20 @@ function Checkbox(parent)
 	return UI.CreateCheckBox(parent);
 end
 
+function RadioBtn(parent, group)
+	local btn = UI.CreateRadioButton(parent);
+
+	if group then
+		btn.SetGroup(group);
+	end
+
+	return btn;
+end
+
+function RadioBtnGroup(parent)
+	return UI.CreateRadioButtonGroup(parent);
+end
+
 function TextInput(parent)
 	return UI.CreateTextInputField(parent);
 end
