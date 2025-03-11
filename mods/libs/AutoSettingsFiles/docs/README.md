@@ -35,7 +35,7 @@ Optional keys:
 * `placeholder` - string - the placeholder text
 * `charLimit` - number - the maximum number of characters that can be entered
 ### radio
-This makes a group of checkboxes where only one checkbox can be checked at any time. `defaultValue` and `otherProps.bkwards` (if specified) must be a number index that can be indexed by `controls`. `defaultValue` becomes the initial checkbox to check. The value of the setting is saved as the index of the currently selected `control`.
+This makes a group of radio buttons (or checkboxes if radio buttons are not supported) where only one option can be checked at any time. `defaultValue` and `otherProps.bkwards` (if specified) must be a number index that can be indexed by `controls`. `defaultValue` becomes the initial checkbox to check. The value of the setting is saved as the index of the currently selected `control`.
 
 Forced keys:
 * `controls` - array of `control` - details about the checkbox listed under `label`

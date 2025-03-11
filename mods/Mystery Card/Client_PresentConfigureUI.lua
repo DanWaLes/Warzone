@@ -8,11 +8,17 @@ local modDevMadeError = false;
 local settingHelpAreas = {};
 local canUseUIElementIsDestroyed;
 local canUseCustomCards;
+local canUseRadioButtons;
 local save = nil;
 
+local function isVersionOrHigher(version)
+	return WL and WL.IsVersionOrHigher and WL.IsVersionOrHigher(version);
+end
+
 function Client_PresentConfigureUI(rootParent)
-	canUseUIElementIsDestroyed = WL and WL.IsVersionOrHigher and WL.IsVersionOrHigher('5.21');
-	canUseCustomCards = WL and WL.IsVersionOrHigher and WL.IsVersionOrHigher('5.32.0.1');
+	canUseUIElementIsDestroyed = isVersionOrHigher('5.21');
+	canUseCustomCards = isVersionOrHigher('5.32.0.1');
+	canUseRadioButtons = isVersionOrHigher('5.34');
 	save = function()
 		-- save because destroying otherwise goes back to default setting values
 		-- returns true if there isnt a error, false if there is an error
@@ -178,17 +184,25 @@ function cpcDoSetting(setting, vert)
 		end
 
 		function listAllOptions()
+			local fnName = 'Create' .. ((canUseRadioButtons and 'RadioButton') or 'CheckBox');
+
 			if not vert5 then
-				vert5 = UI.CreateVerticalLayoutGroup(vert4);
+				local containerName = 'Create' .. ((canUseRadioButtons and 'RadioButton') or 'VerticalLayout') .. 'Group';
+
+				vert5 = UI[containerName](vert4);
 			end
 
 			for a, option in ipairs(setting.controls) do
 				local horz2 = UI.CreateHorizontalLayoutGroup(UI.CreateVerticalLayoutGroup(vert5));
 				local i = a;
 				local isSelectedCheckbox = i == initialSettingValue;
-				local checkbox = UI.CreateCheckBox(horz2)
+				local checkbox = UI[fnName](horz2)
 					.SetText('')
 					.SetIsChecked(isSelectedCheckbox);
+
+				if canUseRadioButtons then
+					checkbox.SetGroup(vert5);
+				end
 
 				makeLabelFromOption(horz2, option);
 				makeLabelHelpFromOption(horz2, UI.CreateVerticalLayoutGroup(vert5), option, a);
