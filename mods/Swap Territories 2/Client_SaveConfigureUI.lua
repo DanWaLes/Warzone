@@ -2,6 +2,10 @@
 
 require('__settings');
 
+local function isVersionOrHigher(version)
+	return WL and WL.IsVersionOrHigher and WL.IsVersionOrHigher(version);
+end
+
 local errMsg;
 local settingValues;
 local modDevMadeError = false;
@@ -13,8 +17,8 @@ function Client_SaveConfigureUI(alert, addCard)
 	errMsg = nil;
 	settingValues = {};
 	customCardSettings = {};
-	canUseUIElementIsDestroyed = WL and WL.IsVersionOrHigher and WL.IsVersionOrHigher('5.21');
-	canUseCustomCards = WL and WL.IsVersionOrHigher and WL.IsVersionOrHigher('5.32.0.1');
+	canUseUIElementIsDestroyed = isVersionOrHigher('5.21');
+	canUseCustomCards = isVersionOrHigher('5.32.0.1');
 
 	if type(getSettings) ~= 'function' then
 		getSettings = function()
@@ -61,7 +65,8 @@ function Client_SaveConfigureUI(alert, addCard)
 				getCardGameSetting(setting, 'MinimumPiecesPerTurn'),
 				getCardGameSetting(setting, 'InitialPieces'),
 				getCardGameSetting(setting, 'Weight'),
-				getCardGameSetting(setting, 'ActiveOrderDuration')
+				getCardGameSetting(setting, 'ActiveOrderDuration'),
+				getCardGameSetting(setting, 'ActiveCardExpireBehavior')
 			);
 
 			Mod.Settings[setting.name] = cardId;
