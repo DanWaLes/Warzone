@@ -32,13 +32,15 @@ function Client_PresentConfigureUI(rootParent)
 		end;
 	end
 
-	cpc(rootParent, getSettings());
+	local vert = UI.CreateVerticalLayoutGroup(rootParent);
+
+	cpc(vert, getSettings());
 
 	if not modDevMadeError then
 		return;
 	end
 
-	UI.CreateLabel(rootParent).SetColor('#FF0000').SetText('The mod developer made an error while trying to add settings');
+	UI.CreateLabel(vert).SetColor('#FF0000').SetText('The mod developer made an error while trying to add settings');
 end
 
 function cpc(parent, settings)
@@ -185,11 +187,16 @@ function cpcDoSetting(setting, vert)
 
 		function listAllOptions()
 			local fnName = 'Create' .. ((canUseRadioButtons and 'RadioButton') or 'CheckBox');
+			local radioBtnGroup;
 
 			if not vert5 then
-				local containerName = 'Create' .. ((canUseRadioButtons and 'RadioButton') or 'VerticalLayout') .. 'Group';
+				vert5 = UI.CreateVerticalLayoutGroup(vert4);
+			end
 
-				vert5 = UI[containerName](vert4);
+			if canUseRadioButtons then
+				-- radio button group should not contain any children
+				-- because it is not a layout group
+				radioBtnGroup = UI.CreateRadioButtonGroup(vert5);
 			end
 
 			for a, option in ipairs(setting.controls) do
@@ -201,7 +208,7 @@ function cpcDoSetting(setting, vert)
 					.SetIsChecked(isSelectedCheckbox);
 
 				if canUseRadioButtons then
-					checkbox.SetGroup(vert5);
+					checkbox.SetGroup(radioBtnGroup);
 				end
 
 				makeLabelFromOption(horz2, option);
