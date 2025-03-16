@@ -4,16 +4,16 @@ require('__settings');
 
 GLOBALS = {};
 
+local function isVersionOrHigher(version)
+	return WL and WL.IsVersionOrHigher and WL.IsVersionOrHigher(version);
+end
+
 local modDevMadeError = false;
 local settingHelpAreas = {};
 local canUseUIElementIsDestroyed;
 local canUseCustomCards;
 local canUseRadioButtons;
 local save = nil;
-
-local function isVersionOrHigher(version)
-	return WL and WL.IsVersionOrHigher and WL.IsVersionOrHigher(version);
-end
 
 function Client_PresentConfigureUI(rootParent)
 	canUseUIElementIsDestroyed = isVersionOrHigher('5.21');
