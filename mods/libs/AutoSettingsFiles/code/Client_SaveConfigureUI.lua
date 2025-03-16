@@ -61,7 +61,8 @@ function Client_SaveConfigureUI(alert, addCard)
 				getCardGameSetting(setting, 'MinimumPiecesPerTurn'),
 				getCardGameSetting(setting, 'InitialPieces'),
 				getCardGameSetting(setting, 'Weight'),
-				getCardGameSetting(setting, 'ActiveOrderDuration')
+				getCardGameSetting(setting, 'ActiveOrderDuration'),
+				getCardGameSetting(setting, 'ActiveCardExpireBehavior')
 			);
 
 			Mod.Settings[setting.name] = cardId;
