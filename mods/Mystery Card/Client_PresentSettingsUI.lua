@@ -7,7 +7,7 @@ local canUseUIElementIsDestroyed;
 function Client_PresentSettingsUI(rootParent)
 	canUseUIElementIsDestroyed = WL and WL.IsVersionOrHigher and WL.IsVersionOrHigher('5.21');
 
-	cps(rootParent, getSettings(), 0);
+	cps(UI.CreateVerticalLayoutGroup(rootParent), getSettings(), 0);
 end
 
 function cps(rootParent, settings)
