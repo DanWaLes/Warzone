@@ -440,7 +440,7 @@ function addCustomCard(name, customCardName, customCardDescription, customCardIm
 	end
 
 	local forcedCardGameSettings = {'NumPieces', 'MinimumPiecesPerTurn', 'InitialPieces', 'Weight'};
-	local optionalCardGameSettings = {'ActiveOrderDuration'};
+	local optionalCardGameSettings = {'ActiveOrderDuration', 'ActiveCardExpireBehavior'};
 
 	validateCardGameSettings(forcedCardGameSettings, {'string', 'number'});
 	validateCardGameSettings(optionalCardGameSettings, {'nil', 'string', 'number'});
