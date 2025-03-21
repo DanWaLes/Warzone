@@ -56,7 +56,15 @@ function Client_SaveConfigureUI(alert, addCard)
 	end
 
 	if type(addCard) == 'function' then
-		for _, setting in ipairs(customCardSettings) do
+		for i, setting in ipairs(customCardSettings) do
+			local duration = getCardGameSetting(setting, 'ActiveOrderDuration') or -1;
+			local expireBehavior = getCardGameSetting(setting, 'ActiveCardExpireBehavior');
+
+			if duration  <= 0 then
+				duration = -1
+				expireBehavior = nil;
+			end
+
 			local cardId = addCard(
 				setting.customCardName,
 				setting.customCardDescription,
@@ -65,8 +73,8 @@ function Client_SaveConfigureUI(alert, addCard)
 				getCardGameSetting(setting, 'MinimumPiecesPerTurn'),
 				getCardGameSetting(setting, 'InitialPieces'),
 				getCardGameSetting(setting, 'Weight'),
-				getCardGameSetting(setting, 'ActiveOrderDuration'),
-				getCardGameSetting(setting, 'ActiveCardExpireBehavior')
+				duration,
+				expireBehavior
 			);
 
 			Mod.Settings[setting.name] = cardId;
