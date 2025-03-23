@@ -1,5 +1,3 @@
--- TODO apply treat duration <= 0 as duration -1 on github
-
 -- modified from https://github.com/DanWaLes/Warzone/tree/main/mods/libs/AutoSettingsFiles
 
 require('settings');
@@ -97,7 +95,7 @@ function getSettings()
 
 	return {
 		Card('Immobilize Card', true, {NumPieces = 6, ActiveOrderDuration = 1, ActiveCardExpireBehavior = start}, 'Prevents attacks/transfers and airlifts to and from a territory. The territory must be one of yours or connected to one of yours.'),
-		Card('Reconnaissance+ Card', true, {NumPieces = 3, ActiveCardExpireBehavior = start}, 'Like a normal Reconnaissance Card, but with a customizable range.', {
+		Card('Reconnaissance+ Card', true, {NumPieces = 3, ActiveCardExpireBehavior = start}, 'Like a Reconnaissance Cards, but with a customizable range.', {
 			addSetting('Reconnaissance+ CardRange', 'Range', 'int', 1, {
 				minValue = 0,
 				maxValue = 5-- capped at 5 for performance reasons
