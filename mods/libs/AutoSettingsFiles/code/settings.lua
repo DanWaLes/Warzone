@@ -1,4 +1,4 @@
--- This file was copied as part of an implementation of https://github.com/DanWaLes/Warzone/tree/main/mods/libs/AutoSettingsFiles
+-- This file was copied as part of the implementation of https://github.com/DanWaLes/Warzone/tree/main/mods/libs/AutoSettingsFiles
 -- Original source: https://github.com/DanWaLes/Warzone/tree/main/mods/libs/AutoSettingsFiles/code/settings.lua
 -- Copyright (c) 2023-2025 https://github.com/DanWaLes
 -- Licensed under the MIT License: https://opensource.org/license/mit
