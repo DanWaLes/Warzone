@@ -2,7 +2,6 @@
 
 require('settings');
 require('ui');
-require('string_util');
 
 local function Card(customCard, settings)
 	local card = addSetting('Enable' .. customCard.name, 'Enable ' .. customCard.name .. ' cards', 'bool', false, {
