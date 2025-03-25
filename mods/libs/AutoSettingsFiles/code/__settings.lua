@@ -1,4 +1,4 @@
--- This file is part of an implementation of https://github.com/DanWaLes/Warzone/tree/main/mods/libs/AutoSettingsFiles
+-- This file is part of the implementation of https://github.com/DanWaLes/Warzone/tree/main/mods/libs/AutoSettingsFiles
 -- Having a getSettings function is necessary for correct functionality
 -- Using the module "settings" is for convenience/error checking
 
