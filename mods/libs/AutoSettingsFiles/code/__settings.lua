@@ -5,6 +5,8 @@
 require('settings');
 
 function getSettings()
+	-- these settings are for example purposes only
+
 	return {
 		addSetting('intsetting', 'int setting', 'int', 3, {
 			minValue = 1,
