@@ -1,4 +1,7 @@
--- copied from https://github.com/DanWaLes/Warzone/tree/main/mods/libs/AutoSettingsFiles
+-- This file was copied as part of an implementation of https://github.com/DanWaLes/Warzone/tree/main/mods/libs/AutoSettingsFiles
+-- Original source: https://github.com/DanWaLes/Warzone/tree/main/mods/libs/AutoSettingsFiles/code/Client_SaveConfigureUI.lua
+-- Copyright (c) 2023-2025 https://github.com/DanWaLes
+-- Licensed under the MIT License: https://opensource.org/license/mit
 
 require('__settings');
 
@@ -253,9 +256,16 @@ function access(setting, fn)
 	return value;
 end
 
+-- This function was adapted from the Lua-users wiki
+-- Original source: http://lua-users.org/wiki/SimpleRound
+-- Author: Unknown (Unable to determine the original author)
+-- Copyright: Unknown (Assumed to be permissively licensed, such as MIT)
+-- Adaptions:
+-- Rename parameter 1 from `num` to `n`
+-- Rename parameter 2 from `numDecimalPlaces` to `dp`
+-- Whitespace changes
 function round(n, dp)
-	-- http://lua-users.org/wiki/SimpleRound
 	local multi = 10 ^ (dp or 0);
 
-	return math.floor((n * multi + 0.5)) / multi;
+	return math.floor(n * multi + 0.5) / multi;
 end
