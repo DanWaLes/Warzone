@@ -61,14 +61,14 @@ Arguments:
 ## addCustomCard
 For use on [Custom Cards](https://www.warzone.com/wiki/Mod_API_Reference:Custom_Cards).
 
-If while configuring or saving mod settings and the game creator's app version does not support custom cards, settings for custom cards will not be configurable or saved. A message in Client_PresentConfigureUI.lua will notify them that their app version does not support custom card and to upgrade app version. The game may still be created.
+If while configuring or saving mod settings and the game creator's app version does not fully support custom cards, settings for custom cards will not be configurable or saved. A message in Client_PresentConfigureUI.lua will notify them that their app version does not support custom card and to upgrade app version. The game may still be created. This can be prevented if a mod uses [Client_CreateGame](https://www.warzone.com/wiki/Mod_Hooks).
 
 Arguments:
 * `name` - string - used to store the CardID from `addCard`. All names must be unique to function correctly
 * `customCardName` - string - name of the card - used for `addCard`
 * `customCardDescription` - string - description of the card - used for `addCard`
 * `customCardImageFilename` - string - image filename - used for `addCard`
-* `cardGameSettingsMap` - table - must have fields `NumPieces`, `MinimumPiecesPerTurn`, `InitialPieces` and `Weight`. Has optional field `ActiveOrderDuration` - an undocumented, untested function parameter for `addCard`. If the value of a field is a number, that value will be used as-is. If the value of a field is a string, it must be a setting `name` and the value of `Mod.Settings[name]` will be used. `cardGameSettingsMap` is applied after all settings have been written to `Mod.Settings`.  - used for `addCard`
+* `cardGameSettingsMap` - table - must have fields `NumPieces`, `MinimumPiecesPerTurn`, `InitialPieces` and `Weight`. Has optional fields `ActiveOrderDuration` (defaults to `-1`) and `ActiveCardExpireBehavior`. If the value of a field is a number, that value will be used as-is. If the value of a field is a string, it must be a setting `name` and the value of `Mod.Settings[name]` will be used. If `ActiveOrderDuration` is falsey, `ActiveOrderDuration` will be changed to `-1` and `ActiveCardExpireBehavior` will be changed to `nil`. `cardGameSettingsMap` is applied after all settings have been written to `Mod.Settings`.  - used for `addCard`
 * `settings` - nil or array of `setting` - all card settings, including completely custom settings
 # Accessing setting values
 Each setting is written to `Mod.Settings[name]`. The `getSetting(name)` function defined in `settings.lua` returns the value stored in `Mod.Settings[name]`. If the value is `nil`, a message will printed. `name` is the same as what is used in `addSetting`, `addSettingTemplate` or `addCustomCard`.
