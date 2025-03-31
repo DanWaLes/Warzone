@@ -1,4 +1,7 @@
--- copied from https://github.com/DanWaLes/Warzone/tree/main/mods/libs/AutoSettingsFiles
+-- This file was copied as part of the implementation of https://github.com/DanWaLes/Warzone/tree/main/mods/libs/AutoSettingsFiles
+-- Original source: https://github.com/DanWaLes/Warzone/tree/main/mods/libs/AutoSettingsFiles/code/Client_PresentConfigureUI.lua
+-- Copyright (c) 2023-2025 https://github.com/DanWaLes
+-- Licensed under the MIT License: https://opensource.org/license/mit
 
 require('__settings');
 
@@ -13,11 +16,12 @@ local settingHelpAreas = {};
 local canUseUIElementIsDestroyed;
 local canUseCustomCards;
 local canUseRadioButtons;
+local appVersionCustomCards = '5.34.1';
 local save = nil;
 
 function Client_PresentConfigureUI(rootParent)
 	canUseUIElementIsDestroyed = isVersionOrHigher('5.21');
-	canUseCustomCards = isVersionOrHigher('5.32.0.1');
+	canUseCustomCards = isVersionOrHigher(appVersionCustomCards);
 	canUseRadioButtons = isVersionOrHigher('5.34');
 	save = function()
 		-- save because destroying otherwise goes back to default setting values
@@ -98,7 +102,7 @@ function cpcDoSetting(setting, vert)
 	if setting.isCustomCard then
 		if not canUseCustomCards then
 			UI.CreateLabel(vert).SetText('This mod uses custom cards.');
-			UI.CreateLabel(vert).SetText('You must use update your app to at least version 5.32.0.1 to use custom card features in games.');
+			UI.CreateLabel(vert).SetText('You must use update your app to at least version ' .. appVersionCustomCards .. ' to use custom card features in games.');
 
 			return;
 		end

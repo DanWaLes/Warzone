@@ -1,4 +1,7 @@
--- copied from https://github.com/DanWaLes/Warzone/tree/main/mods/libs/AutoSettingsFiles
+-- This file was copied as part of the implementation of https://github.com/DanWaLes/Warzone/tree/main/mods/libs/AutoSettingsFiles
+-- Original source: https://github.com/DanWaLes/Warzone/tree/main/mods/libs/AutoSettingsFiles/code/Client_SaveConfigureUI.lua
+-- Copyright (c) 2023-2025 https://github.com/DanWaLes
+-- Licensed under the MIT License: https://opensource.org/license/mit
 
 require('__settings');
 
@@ -18,7 +21,7 @@ function Client_SaveConfigureUI(alert, addCard)
 	settingValues = {};
 	customCardSettings = {};
 	canUseUIElementIsDestroyed = isVersionOrHigher('5.21');
-	canUseCustomCards = isVersionOrHigher('5.32.0.1');
+	canUseCustomCards = isVersionOrHigher('5.34.1');
 
 	if type(getSettings) ~= 'function' then
 		getSettings = function()
@@ -56,7 +59,15 @@ function Client_SaveConfigureUI(alert, addCard)
 	end
 
 	if type(addCard) == 'function' then
-		for _, setting in ipairs(customCardSettings) do
+		for i, setting in ipairs(customCardSettings) do
+			local duration = getCardGameSetting(setting, 'ActiveOrderDuration') or -1;
+			local expireBehavior = getCardGameSetting(setting, 'ActiveCardExpireBehavior');
+
+			if duration  <= 0 then
+				duration = -1
+				expireBehavior = nil;
+			end
+
 			local cardId = addCard(
 				setting.customCardName,
 				setting.customCardDescription,
@@ -65,8 +76,8 @@ function Client_SaveConfigureUI(alert, addCard)
 				getCardGameSetting(setting, 'MinimumPiecesPerTurn'),
 				getCardGameSetting(setting, 'InitialPieces'),
 				getCardGameSetting(setting, 'Weight'),
-				getCardGameSetting(setting, 'ActiveOrderDuration'),
-				getCardGameSetting(setting, 'ActiveCardExpireBehavior')
+				duration,
+				expireBehavior
 			);
 
 			Mod.Settings[setting.name] = cardId;
@@ -245,9 +256,16 @@ function access(setting, fn)
 	return value;
 end
 
+-- This function was adapted from the Lua-users wiki
+-- Original source: http://lua-users.org/wiki/SimpleRound
+-- Author: Unknown (Unable to determine the original author)
+-- Copyright: Unknown (Assumed to be permissively licensed, such as MIT)
+-- Adaptions:
+-- Rename parameter 1 from `num` to `n`
+-- Rename parameter 2 from `numDecimalPlaces` to `dp`
+-- Whitespace changes
 function round(n, dp)
-	-- http://lua-users.org/wiki/SimpleRound
 	local multi = 10 ^ (dp or 0);
 
-	return math.floor((n * multi + 0.5)) / multi;
+	return math.floor(n * multi + 0.5) / multi;
 end
