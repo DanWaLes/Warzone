@@ -32,4 +32,8 @@ There are currently two files:
   * Arguments:
     * `str` - string - the text for checking if it should be referred to as 'a' or 'an'
     * `join` - boolean - if truthy a space and `str` will be appended to 'a' or 'an'
+<<<<<<< HEAD
   * Returns: string
+=======
+  * Returns: string
+>>>>>>> origin/main

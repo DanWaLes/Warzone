@@ -470,4 +470,8 @@ function makeNumberInput(setting, horz, initialSettingValue)
 		.SetSliderMinValue(setting.minValue)
 		.SetSliderMaxValue(setting.maxValue)
 		.SetValue(initialSettingValue);
+<<<<<<< HEAD
 end
+=======
+end
+>>>>>>> origin/main

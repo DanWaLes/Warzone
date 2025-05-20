@@ -109,4 +109,8 @@ function getSettings()
 			};
 		end)
 	};
+<<<<<<< HEAD
 end
+=======
+end
+>>>>>>> origin/main

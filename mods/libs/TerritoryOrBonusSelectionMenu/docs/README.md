@@ -59,4 +59,8 @@ Allows mods to easily to guide players to select territories or bonuses. Players
           * `parent` - a vertical layout group UI element
     * `wz` - table - used for giving access to variables for functions in `bonusValidation`
       * Must have key:
+<<<<<<< HEAD
         * `game` - [ClientGame](https://www.warzone.com/wiki/Mod_API_Reference:ClientGame)
+=======
+        * `game` - [ClientGame](https://www.warzone.com/wiki/Mod_API_Reference:ClientGame)
+>>>>>>> origin/main

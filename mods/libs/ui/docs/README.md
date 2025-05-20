@@ -45,4 +45,8 @@ Defines global shorthand function names for [UI elements](https://www.warzone.co
   * Arguments:
     `card` - CardGameCustom
     `btnParent` - UI element
+<<<<<<< HEAD
     `helpContentParent` - UI element
+=======
+    `helpContentParent` - UI element
+>>>>>>> origin/main

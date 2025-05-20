@@ -312,4 +312,8 @@ function BonusSelectionMenu(vert, bonusValidation, wz)
 	};
 
 	return TerritoryOrBonusSelectionMenu(vert, validation, wz, true);
+<<<<<<< HEAD
 end
+=======
+end
+>>>>>>> origin/main

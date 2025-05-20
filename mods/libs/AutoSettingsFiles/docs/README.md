@@ -95,4 +95,8 @@ Each setting is written to `Mod.Settings[name]`. The `getSetting(name)` function
 ![Same help button clicked](imgs/Client_PresentSettingsUI.lua/3_same_help_button_clicked.png)
 ![Expand collapse button clicked](imgs/Client_PresentSettingsUI.lua/4_expand_collapse_button_clicked.png)
 ![Same expand collapse button clicked](imgs/Client_PresentSettingsUI.lua/5_same_expand_collapse_button_clicked.png)
+<<<<<<< HEAD
 ![Expand collapse button clicked](imgs/Client_PresentSettingsUI.lua/6_expand_collapse_button_clicked.png)
+=======
+![Expand collapse button clicked](imgs/Client_PresentSettingsUI.lua/6_expand_collapse_button_clicked.png)
+>>>>>>> origin/main

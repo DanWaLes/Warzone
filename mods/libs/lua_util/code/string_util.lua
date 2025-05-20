@@ -32,4 +32,8 @@ function aAn(str, join)
 	end
 
 	return ret;
+<<<<<<< HEAD
 end
+=======
+end
+>>>>>>> origin/main
