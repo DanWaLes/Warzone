@@ -1,0 +1,1 @@
+Allows you to make more attacks/transfers from a territory that you already issued attack/transfer orders from.
